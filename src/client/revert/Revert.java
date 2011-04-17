@@ -26,12 +26,8 @@ public class Revert extends BasicGame {
 	
 	private Image imgShip;
 	
-	private int clientId;
-	
 	public Player[] players = new Player[Constants.WORLD_PLAYER_SIZE];
 	public EntityController ec;
-	
-	private boolean isSpawned;
 
 	public Revert() {
 		super("Revert");
@@ -47,7 +43,7 @@ public class Revert extends BasicGame {
 		gc.setVSync(true);
 
 		try {
-			imgShip = new Image("img/fighter.png");
+			imgShip = new Image("img/ship.png");
 			map = new TiledMap("maps/map01.tmx");
 		} catch (SlickException e) {
 			e.printStackTrace();
@@ -72,14 +68,35 @@ public class Revert extends BasicGame {
 		
 	}
 	
+	short counter = 0;
 	@Override
 	public void update(GameContainer gc, int delta) throws SlickException {
 
 		Entity ship = ec.getControlledShip();
+		Player thePlayer = null;
+		
+		// Get the player controlling this game
+		for(Player player : players){
+			if(player == null) continue;
+			if(player.id == net.id){
+				thePlayer = player;
+				break;
+			}
+		}
+		
+		// Send position update packet to server
+		if(counter > 10){
+			if(thePlayer != null && thePlayer.ship != null){
+				if(ship.isAlive()){
+					net.send(thePlayer.ship.getPacket());
+				}
+			}
+			counter = 0;
+		}
+		counter++;
 		
 		ec.update(gc, delta);
 		cam.centerOn(ship);
-		// Network
 		
 	}
 	
@@ -89,7 +106,6 @@ public class Revert extends BasicGame {
 		ship.setImage(imgShip);
 		
 		System.out.println("ship created for " + id);
-		isSpawned = true;
 		
 		players[id].ship = ship;
 		ec.add(ship);
@@ -125,12 +141,14 @@ public class Revert extends BasicGame {
 		
 		//pc.send(new Packet(clientId, w, a, s, d));
 		//System.out.println(clientId + " " + w + " " + a + " " + s + " " + d);
+		/*
 		try {
 			if(isSpawned)	// bandage so they cant send update packets when ship doesnt even exist yet
 				actionSender.sendMoveUpdate(w, a, s, d, q, e);
 		} catch (NetException e) {
 			e.printStackTrace();
 		}
+		*/
 		
 	}
 
@@ -169,25 +187,22 @@ public class Revert extends BasicGame {
 			}			
 			//pc.send(new Packet(clientId, w, a, s, d));
 			//System.out.println(clientId + " " + w + " " + a + " " + s + " " + d);
+			/*
 			try {
 				if(isSpawned)	// bandage so they cant send update packets when ship doesnt even exist yet
-					actionSender.sendMoveUpdate(w, a, s, d, q, e);
+					//actionSender.sendMoveUpdate(w, a, s, d, q, e);
 			} catch (NetException e) {
 				e.printStackTrace();
 			}
+			*/
 			
 		}
 	}
 	
-	public int getClientId(){ return clientId; }
-	public void setClientId(int id){ clientId = id; }
-	public boolean getIsSpawned(){ return isSpawned; }
-	public void setIsSpawned(boolean s){ isSpawned = s; }
-	
 	public static void main(String args[]){
         try {
 
-            AppGameContainer agc = new AppGameContainer(new Revert(), 800, 600, false);
+            AppGameContainer agc = new AppGameContainer(new Revert(), 1280, 800, false);
             agc.start();
 
         } catch (SlickException e) {

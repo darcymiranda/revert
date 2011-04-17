@@ -22,11 +22,12 @@ public class Packet implements Serializable  {
 	
 	private final long timeStamp = System.currentTimeMillis();
 	private int id = -1;
+	private int delta = 0;
 	private String message;
 	private String username;
 	private boolean status;
 	private boolean w,s,d,a,q,e;
-	private float x,y,r;
+	private float x,y,r,xv,yv;
 	
 	public byte type;
 	
@@ -81,12 +82,22 @@ public class Packet implements Serializable  {
 		this.w = w;	this.s = s; this.d = d; this.a = a; this.q = q; this.e = e;
 	}
 	
-	public Packet(byte t, int id, float x, float y, float r){
+	public Packet(byte t, int id, float x, float y, float xv, float yv, float r){
 		this.type = t;
 		this.id = id;
 		this.x = x;
 		this.y = y;
 		this.r = r;
+		this.xv = xv;
+		this.yv = yv;
+	}
+	public Packet(byte t, float x, float y, float xv, float yv, float r){
+		this.type = t;
+		this.x = x;
+		this.y = y;
+		this.r = r;
+		this.xv = xv;
+		this.yv = yv;
 	}
 	
 	public void setMessage(String message){ this.message = message; }
@@ -111,6 +122,8 @@ public class Packet implements Serializable  {
 	public float getPositionX(){ return x; }
 	public float getPositionY(){ return y; }
 	public float getRotationR(){ return r; }
+	public float getVelocityX(){ return xv; }
+	public float getVelocityY(){ return yv; }
 	
 	public long getTimeStamp(){ return timeStamp; }
 	

@@ -8,7 +8,7 @@ public class Ship {
 	
 	public float x, y, r;
 	public float xv, yv;
-	private float oldx, oldy, oldr;
+	private float oldx, oldy, oldr, oldxv, oldyv;
 	
 	private final float ACCELERATION = 4f / 1000;
 	private final float maxVelocity = 5;
@@ -25,30 +25,17 @@ public class Ship {
 	 */
 	public void tick(){
 		
-		/* OLD
-		if(!isAlive){	// change to true when isAlive is implemented properly
-			if(w)
-				y-=3;
-			if(s)
-				y+=3;
-			if(a)
-				x-=3;
-			if(d)
-				x+=3;
-		}
-		*/
-		
-		if(!isAlive){
-			if(w)
-				yv -= 1;
-		}
+		x += xv;
+		y -= yv;
 		
 		// determines if the position has changed from the last one
-		posChanged = (oldx != x || oldy != y || oldr != r);
+		posChanged = (oldx != x || oldy != y || oldr != r || oldxv != xv || oldyv != yv);
 		
 		oldx = x;
 		oldy = y;
 		oldr = r;
+		oldxv = xv;
+		oldyv = yv;
 		
 	}
 	
@@ -57,12 +44,21 @@ public class Ship {
 	 * @param packet
 	 */
 	public void update(Packet packet){
+		/*
 		w = packet.getPressedW();
 		a = packet.getPressedA();
 		s = packet.getPressedS();
 		d = packet.getPressedD();
 		e = packet.getPressedE();
 		q = packet.getPressedQ();
+		*/
+		
+		x = packet.getPositionX();
+		y = packet.getPositionY();
+		r = packet.getRotationR();
+		xv = packet.getVelocityX();
+		yv = packet.getVelocityY();
+		
 	}
 	
 	public boolean hasPositionChanged(){ return posChanged; }

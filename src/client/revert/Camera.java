@@ -105,7 +105,7 @@ public class Camera {
     */
    public void centerOn(Entity entity){
 	   if(entity != null)
-		   this.centerOn(new Vector2f(entity.serverPosition.x + entity.velocity.x, entity.serverPosition.y + entity.velocity.y));
+		   this.centerOn(new Vector2f(entity.clientPosition.x + entity.velocity.x, entity.clientPosition.y + entity.velocity.y));
    }
    
    /**

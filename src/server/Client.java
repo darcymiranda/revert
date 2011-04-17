@@ -15,9 +15,6 @@ import packet.Packet;
  *
  */
 
-/**
- * TODO: Timeout methods should have it's own class.
- */
 public class Client extends Thread {
 	
 	public Socket socket;
@@ -74,7 +71,7 @@ public class Client extends Thread {
 					outPackets.remove(0);
 				}
 				
-				Thread.sleep(25);
+				Thread.sleep(1);
 				
 			}catch(SocketException se){
 				disconnect();

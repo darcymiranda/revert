@@ -26,8 +26,11 @@ public class Server implements Runnable{
 	private List<Client> clients = new LinkedList<Client>();
 	private World world;
 	
-	public Server(String host, int port){
-		address = new InetSocketAddress(host, port);
+	private long time;
+	private final int tickRate = 50;
+	
+	public Server(int port){
+		address = new InetSocketAddress(port);
 	}
 	
 	/**
@@ -84,7 +87,8 @@ public class Server implements Runnable{
 					}
 				}
 				
-				Thread.sleep(Constants.TICKRATE);
+				//Thread.sleep(Constants.TICKRATE);
+				sleep();
 				
 			}
 			
@@ -298,6 +302,40 @@ public class Server implements Runnable{
 		accepter = null;
 		serverSocket.close();
 		System.out.println("Server offline.");
+	}
+	
+	/**
+	 * Reset the server timer.
+	 */
+	private void resetTime(){
+		time = System.currentTimeMillis();
+	}
+	
+	/**
+	 * Return the difference between the last time the timer has been reset and the VM's time since start up.
+	 * @return elapsed time
+	 */
+	private long elapsedTime(){
+		return System.currentTimeMillis() - time;
+	}
+	
+	/**
+	 * Wait till the next ready tick. This is determined by the defined tick rate.
+	 */
+	private void sleep() throws InterruptedException {
+		
+		long sleepTime = tickRate - elapsedTime();
+		if (sleepTime > 0) {
+			Thread.sleep(sleepTime);
+		} else {
+			// The server has reached maximum load, players may now experiance lag.
+			try{
+				System.out.println("Server load: " + (100 + (Math.abs(sleepTime) / (tickRate / 100))) + "%!");
+			}catch(ArithmeticException ae){
+				// WHAT YOU CANT DIVIDE BY ZERO!?!?!
+			}
+		}
+		resetTime();
 	}
 	
 	/**

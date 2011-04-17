@@ -49,7 +49,7 @@ public class World {
 				
 				if(clients[i].getReadyStatus()){
 					if(ship.hasPositionChanged())
-						client.send(new Packet(Packet.UPDATE_OTHER, clients[i].id, ship.x, ship.y, ship.r));
+						client.send(new Packet(Packet.UPDATE_OTHER, clients[i].id, ship.x, ship.y, ship.xv, ship.yv, ship.r));
 				}
 			}
 		}

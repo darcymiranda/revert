@@ -14,50 +14,31 @@ public class Ship extends Entity {
 	
 	private final float ACCELERATION = 4f / 1000;
 	private final float maxVelocity = 5;
-	
-	private boolean isControlled; // determines if the player can control the ship
+	private float positionDifx, positionDify;
+	private float lastPositionx, lastPositiony;
 	
 	public Ship(){
-	}
-	
-	public Ship(Vector2f clientPosition){
-		
-		super();
-		
-		this.clientPosition = clientPosition;
-		
-		velocity = new Vector2f();
-		dirSpeed = new Vector2f();
-		
 	}
 
 	public Ship(Vector2f clientPosition, int id, boolean c){
 		
 		super();
+		setControlled(c);
 		
 		this.clientPosition = clientPosition;
-		
 		this.id = id;
-		this.isControlled = c;
+		lastPositionx = clientPosition.x;
+		lastPositiony = clientPosition.y;
 		
 		velocity = new Vector2f();
 		dirSpeed = new Vector2f();
 		
 		try{
-			this.setImage(new Image("img/fighter.png"));
+			this.setImage(new Image("img/ship.png"));
 		}catch(SlickException ex){
 			ex.printStackTrace();
 		}
 		
-	}
-	
-	/**
-	 * Creates a ship instance.
-	 * @param clientPosition	the vector2f clientPosition of where it will spawn
-	 * @return	Ship the created ship instance
-	 */
-	public Ship createInstance(Vector2f clientPosition){
-		return new Ship(clientPosition);
 	}
 	
 	/**
@@ -80,7 +61,7 @@ public class Ship extends Entity {
 		 * Input controls
 		 */
 		
-		if(isControlled){
+		if(super.isControlled()){
 			
 			Input in = gc.getInput();
 			
@@ -196,7 +177,6 @@ public class Ship extends Entity {
 			}
 			
 			if(in.isKeyDown(Input.KEY_D)){
-				//serverPosition.x += 3;
 				
 				rotation += 0.2f * delta;
 				dirSpeed.x = (float) Math.sin(Math.toRadians(rotation));
@@ -205,7 +185,6 @@ public class Ship extends Entity {
 			}
 			
 			if(in.isKeyDown(Input.KEY_A)){
-				//serverPosition.x -= 3;
 				
 				rotation += -0.2f * delta;
 				dirSpeed.x = (float) Math.sin(Math.toRadians(rotation));
@@ -214,7 +193,6 @@ public class Ship extends Entity {
 			}
 			
 			if(in.isKeyDown(Input.KEY_W)){
-				//serverPosition.y -= 3;
 				
 				// the calculation for increasing the x-axis velocity for forward movement
 				float xvelChange = velocity.x + (ACCELERATION * delta) * dirSpeed.x;
@@ -252,7 +230,6 @@ public class Ship extends Entity {
 			}
 			
 			if(in.isKeyDown(Input.KEY_S)){
-				//serverPosition.y += 3;
 				
 				// the calculation for increasing the x-axis velocity for backwards movement
 				float xvelChange = velocity.x + ((ACCELERATION * delta) * dirSpeed.x) / 2;
@@ -291,8 +268,29 @@ public class Ship extends Entity {
 			}
 		}
 		
-		//clientPosition.x += velocity.x;
-		//clientPosition.y -= velocity.y;
+		/*
+		if(serverPosition.x > clientPosition.x)
+			positionDifx = serverPosition.x - clientPosition.x;
+		else
+			positionDifx = 0;
+		
+		clientPosition.x += positionDifx * 0.20f;
+		
+		if(serverPosition.y > clientPosition.y)
+			positionDify = serverPosition.y - clientPosition.y;
+		else
+			positionDify = 0;
+		
+		clientPosition.y += positionDify * 0.20f;
+		*/
+		
+		//float t1 = (clientPosition.x - lastPositionx) * 0.20f;
+		//float t2 = (clientPosition.y - lastPositiony) * 0.20f;
+		
+		//System.out.println(t1 + "  " + t2);
+		
+		clientPosition.x += velocity.x;
+		clientPosition.y -= velocity.y;
 		
 		super.setRotation(rotation);
 	
@@ -302,17 +300,28 @@ public class Ship extends Entity {
 		super.render(g);
 	}
 	
+	public Packet getPacket(){
+		return new Packet(Packet.UPDATE_SELF, clientPosition.x, clientPosition.y, velocity.x, velocity.y, rotation);
+	}
+	
 	/**
 	 * Requires a packet object to set this ships x and y serverPosition.
 	 * @param p the packet to be read
 	 */
 	public void setPacket(Packet p){
+		
+		lastPositionx = serverPosition.x;
+		lastPositiony = serverPosition.y;		
 		serverPosition.x = p.getPositionX();
 		serverPosition.y = p.getPositionY();
+		
+		// send velocities and rotation of uncontrolled ships
+		if(!super.isControlled()){
+			super.setRotation(p.getRotationR());
+			clientPosition.x = p.getPositionX();
+			clientPosition.y = p.getPositionY();
+			velocity.x = p.getVelocityX();
+			velocity.y = p.getVelocityY();
+		}
 	}
-	
-	public boolean isControlled(){
-		return isControlled;
-	}
-	
 }

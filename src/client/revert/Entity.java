@@ -5,6 +5,8 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
 
+import client.ActionSender;
+
 import packet.Packet;
 
 /**
@@ -31,22 +33,18 @@ public abstract class Entity {
 	protected int id; 				// refers to the client id that owns the entity
 	protected float rotation;
 	
+	private boolean isControlled; // determines if the player can control the ship
+	private boolean isAlive;
+	
 	private Image image;
 	
 	public Entity(){
 		clientPosition = new Vector2f(200,200);
 		serverPosition = new Vector2f(200,200);
+		isAlive = true;
 	}
 	
-	/**
-	 * A controlled instance creation of the Entity object.
-	 * @return Entity
-	 */
-	public abstract Entity createInstance(Vector2f position);
-	
 	public abstract void setPacket(Packet p);
-	
-	public abstract boolean isControlled();
 	
 	/**
 	 * Add a graphic to the entity that will be rendered.
@@ -57,7 +55,7 @@ public abstract class Entity {
 		height = img.getHeight();
 		width = img.getWidth();
 		
-		image = img;
+		image = img.copy();
 		
 	}
 	
@@ -65,18 +63,23 @@ public abstract class Entity {
 		
 		image.rotate(rotation - image.getRotation());
 		
-		
-		
 	}
 	
 	public void render(Graphics g){
 		
-		g.drawImage(image, serverPosition.x, serverPosition.y);
+		g.drawImage(image, clientPosition.x, clientPosition.y);
+		g.drawRect(serverPosition.x, serverPosition.y, width, height);
 		
 	}
 	
 	public float getRotation(){ return rotation; }
 	public void setRotation(float rotation) { this.rotation = rotation; }
+	
+	public boolean isAlive(){ return isAlive; }
+	public void setAlive(boolean isAlive){ this.isAlive = isAlive; }
+	
+	public boolean isControlled(){ return isControlled; }
+	public void setControlled(boolean isControlled){ this.isControlled = isControlled; }
 	
 	public int getId(){ return id; }
 	
@@ -86,6 +89,5 @@ public abstract class Entity {
 		clientPosition.x = x;
 		clientPosition.y = y;
 	}
-	
 
 }

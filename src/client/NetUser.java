@@ -27,8 +27,8 @@ import server.Constants;
 		private List<Packet> packets = new LinkedList<Packet>();	// OUTBOUND
 		private long tick = 0;
 		
-		private final String host = "5.44.46.25";
-		private final int port = 9999;
+		private final String host = "127.0.0.1";
+		private final int port = 55274;
 		
 		// Game related
 		private Revert client;
@@ -61,6 +61,7 @@ import server.Constants;
 				init();
 				
 			}catch(ConnectException ce){
+				ce.printStackTrace();
 				System.err.println("Failed to connect to server.");
 				return;
 			}catch(Exception ex){
@@ -149,8 +150,23 @@ import server.Constants;
 			}
 			else if(packet.type == Packet.CLIENT_INFO){
 				
+				System.out.println(packet.getId() + " PACKET ID");
+				
 				if(packet.getId() != id){
-					Player player = new Player(packet.getId(), packet.getUsername(), packet.getStatus());
+					for(Player player : client.players){
+						if(player == null) continue;
+						if(player.id == packet.getId()) continue;
+						
+						Player tempPlayer = new Player(packet.getId(), packet.getUsername(), packet.getStatus());
+						client.players[packet.getId()] = tempPlayer;
+						
+						if(packet.getStatus() && client.players[packet.getId()].ship == null)
+							client.createShip(packet.getId(), false);
+						
+						System.out.println(tempPlayer + " connected.");
+					}
+					
+					/*
 					for(int i = 0; i < client.players.length; i++){
 						if(client.players[i] != null) continue;
 						
@@ -161,9 +177,11 @@ import server.Constants;
 						
 						break;
 					}
+					*/
+
 					
 					// for debugging
-					System.out.println(player + " connected.");
+					
 				}
 			}
 			else if(packet.type == Packet.CONNECT){
