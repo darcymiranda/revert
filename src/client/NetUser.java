@@ -150,50 +150,39 @@ import server.Constants;
 			}
 			else if(packet.type == Packet.CLIENT_INFO){
 				
-				System.out.println(packet.getId() + " PACKET ID");
-				
 				if(packet.getId() != id){
 					for(Player player : client.players){
 						if(player == null) continue;
-						if(player.id == packet.getId()) continue;
-						
-						Player tempPlayer = new Player(packet.getId(), packet.getUsername(), packet.getStatus());
-						client.players[packet.getId()] = tempPlayer;
-						
-						if(packet.getStatus() && client.players[packet.getId()].ship == null)
+						if(player.id == id) continue; // ignore yourself
+							
+						// Create a ship for the player if he connected ready
+						if(packet.getStatus() && player.ship == null)
 							client.createShip(packet.getId(), false);
-						
-						System.out.println(tempPlayer + " connected.");
+							
 					}
-					
-					/*
-					for(int i = 0; i < client.players.length; i++){
-						if(client.players[i] != null) continue;
-						
-						client.players[i] = player;
-						// create a ship if they have true ready status and dont already have one
-						if(packet.getStatus() && client.players[i].ship == null)
-							client.createShip(packet.getId(), false);
-						
-						break;
-					}
-					*/
-
-					
-					// for debugging
-					
 				}
 			}
 			else if(packet.type == Packet.CONNECT){
+				
+				if(id == -1){
 
-				id = packet.getId();
+					id = packet.getId();
+					
+					username = "GraalTest"+id; // debug
+					
+					client.players[id] = new Player(id, username);
+					System.out.println("Connection established with server.");
+					
+					send(new Packet(Packet.CONNECT, id, username));
 				
-				username = "GraalTest"+id; // debug
-				
-				client.players[id] = new Player(id, username);
-				System.out.println("Connection established with server.");
-				
-				send(new Packet(Packet.CONNECT, id, username));
+				}
+				else{
+					// TODO: Should probably check if that player already exists????
+					Player tempPlayer = new Player(packet.getId(), packet.getUsername(), packet.getStatus());
+					client.players[packet.getId()] = tempPlayer;
+					
+					System.out.println(tempPlayer + " connected.");
+				}
 			}
 			else if(packet.type == Packet.DISCONNECT){
 				

@@ -6,11 +6,7 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Revert5.0/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/darcy/Desktop/darcy&apos;s workspace/Revert5.0/lib/lwjgl.jar">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/darcy/Desktop/darcy&apos;s workspace/librarys"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/darcy/Desktop/darcy&apos;s workspace/Revert5.0/lib/lwjgl.jar"/>
 	<classpathentry kind="lib" path="C:/Users/darcy/Desktop/darcy&apos;s workspace/Revert5.0/lib/natives-win32.jar"/>
 	<classpathentry kind="lib" path="C:/Users/darcy/Desktop/darcy&apos;s workspace/Revert5.0/lib/slick.jar"/>
 	<classpathentry kind="output" path="bin"/>

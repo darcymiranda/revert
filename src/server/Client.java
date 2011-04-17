@@ -98,8 +98,9 @@ public class Client extends Thread {
 	 * @param packet
 	 */
 	public void send(Packet packet){
-		if(packet != null)
+		if(packet != null){
 			outPackets.add(packet);
+		}
 	}
 	
 	/**

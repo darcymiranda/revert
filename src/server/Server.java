@@ -141,10 +141,12 @@ public class Server implements Runnable{
 				
 				// Sends around the names of clients/ids to eachother.
 				// Send to all clients including self to confirm ready mark client side.
-				sendToAll(new Packet(Packet.CLIENT_INFO, client.id, packet.getUsername(), client.getReadyStatus()), true);
+				sendToAll(new Packet(Packet.CONNECT, client.id, packet.getUsername(), client.getReadyStatus()), false);
 				
 				// Sends data from currently connected clients to the newly connected client.
-				sendAllToClient(client, new Packet(Packet.CLIENT_INFO));
+				sendAllToClient(client, new Packet(Packet.CONNECT));
+				sendAllToClient(client, new Packet(Packet.READY_MARKER));	// make sure new client knows of everyones ready status
+																												// additional client info sent here
 
 			}
 			
@@ -229,44 +231,47 @@ public class Server implements Runnable{
 		else{
 			for(Client client : clients){
 				client.send(packet);
+				//!//System.out.println("send id " + packet.getId() + " to " + client);
 			}
 		}
 	}
 	
 	/**
 	 * Sends data from currently connected clients to the client passed in.
-	 * @param client
+	 * @param client		the client receiving the packets
 	 * @param packet	the packet must have a type defined
 	 */
 	private void sendAllToClient(Client client, Packet packet){
 		
 		// Sends data from currently connected clients to the newly connected client.
 		Client iClient;
+		Packet tempPacket;
 		for(int i = 0; i < clients.size(); i++){
 			
 			iClient = clients.get(i);
+			tempPacket = new Packet(packet.type);
 			
 			// Make sure we don't send it's own data to itself.
 			if(iClient.id == client.id) continue;
 			
 			// Determine what kind of packet it is and fill accordingly.
 			if(packet.type == Packet.READY_MARKER){
-				packet.setId(iClient.id);
-				packet.setStatus(iClient.getReadyStatus());
+				tempPacket.setId(iClient.id);
+				tempPacket.setStatus(iClient.getReadyStatus());
 			}
-			else if(packet.type == Packet.CLIENT_INFO){
-				packet.setId(iClient.id);
-				packet.setUsername(iClient.getUsername());
-				packet.setStatus(iClient.getReadyStatus());
+			else if(packet.type == Packet.CONNECT){
+				tempPacket.setId(iClient.id);
+				tempPacket.setUsername(iClient.getUsername());
+				tempPacket.setStatus(iClient.getReadyStatus());
 			}
 			else{
-				packet.type = Packet.SERVER_MESSAGE;
-				packet.setMessage("Error - Failed to obtain other players information.");
+				tempPacket.type = Packet.SERVER_MESSAGE;
+				tempPacket.setMessage("Error - Failed to obtain other players information.");
 				System.err.println("CRITICAL: Failed to provide client information to " + client);
 			}
 			
 			// Give the client data about the currently connected clients.
-			client.send(packet);
+			client.send(tempPacket);
 		}
 	}
 	

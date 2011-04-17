@@ -110,50 +110,9 @@ public class Revert extends BasicGame {
 		players[id].ship = ship;
 		ec.add(ship);
 	}
-	
-	// Keys
-	private boolean w, a, s, d, q, e;
-	
-	/**
-	 * Sends a packet to the server contained which current keys are being pressed when a key is released.
-	 */
-	public void keyReleased(int key, char c){
-		if(key == Input.KEY_W || key == Input.KEY_A  || key == Input.KEY_S  || key == Input.KEY_D || key == Input.KEY_Q || key == Input.KEY_E ){
-			if(key == Input.KEY_W){
-				w = false;
-			}
-			if(key == Input.KEY_A){
-				a = false;
-			}
-			if(key == Input.KEY_S){
-				s = false;
-			}
-			if(key == Input.KEY_D){
-				d = false;
-			}
-			if(key == Input.KEY_Q){
-				q = false;
-			}
-			if(key == Input.KEY_E){
-				e = false;
-			}
-		}
-		
-		//pc.send(new Packet(clientId, w, a, s, d));
-		//System.out.println(clientId + " " + w + " " + a + " " + s + " " + d);
-		/*
-		try {
-			if(isSpawned)	// bandage so they cant send update packets when ship doesnt even exist yet
-				actionSender.sendMoveUpdate(w, a, s, d, q, e);
-		} catch (NetException e) {
-			e.printStackTrace();
-		}
-		*/
-		
-	}
 
 	/**
-	 * Sends a packet to the server containing which current keys are being pressed when a key gets pressed.
+	 * Keyboard input
 	 */
 	public void keyPressed(int key, char c){
 		
@@ -164,38 +123,6 @@ public class Revert extends BasicGame {
 			} catch (NetException e) {
 				e.printStackTrace();
 			}
-		}
-		
-		if(key == Input.KEY_W || key == Input.KEY_A  || key == Input.KEY_S  || key == Input.KEY_D || key == Input.KEY_Q || key == Input.KEY_E ){
-			if(key == Input.KEY_W){
-				w = true;
-			}
-			if(key == Input.KEY_A){
-				a = true;
-			}
-			if(key == Input.KEY_S){
-				s = true;
-			}
-			if(key == Input.KEY_D){
-				d = true;
-			}
-			if(key == Input.KEY_Q){
-				q = true;
-			}
-			if(key == Input.KEY_E){
-				e = true;
-			}			
-			//pc.send(new Packet(clientId, w, a, s, d));
-			//System.out.println(clientId + " " + w + " " + a + " " + s + " " + d);
-			/*
-			try {
-				if(isSpawned)	// bandage so they cant send update packets when ship doesnt even exist yet
-					//actionSender.sendMoveUpdate(w, a, s, d, q, e);
-			} catch (NetException e) {
-				e.printStackTrace();
-			}
-			*/
-			
 		}
 	}
 	

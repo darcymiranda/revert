@@ -129,7 +129,7 @@ public class Packet implements Serializable  {
 	
 	@Override
 	public String toString(){
-		return "ID: " + id + "  Time: " + "  Type: " + type;
+		return ": ID: " + id + "  Time: " + "  Type: " + type;
 	}
 
 }
