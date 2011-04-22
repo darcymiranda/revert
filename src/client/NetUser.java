@@ -27,8 +27,8 @@ import server.Constants;
 		private List<Packet> packets = new LinkedList<Packet>();	// OUTBOUND
 		private long tick = 0;
 		
-		private String host = "127.0.0.1";
-		private int port = 19555;
+		private String host = "";
+		private int port = 0;
 		
 		// Game related
 		private Revert client;
@@ -38,12 +38,8 @@ import server.Constants;
 		
 		public NetUser(Revert client, String host, int port){
 			this.client = client;
-			
-			if(host == "" || host == null)
-				this.host = host;
-			if(port == 0)
-				this.port = port;
-			
+			this.host = host;
+			this.port = port;
 		}
 		
 		/**
