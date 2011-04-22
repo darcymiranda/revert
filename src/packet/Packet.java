@@ -21,6 +21,7 @@ public class Packet implements Serializable  {
 	private static final long serialVersionUID = 1L;
 	
 	private final long timeStamp = System.currentTimeMillis();
+	private float time;
 	private int id = -1;
 	private int delta = 0;
 	private String message;
@@ -125,11 +126,12 @@ public class Packet implements Serializable  {
 	public float getVelocityX(){ return xv; }
 	public float getVelocityY(){ return yv; }
 	
-	public long getTimeStamp(){ return timeStamp; }
+	public float getTime(){ return time; }
+	public void setTime(float t){ this.time = t; }
 	
 	@Override
 	public String toString(){
-		return ": ID: " + id + "  Time: " + "  Type: " + type;
+		return ": ID: " + id + "  Time: " + time + "  Type: " + type;
 	}
 
 }

@@ -27,8 +27,8 @@ import server.Constants;
 		private List<Packet> packets = new LinkedList<Packet>();	// OUTBOUND
 		private long tick = 0;
 		
-		private final String host = "127.0.0.1";
-		private final int port = 55274;
+		private String host = "127.0.0.1";
+		private int port = 19555;
 		
 		// Game related
 		private Revert client;
@@ -36,8 +36,14 @@ import server.Constants;
 		public boolean readyStatus;
 		public String username;
 		
-		public NetUser(Revert client){
+		public NetUser(Revert client, String host, int port){
 			this.client = client;
+			
+			if(host == "" || host == null)
+				this.host = host;
+			if(port == 0)
+				this.port = port;
+			
 		}
 		
 		/**
@@ -167,8 +173,6 @@ import server.Constants;
 				if(id == -1){
 
 					id = packet.getId();
-					
-					username = "GraalTest"+id; // debug
 					
 					client.players[id] = new Player(id, username);
 					System.out.println("Connection established with server.");

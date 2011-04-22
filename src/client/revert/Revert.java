@@ -1,11 +1,19 @@
 package client.revert;
 
+import java.awt.Font;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.UnicodeFont;
+import org.newdawn.slick.font.effects.ColorEffect;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.tiled.TiledMap;
@@ -28,6 +36,9 @@ public class Revert extends BasicGame {
 	
 	public Player[] players = new Player[Constants.WORLD_PLAYER_SIZE];
 	public EntityController ec;
+	
+	public UnicodeFont font;
+	public String username;
 
 	public Revert() {
 		super("Revert");
@@ -41,7 +52,32 @@ public class Revert extends BasicGame {
 	public void init(GameContainer gc){
 		
 		gc.setVSync(true);
-
+		
+	    Font awtFont = new Font("Verdana", Font.PLAIN, 12); 
+	    font = new UnicodeFont(awtFont, 12, false, false); 
+	    font.getEffects().add(new ColorEffect(java.awt.Color.WHITE));
+	    font.addAsciiGlyphs();
+	    try {
+			font.loadGlyphs();
+		} catch (SlickException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	   
+		String host = null;
+		int port = 0;
+		File conf = new File("revert.conf");
+		
+		try{
+			BufferedReader br = new BufferedReader(new FileReader(conf));
+			host = br.readLine();
+			port = Integer.parseInt(br.readLine());
+			username = br.readLine();
+			br.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
 		try {
 			imgShip = new Image("img/ship.png");
 			map = new TiledMap("maps/map01.tmx");
@@ -49,10 +85,14 @@ public class Revert extends BasicGame {
 			e.printStackTrace();
 		}
 		
+
+		
 		// Network
-		net = new NetUser(this);
+		net = new NetUser(this, host, port);
 		new Thread(net).start();
 		actionSender = new ActionSender(net);
+		
+		net.username = username;
 		
 		ec = new EntityController();
 		cam = new Camera(gc, map);
@@ -105,7 +145,11 @@ public class Revert extends BasicGame {
 		Ship ship = new Ship().createInstance(new Vector2f(200,200), id, c);
 		ship.setImage(imgShip);
 		
-		System.out.println("ship created for " + id);
+		/** Temp **/
+		ship.username = net.username;
+		ship.font = font;
+		
+		System.out.println("ship created for " + id + " " + net.username);
 		
 		players[id].ship = ship;
 		ec.add(ship);

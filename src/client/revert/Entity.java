@@ -3,6 +3,7 @@ package client.revert;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.geom.Vector2f;
 
 import client.ActionSender;
@@ -38,6 +39,10 @@ public abstract class Entity {
 	
 	private Image image;
 	
+	/** TEMP **/
+	public String username;
+	public UnicodeFont font;
+	
 	public Entity(){
 		clientPosition = new Vector2f(200,200);
 		serverPosition = new Vector2f(200,200);
@@ -69,6 +74,7 @@ public abstract class Entity {
 		
 		g.drawImage(image, clientPosition.x, clientPosition.y);
 		g.drawRect(serverPosition.x, serverPosition.y, width, height);
+		font.drawString(clientPosition.x + width - 50, clientPosition.y + height, username);
 		
 	}
 	

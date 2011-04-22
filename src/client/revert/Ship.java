@@ -1,10 +1,17 @@
 package client.revert;
 
+import java.awt.Font;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.UnicodeFont;
+import org.newdawn.slick.font.effects.ColorEffect;
 import org.newdawn.slick.geom.Vector2f;
 
 import packet.Packet;
@@ -14,8 +21,10 @@ public class Ship extends Entity {
 	
 	private final float ACCELERATION = 4f / 1000;
 	private final float maxVelocity = 5;
-	private float positionDifx, positionDify;
-	private float lastPositionx, lastPositiony;
+	private float delta;
+	
+	private Timer time = new Timer();;
+	private List<Packet> packetInterval = new LinkedList<Packet>();
 	
 	public Ship(){
 	}
@@ -27,8 +36,6 @@ public class Ship extends Entity {
 		
 		this.clientPosition = clientPosition;
 		this.id = id;
-		lastPositionx = clientPosition.x;
-		lastPositiony = clientPosition.y;
 		
 		velocity = new Vector2f();
 		dirSpeed = new Vector2f();
@@ -266,28 +273,31 @@ public class Ship extends Entity {
 				}
 				
 			}
+			
 		}
-		
-		/*
-		if(serverPosition.x > clientPosition.x)
-			positionDifx = serverPosition.x - clientPosition.x;
-		else
-			positionDifx = 0;
-		
-		clientPosition.x += positionDifx * 0.20f;
-		
-		if(serverPosition.y > clientPosition.y)
-			positionDify = serverPosition.y - clientPosition.y;
-		else
-			positionDify = 0;
-		
-		clientPosition.y += positionDify * 0.20f;
-		*/
-		
-		//float t1 = (clientPosition.x - lastPositionx) * 0.20f;
-		//float t2 = (clientPosition.y - lastPositiony) * 0.20f;
-		
-		//System.out.println(t1 + "  " + t2);
+		else{
+			/*
+			Packet tp0, tp1;
+			if(packetInterval.size() > 2){
+				tp0 = packetInterval.get(0);
+				tp1 = packetInterval.get(1);
+				float distancex = tp1.getPositionX() - tp0.getPositionX();
+				float distancey = tp1.getPositionY() - tp0.getPositionY();
+				
+				//if(distancex > 5) distancex /= 5;
+				
+				velocity.x = ((distancex - velocity.x) * (lastTick));
+				velocity.y = -((distancey - velocity.y) * (lastTick));
+				
+				packetInterval.remove(0);
+			
+				System.out.println(lastTick + " :: " + velocity.x + " " + velocity.y + " distance x: " + distancex + " distance y: " + distancey + "        " + packetInterval.size());
+				
+			}
+			*/
+			
+			
+		}
 		
 		clientPosition.x += velocity.x;
 		clientPosition.y -= velocity.y;
@@ -298,30 +308,49 @@ public class Ship extends Entity {
 	
 	public void render(GameContainer gc, Graphics g){
 		super.render(g);
+		
+		System.out.println(font);
+		
 	}
 	
 	public Packet getPacket(){
+		//System.out.println(velocity.x + " " + velocity.y);
 		return new Packet(Packet.UPDATE_SELF, clientPosition.x, clientPosition.y, velocity.x, velocity.y, rotation);
 	}
 	
+	
+	float lastTick = 0;
 	/**
 	 * Requires a packet object to set this ships x and y serverPosition.
 	 * @param p the packet to be read
 	 */
 	public void setPacket(Packet p){
 		
-		lastPositionx = serverPosition.x;
-		lastPositiony = serverPosition.y;		
 		serverPosition.x = p.getPositionX();
 		serverPosition.y = p.getPositionY();
 		
 		// send velocities and rotation of uncontrolled ships
 		if(!super.isControlled()){
 			super.setRotation(p.getRotationR());
-			clientPosition.x = p.getPositionX();
-			clientPosition.y = p.getPositionY();
 			velocity.x = p.getVelocityX();
 			velocity.y = p.getVelocityY();
+			
+			//lastTick = time.reset() /1000;
+		
+			float dx = serverPosition.x - clientPosition.x;
+			float dy = serverPosition.y - clientPosition.y;
+			
+			//packetInterval.add(p);
+			
+			float xdistMax = 100+velocity.x;
+			float ydistMax = 100+velocity.y;
+			if((velocity.x == 0 || velocity.y == 0) ||
+					(dx > xdistMax || dx < xdistMax) || (dy > ydistMax || dx < ydistMax)){
+				
+				//clientPosition.x = p.getPositionX();
+				//clientPosition.y = p.getPositionY();
+			}
+			
 		}
 	}
 }

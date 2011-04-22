@@ -10,9 +10,6 @@ public class Ship {
 	public float xv, yv;
 	private float oldx, oldy, oldr, oldxv, oldyv;
 	
-	private final float ACCELERATION = 4f / 1000;
-	private final float maxVelocity = 5;
-	
 	private boolean posChanged;
 	private boolean isAlive;
 	
@@ -25,11 +22,13 @@ public class Ship {
 	 */
 	public void tick(){
 		
-		x += xv;
-		y -= yv;
+		//x += xv;
+		//y -= yv;
 		
 		// determines if the position has changed from the last one
 		posChanged = (oldx != x || oldy != y || oldr != r || oldxv != xv || oldyv != yv);
+		
+		//System.out.println(x + " : " + oldx + "       " + y + " : " + oldy);
 		
 		oldx = x;
 		oldy = y;
