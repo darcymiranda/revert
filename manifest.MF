@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: client.revert.Revert
+Class-Path: lib\lwjgl.jar lib\natives-win32.jar lib\slick.jar
+
