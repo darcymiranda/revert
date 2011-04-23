@@ -3,5 +3,3 @@ When a new player joins the game all the other players "client position" goes ba
 "client position" and "server position" slowly goes out of sync.
 
 Rotation needs to be smoothed.
-
-Each player shares the same name as you.
