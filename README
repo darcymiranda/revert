@@ -1,0 +1,3 @@
+revert is a 2D, multiplayer space shooter. Right now it is being actively developed and the networking code/framework is the primary focus.
+
+revert is written in Java with the Slick2D library.
