@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Iterator;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
@@ -17,6 +18,8 @@ import org.newdawn.slick.font.effects.ColorEffect;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.tiled.TiledMap;
+
+import packet.Packet;
 
 import server.Constants;
 
@@ -33,12 +36,13 @@ public class Revert extends BasicGame {
 	public ActionSender actionSender;
 	
 	private Image imgShip;
+	private Image imgBullet;
+	private UnicodeFont font;
 	
 	public Player[] players = new Player[Constants.WORLD_PLAYER_SIZE];
 	public EntityController ec;
 	
-	public UnicodeFont font;
-	public String username;
+	
 
 	public Revert() {
 		super("Revert");
@@ -53,6 +57,7 @@ public class Revert extends BasicGame {
 		
 		gc.setVSync(true);
 		
+		/** Init Font **/
 	    Font awtFont = new Font("Verdana", Font.PLAIN, 12); 
 	    font = new UnicodeFont(awtFont, 12, false, false); 
 	    font.getEffects().add(new ColorEffect(java.awt.Color.WHITE));
@@ -60,12 +65,13 @@ public class Revert extends BasicGame {
 	    try {
 			font.loadGlyphs();
 		} catch (SlickException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	   
+		/** Init Configuration File **/
 		String host = null;
 		int port = 0;
+		String username = null;
 		File conf = new File("revert.conf");
 		
 		try{
@@ -78,22 +84,22 @@ public class Revert extends BasicGame {
 			e.printStackTrace();
 		}
 		
+		/** Init Images **/
 		try {
+			imgBullet = new Image("img/bullet.png");
 			imgShip = new Image("img/ship.png");
 			map = new TiledMap("maps/map01.tmx");
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
 		
-
-		
-		// Network
+		/** Init Networking **/
 		net = new NetUser(this, host, port);
 		new Thread(net).start();
+		net.username = username;
 		actionSender = new ActionSender(net);
 		
-		net.username = username;
-		
+		/** Init Game**/
 		ec = new EntityController();
 		cam = new Camera(gc, map);
 		
@@ -125,7 +131,7 @@ public class Revert extends BasicGame {
 		}
 		
 		// Send position update packet to server
-		if(counter > 10){
+		if(counter > 7){
 			if(thePlayer != null && thePlayer.ship != null){
 				if(ship.isAlive()){
 					net.send(thePlayer.ship.getPacket());
@@ -144,9 +150,7 @@ public class Revert extends BasicGame {
 
 		Ship ship = new Ship().createInstance(new Vector2f(200,200), id, c);
 		ship.setImage(imgShip);
-		
-		/** Temp **/
-		ship.username = net.username;
+		ship.username = players[id].username;
 		ship.font = font;
 		
 		System.out.println("ship created for " + id + " " + net.username);

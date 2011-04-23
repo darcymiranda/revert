@@ -1,10 +1,12 @@
 package server;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import packet.Packet;
 
 public class Ship {
-	
-	private boolean w, a, s, d, e, q;
 	
 	public float x, y, r;
 	public float xv, yv;
@@ -12,6 +14,8 @@ public class Ship {
 	
 	private boolean posChanged;
 	private boolean isAlive;
+	
+	private List<Bullet> bullets = new LinkedList<Bullet>();
 	
 	public Ship(float x, float y, boolean alive){
 		this.x = x; this.y = y; this.isAlive = alive;
@@ -43,14 +47,6 @@ public class Ship {
 	 * @param packet
 	 */
 	public void update(Packet packet){
-		/*
-		w = packet.getPressedW();
-		a = packet.getPressedA();
-		s = packet.getPressedS();
-		d = packet.getPressedD();
-		e = packet.getPressedE();
-		q = packet.getPressedQ();
-		*/
 		
 		x = packet.getPositionX();
 		y = packet.getPositionY();
@@ -58,6 +54,10 @@ public class Ship {
 		xv = packet.getVelocityX();
 		yv = packet.getVelocityY();
 		
+	}
+	
+	public Iterator<Bullet> getBulletIterator(){
+		return bullets.iterator();
 	}
 	
 	public boolean hasPositionChanged(){ return posChanged; }

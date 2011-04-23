@@ -5,9 +5,8 @@ import java.io.ObjectInputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import client.revert.Timer;
-
 import packet.Packet;
+import packet.Snapshot;
 
 /**
  * 
@@ -21,7 +20,7 @@ public class NetUserRecieve extends Thread{
 	private ObjectInputStream in;
 	
 	private List<Packet> packets = new LinkedList<Packet>();		// INBOUND
-	private Timer timer = new Timer();
+	private List<Snapshot> screenshots = new LinkedList<Snapshot>();
 	
 	public NetUserRecieve(NetUser user){
 		this.user = user;
@@ -37,15 +36,16 @@ public class NetUserRecieve extends Thread{
 		try {
 			
 			init();
-			timer.reset();
 			
 			Packet packet;
+			//Screenshot screenshot;
 			for(;;){
 				
 				// read packets from the server and add into packet queue
 				packet = (Packet) in.readObject();
-				packet.setTime(timer.reset());
+				//screenshot = (Screenshot) in.readObject();
 				packets.add(packet);
+				//screenshots.add(screenshot);
 				
 			}
 			

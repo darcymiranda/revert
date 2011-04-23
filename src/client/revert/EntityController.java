@@ -1,6 +1,7 @@
 package client.revert;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -94,6 +95,10 @@ public class EntityController {
 		}
 		
 		pool.add(ship);
+	}
+	
+	public Iterator<Entity> getIterator(){
+		return pool.iterator();
 	}
 
 

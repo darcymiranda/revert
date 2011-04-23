@@ -14,13 +14,12 @@ public class Packet implements Serializable  {
 	public static final byte READY_MARKER = 2;
 	public static final byte CHAT = 3;
 	public static final byte UPDATE_SELF = 4;
-	public static final byte UPDATE_OTHER = 5;
+	public static final byte UPDATE_OTHER = 6;
 	public static final byte CLIENT_INFO = 9;
 	public static final byte SERVER_MESSAGE = 10;
 
 	private static final long serialVersionUID = 1L;
 	
-	private final long timeStamp = System.currentTimeMillis();
 	private float time;
 	private int id = -1;
 	private int delta = 0;
@@ -76,11 +75,6 @@ public class Packet implements Serializable  {
 		this.type = t;
 		this.x = x;
 		this.y = y;
-	}
-	
-	public Packet(byte t, boolean w, boolean a, boolean s, boolean d, boolean q, boolean e){
-		this.type = t;
-		this.w = w;	this.s = s; this.d = d; this.a = a; this.q = q; this.e = e;
 	}
 	
 	public Packet(byte t, int id, float x, float y, float xv, float yv, float r){

@@ -40,7 +40,7 @@ public abstract class Entity {
 	private Image image;
 	
 	/** TEMP **/
-	public String username;
+	public String username = "";
 	public UnicodeFont font;
 	
 	public Entity(){
@@ -49,7 +49,42 @@ public abstract class Entity {
 		isAlive = true;
 	}
 	
-	public abstract void setPacket(Packet p);
+	/**
+	 * Requires a packet object to set this ships x and y serverPosition.
+	 * @param p the packet to be read
+	 */
+	public void setPacket(Packet p){
+		
+		serverPosition.x = p.getPositionX();
+		serverPosition.y = p.getPositionY();
+		
+		// send velocities and rotation of uncontrolled ships
+		if(!isControlled){
+			rotation = p.getRotationR();
+			velocity.x = p.getVelocityX();
+			velocity.y = p.getVelocityY();
+		
+			float dx = serverPosition.x - clientPosition.x;
+			float dy = serverPosition.y - clientPosition.y;
+			
+			float xdistMax = 100+velocity.x;
+			float ydistMax = 100+velocity.y;
+			if((velocity.x == 0 || velocity.y == 0) ||
+					(dx > xdistMax || dx < xdistMax) || (dy > ydistMax || dx < ydistMax)){
+				
+				//clientPosition.x = p.getPositionX();
+				//clientPosition.y = p.getPositionY();
+			}
+		}
+	}
+	
+	/**
+	 * Returns a packet object containing the rotation; x, y positions and x, y, velocities.
+	 * @return
+	 */
+	public Packet getPacket(){
+		return new Packet(Packet.UPDATE_SELF, clientPosition.x, clientPosition.y, velocity.x, velocity.y, rotation);
+	}
 	
 	/**
 	 * Add a graphic to the entity that will be rendered.
@@ -73,8 +108,6 @@ public abstract class Entity {
 	public void render(Graphics g){
 		
 		g.drawImage(image, clientPosition.x, clientPosition.y);
-		g.drawRect(serverPosition.x, serverPosition.y, width, height);
-		font.drawString(clientPosition.x + width - 50, clientPosition.y + height, username);
 		
 	}
 	

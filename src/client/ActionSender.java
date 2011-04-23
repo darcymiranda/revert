@@ -52,29 +52,6 @@ public class ActionSender {
 		net.send(new Packet(Packet.READY_MARKER, net.id, ready));
 	}
 	
-	
-	/**
-	 * Tells the server to do updates on the server side ship.
-	 * @param w
-	 * @param a
-	 * @param s
-	 * @param d
-	 * @param q
-	 * @param e
-	 * @throws NetException
-	 */
-	public void sendMoveUpdate(boolean w, boolean a, boolean s, boolean d,
-			boolean q, boolean e) throws NetException{
-		
-		checkInit();
-		// check if the last directions are the same as the new ones
-		if(!(w == tw && a == ta && s == ts && d == td && q == tq && e == te)){
-			net.send(new Packet(Packet.UPDATE_SELF, w, a, s, d, q, e));
-			tw = w; ta = a; ts = s; td = d; tq = q; te = e;
-		}
-		
-	}
-	
 	public void sendMoveUpdate2(float x, float y, float xv, float yv, float r) throws NetException{
 		
 		checkInit();
