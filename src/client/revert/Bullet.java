@@ -8,7 +8,7 @@ import packet.Packet;
 public class Bullet extends Entity {       
 	
 	private float speed = 500f / 1000f;
-	private float maxTravelTime = 100;
+	private float maxTravelTime = 250;
 	private float travelTime;
 	
 	public Bullet(float x, float y){

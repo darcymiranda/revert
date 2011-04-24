@@ -1,13 +1,15 @@
 package packet;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Snapshot {
+public class Snapshot implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	private List<Packet> packets = new LinkedList<Packet>();
-	private int increment = 0;
 	
 	public void Screnshot(){
 		
@@ -17,7 +19,16 @@ public class Snapshot {
 		if(packet != null)
 			packets.add(packet);
 		else
-			System.err.println("Null packet attempted to be added to the screenshot.");
+			System.err.println("Null packet attempted to be added to the snapshot.");
+	}
+	
+	public Packet getNextPacket(){
+		Packet p = null;
+		if(!packets.isEmpty()){
+			p = packets.get(0);
+			packets.remove(0);
+		}
+		return p;
 	}
 	
 	public Iterator<Packet> getIterator(){

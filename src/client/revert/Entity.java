@@ -34,6 +34,8 @@ public abstract class Entity {
 	protected int id; 				// refers to the client id that owns the entity
 	protected float rotation;
 	
+	private float timeSinceLastPacket = System.currentTimeMillis();
+	
 	private boolean isControlled; // determines if the player can control the ship
 	private boolean isAlive;
 	
@@ -55,25 +57,35 @@ public abstract class Entity {
 	 */
 	public void setPacket(Packet p){
 		
+		timeSinceLastPacket = (System.currentTimeMillis() - timeSinceLastPacket) / 1000.0f;
+		
 		serverPosition.x = p.getPositionX();
 		serverPosition.y = p.getPositionY();
 		
-		// send velocities and rotation of uncontrolled ships
 		if(!isControlled){
-			rotation = p.getRotationR();
 			velocity.x = p.getVelocityX();
 			velocity.y = p.getVelocityY();
+			
+			if(timeSinceLastPacket == 0)
+				timeSinceLastPacket = 1;
+			
+			// Smooth out rotation
+			//float velRotation = (p.getRotationR() - rotation) / timeSinceLastPacket;
+			//rotation += velRotation;
+			//System.out.println(timeSinceLastPacket + " " + + p.getRotationR() + ":" + rotation + " " + velRotation);
 		
 			float dx = serverPosition.x - clientPosition.x;
 			float dy = serverPosition.y - clientPosition.y;
 			
-			float xdistMax = 100+velocity.x;
-			float ydistMax = 100+velocity.y;
+			// Teleport entity to proper location, if the client and server positions are out of sync.
+			float xdistMax = 75+velocity.x;
+			float ydistMax = 75+velocity.y;
 			if((velocity.x == 0 || velocity.y == 0) ||
-					(dx > xdistMax || dx < xdistMax) || (dy > ydistMax || dx < ydistMax)){
+					(dx > xdistMax || dx < -xdistMax) || (dy > ydistMax || dx < -ydistMax)){
 				
-				//clientPosition.x = p.getPositionX();
-				//clientPosition.y = p.getPositionY();
+				clientPosition.x = p.getPositionX();
+				clientPosition.y = p.getPositionY();
+				
 			}
 		}
 	}

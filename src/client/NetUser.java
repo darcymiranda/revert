@@ -12,6 +12,7 @@ import client.revert.Entity;
 import client.revert.Revert;
 
 import packet.Packet;
+import packet.Snapshot;
 import server.Constants;
 
 	/**
@@ -24,8 +25,7 @@ import server.Constants;
 		public Socket socket;
 		private NetUserRecieve in;
 		private ObjectOutputStream out;
-		private List<Packet> packets = new LinkedList<Packet>();	// OUTBOUND
-		private long tick = 0;
+		private Snapshot outSnapshot;
 		
 		private String host = "";
 		private int port = 0;
@@ -72,24 +72,24 @@ import server.Constants;
 				
 			try{	
 				
-				Packet packet = null;
+				Snapshot snapshot = null;
 				for(;;){
 					
 					// Read packets from the server and process them.
-					if(in.hasPackets()){
-						packet = in.getPacket();
-						process(packet);
+					if(in.hasNextSnapshot()){
+						snapshot = in.getNextSnapshot();
+						for(Packet packet : snapshot.getPackets()){
+							process(packet);
+						}
 					}
 					
 					// Send out packets to the server.
-					if(!packets.isEmpty()){
-						packet = packets.get(0);
-						out.writeObject(packet);
+					if(outSnapshot != null){
+						System.out.println("Sent ! " + outSnapshot.getPackets().size());
+						out.writeObject(outSnapshot);
 						out.flush();
-						packets.remove(packet);
+						outSnapshot = null;
 					}
-					
-					packet = null;
 					
 					Thread.sleep(1);
 					
@@ -209,7 +209,10 @@ import server.Constants;
 		 * @param packet
 		 */
 		public void send(Packet packet){
-			packets.add(packet);
+			if(outSnapshot == null)
+				outSnapshot = new Snapshot();
+			
+			outSnapshot.addPacket(packet);
 		}
 		
 		public void disconnect(){

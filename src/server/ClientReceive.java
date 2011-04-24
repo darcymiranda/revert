@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import packet.Packet;
+import packet.Snapshot;
 
 /**
  * 
@@ -17,7 +18,7 @@ public class ClientReceive extends Thread{
 	private Client client;
 	private ObjectInputStream in;
 	
-	public List<Packet> packets = new LinkedList<Packet>();		// INBOUND
+	public List<Snapshot> snapshots = new LinkedList<Snapshot>();		// INBOUND
 	
 	public ClientReceive(Client client){
 		this.client = client;
@@ -34,12 +35,12 @@ public class ClientReceive extends Thread{
 			
 			init();
 			
-			Packet packet;
+			Snapshot snapshot;
 			for(;;){
 				
 				// read packets from the server and add into packet queue
-				packet = (Packet) in.readObject();
-				packets.add(packet);
+				snapshot = (Snapshot) in.readObject();
+				snapshots.add(snapshot);
 				
 			}
 			
@@ -51,35 +52,17 @@ public class ClientReceive extends Thread{
 		
 	}
 	
-	/**
-	 * Get lastest packet from the queue.
-	 * @return Packet
-	 */
-	public Packet getPacket(){
-		Packet p = null;
-		if(!packets.isEmpty()){
-			p = packets.get(0);
-			packets.remove(0);
+	public Snapshot getNextSnapshot(){
+		Snapshot snapshot = null;
+		if(!snapshots.isEmpty()){
+			snapshot = snapshots.get(0);
+			snapshots.remove(0);
 		}
-		return p;
+		return snapshot;
 	}
 	
-	/**
-	 * Get all the packets currently in the queue.
-	 * @return
-	 */
-	public List<Packet> getPackets(){
-		List<Packet> p = new LinkedList<Packet>(packets);
-		packets.clear();
-		return p;
-	}
-	
-	/**
-	 * Returns true if there are packets in the queue waiting to be read.
-	 * @return
-	 */
-	public boolean hasPackets(){
-		return !packets.isEmpty();
+	public boolean hasNextSnapshot(){
+		return !snapshots.isEmpty();
 	}
 	
 	public ObjectInputStream getInStream(){ return in; }

@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import packet.Packet;
+import packet.Snapshot;
 
 /**
  * Server that will start when a client hosts a lobby.
@@ -87,7 +88,6 @@ public class Server implements Runnable{
 					}
 				}
 				
-				//Thread.sleep(Constants.TICKRATE);
 				sleep();
 				
 			}
@@ -113,77 +113,82 @@ public class Server implements Runnable{
 	public void process(){
 		
 		//List<Packet> inPackets;
-		Packet packet;
+		//Packet packet;
+		Snapshot snapshot;
 		for(Client client: clients){
 			
 			if(client == null) continue;
 			if(client.receive == null) continue;
 			
-			packet = client.receive.getPacket();
-			if(packet == null) continue;
+			
+			snapshot = client.receive.getNextSnapshot();
+			if(snapshot == null) continue;
 			
 			/* Process Packets here */
+			for(Packet packet : snapshot.getPackets()){
 			
-			// update the client's game related data
-			if(packet.type == Packet.UPDATE_SELF){
-				// TODO: client class should have it's own update method
-				// so the client may chooose which attached objects should
-				// or should not be update.
-				client.getShip().update(packet);
-			}
-			// Performes a connection handshake with the client.
-			else if(packet.type == Packet.CONNECT){
-				
-				client.setUsername(packet.getUsername());
+				// update the client's game related data
+				if(packet.type == Packet.UPDATE_SELF){
+					// TODO: client class should have it's own update method
+					// so the client may chooose which attached objects should
+					// or should not be update.
+					client.getShip().update(packet);
+				}
+				// Performes a connection handshake with the client.
+				else if(packet.type == Packet.CONNECT){
 					
-				client.setConnectionStatus(true);
-				System.out.println(client + " connection established.");
-				
-				// Sends around the names of clients/ids to eachother.
-				// Send to all clients including self to confirm ready mark client side.
-				sendToAll(new Packet(Packet.CONNECT, client.id, packet.getUsername(), client.getReadyStatus()), false);
-				
-				// Sends data from currently connected clients to the newly connected client.
-				sendAllToClient(client, new Packet(Packet.CONNECT));
-				sendAllToClient(client, new Packet(Packet.READY_MARKER));	// make sure new client knows of everyones ready status
-																												// additional client info sent here
-
-			}
-			
-			// Set ready status flag for clients
-			else if(packet.type == Packet.READY_MARKER && !client.getReadyStatus()){
-				client.setReadyStatus(packet.getStatus());
-				String rstatus = packet.getStatus() ? "ready" : "not ready";
-				System.out.println(client + " is " + rstatus + ".");
-				
-				// Send to all clients including self to confirm ready mark client side.
-				sendToAll(new Packet(Packet.READY_MARKER, client.id, packet.getStatus()), true);
-				// Send currently connected client ready info to this client
-				sendAllToClient(client, new Packet(Packet.READY_MARKER));
-			}
-			
-
-			// Chat or Commands	-- has not been tested
-			else if(packet.type == Packet.CHAT){
-				// Check if the message is a command
-				String packetMsg = packet.getMessage();
-				int packetId = packet.getId();
-				if(packetMsg.matches("/{1,1}")){
-					String command = packetMsg.toLowerCase().substring(1);
-					commandHandler(command);
-				}else{
+					client.setUsername(packet.getUsername());
+						
+					client.setConnectionStatus(true);
+					System.out.println(client + " connection established.");
 					
-					// Grab username
-					String tempUsername = null;
-					for(int i = 0; i < clients.size(); i++)
-						if(clients.get(i).getId() == packetId)
-							tempUsername = clients.get(i).getUsername();
+					// Sends around the names of clients/ids to eachother.
+					// Send to all clients including self to confirm ready mark client side.
+					sendToAll(new Packet(Packet.CONNECT, client.id, packet.getUsername(), client.getReadyStatus()), false);
 					
-					// Send to all clients excluding self.
-					sendToAll(new Packet(Packet.CHAT, packetId, tempUsername, packetMsg), false);
-					System.out.println(client + " says: " + packetMsg);
+					// Sends data from currently connected clients to the newly connected client.
+					sendAllToClient(client, new Packet(Packet.CONNECT));
+					sendAllToClient(client, new Packet(Packet.READY_MARKER));	// make sure new client knows of everyones ready status
+																													// additional client info sent here
+	
+				}
+				
+				// Set ready status flag for clients
+				else if(packet.type == Packet.READY_MARKER && !client.getReadyStatus()){
+					client.setReadyStatus(packet.getStatus());
+					String rstatus = packet.getStatus() ? "ready" : "not ready";
+					System.out.println(client + " is " + rstatus + ".");
+					
+					// Send to all clients including self to confirm ready mark client side.
+					sendToAll(new Packet(Packet.READY_MARKER, client.id, packet.getStatus()), true);
+					// Send currently connected client ready info to this client
+					sendAllToClient(client, new Packet(Packet.READY_MARKER));
+				}
+				
+	
+				// Chat or Commands	-- has not been tested
+				else if(packet.type == Packet.CHAT){
+					// Check if the message is a command
+					String packetMsg = packet.getMessage();
+					int packetId = packet.getId();
+					if(packetMsg.matches("/{1,1}")){
+						String command = packetMsg.toLowerCase().substring(1);
+						commandHandler(command);
+					}else{
+						
+						// Grab username
+						String tempUsername = null;
+						for(int i = 0; i < clients.size(); i++)
+							if(clients.get(i).getId() == packetId)
+								tempUsername = clients.get(i).getUsername();
+						
+						// Send to all clients excluding self.
+						sendToAll(new Packet(Packet.CHAT, packetId, tempUsername, packetMsg), false);
+						System.out.println(client + " says: " + packetMsg);
+					}
 				}
 			}
+			
 		}
 		
 		world.process();

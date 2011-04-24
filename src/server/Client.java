@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import packet.Packet;
+import packet.Snapshot;
 
 /**
  * 
@@ -36,7 +37,7 @@ public class Client extends Thread {
 	/* the ship that is attached to this client */
 	private Ship ship;
 	
-	private List<Packet> outPackets = new LinkedList<Packet>();
+	private Snapshot outSnapshot = null;
 	
 	public Client(Socket socket) throws IOException{
 		this.socket = socket;
@@ -65,10 +66,18 @@ public class Client extends Thread {
 			try{
 				
 				// write packets to the server
+				/*
 				if(!outPackets.isEmpty()){
 					out.writeObject(outPackets.get(0));
 					out.flush();
 					outPackets.remove(0);
+				}
+				*/
+				
+				if(outSnapshot != null){
+					out.writeObject(outSnapshot);
+					out.flush();
+					outSnapshot = null;
 				}
 				
 				Thread.sleep(1);
@@ -99,7 +108,10 @@ public class Client extends Thread {
 	 */
 	public void send(Packet packet){
 		if(packet != null){
-			outPackets.add(packet);
+			if(outSnapshot ==  null)
+				outSnapshot = new Snapshot();
+			
+			outSnapshot.addPacket(packet);
 		}
 	}
 	

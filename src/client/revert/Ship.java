@@ -26,7 +26,7 @@ public class Ship extends Entity {
 	private int rate = 100;
 	private float accuracy = .97f;
 	
-	private List<Bullet> bullets = new LinkedList<Bullet>();
+	public List<Bullet> bullets = new LinkedList<Bullet>();
 	
 	public Ship(){
 	}

@@ -19,8 +19,7 @@ public class NetUserRecieve extends Thread{
 	private NetUser user;
 	private ObjectInputStream in;
 	
-	private List<Packet> packets = new LinkedList<Packet>();		// INBOUND
-	private List<Snapshot> screenshots = new LinkedList<Snapshot>();
+	private List<Snapshot> snapshots = new LinkedList<Snapshot>();
 	
 	public NetUserRecieve(NetUser user){
 		this.user = user;
@@ -37,15 +36,15 @@ public class NetUserRecieve extends Thread{
 			
 			init();
 			
-			Packet packet;
-			//Screenshot screenshot;
+			//Packet packet;
+			Snapshot snapshot;
 			for(;;){
 				
 				// read packets from the server and add into packet queue
-				packet = (Packet) in.readObject();
-				//screenshot = (Screenshot) in.readObject();
-				packets.add(packet);
-				//screenshots.add(screenshot);
+				//packet = (Packet) in.readObject();
+				snapshot = (Snapshot) in.readObject();
+				//packets.add(packet);
+				snapshots.add(snapshot);
 				
 			}
 			
@@ -59,32 +58,17 @@ public class NetUserRecieve extends Thread{
 		
 	}
 	
-	/**
-	 * Get lastest packet from the queue.
-	 * @return Packet
-	 */
-	public Packet getPacket(){
-		Packet p = packets.get(0);
-		packets.remove(0);
-		return p;
+	public Snapshot getNextSnapshot(){
+		Snapshot snapshot = null;
+		if(!snapshots.isEmpty()){
+			snapshot = snapshots.get(0);
+			snapshots.remove(0);
+		}
+		return snapshot;
 	}
 	
-	/**
-	 * Get all the packets currently in the queue.
-	 * @return
-	 */
-	public List<Packet> getPackets(){
-		List<Packet> p = packets;
-		packets.clear();
-		return p;
-	}
-	
-	/**
-	 * Returns true if there are packets in the queue waiting to be read.
-	 * @return
-	 */
-	public boolean hasPackets(){
-		return !packets.isEmpty();
+	public boolean hasNextSnapshot(){
+		return !snapshots.isEmpty();
 	}
 	
 	public ObjectInputStream getInStream(){ return in; }
