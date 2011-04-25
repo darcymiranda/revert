@@ -1,5 +1,8 @@
 package client.revert;
 
+import java.util.Properties;
+
+
 import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
@@ -175,6 +178,11 @@ public class Revert extends BasicGame {
 	}
 	
 	public static void main(String args[]){
+
+		Properties prop = System.getProperties();
+		
+		System.out.println(prop.getProperty("java.class.path"));
+		
         try {
 
             AppGameContainer agc = new AppGameContainer(new Revert(), 1280, 800, false);
