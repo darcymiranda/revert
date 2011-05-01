@@ -1,0 +1,26 @@
+Index: src/java/org/lwjgl/Sys.java
+
+===================================================================
+
+--- src/java/org/lwjgl/Sys.java	(revision 3456)
+
++++ src/java/org/lwjgl/Sys.java	(working copy)
+
+@@ -78,6 +78,16 @@
+
+ 	}
+ 
+ 	private static void loadLibrary(final String lib_name) {
++		boolean is64bit = "amd64".equals(System.getProperty("os.arch"));
++		if(is64bit) {
++			try {
++				doLoadLibrary(lib_name + POSTFIX64BIT);
++				return;
++			} catch (UnsatisfiedLinkError e) {
++				LWJGLUtil.log("Failed to load 64 bit library: " + e.getMessage());
++			}
++			// fallback to loading the "old way"
++		}
+ 		try {
+ 			doLoadLibrary(lib_name);
+ 		} catch (UnsatisfiedLinkError e) {
