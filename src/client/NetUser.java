@@ -85,7 +85,6 @@ import server.Constants;
 					
 					// Send out packets to the server.
 					if(outSnapshot != null){
-						System.out.println("Sent ! " + outSnapshot.getPackets().size());
 						out.writeObject(outSnapshot);
 						out.flush();
 						outSnapshot = null;
@@ -114,6 +113,13 @@ import server.Constants;
 					client.players[pId].ship.setPacket(packet);
 				}
 				
+			}
+			else if(packet.type == Packet.UPDATE_OTHER_BULLET){
+				
+				int pId = packet.getId();
+				if(client.players[pId] != null){
+					client.players[pId].ship.addBullet(packet);
+				}
 			}
 			else if(packet.type == Packet.UPDATE_SELF){
 				

@@ -1,5 +1,6 @@
 package server;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import packet.Packet;
@@ -52,6 +53,17 @@ public class World {
 				if(clients[i].getReadyStatus()){
 					if(ship.hasPositionChanged())
 						client.send(new Packet(Packet.UPDATE_OTHER, clients[i].id, ship.x, ship.y, ship.xv, ship.yv, ship.r));
+					
+					ArrayList<Bullet> bullets = ship.getBullets();
+					Bullet bullet;
+					for(int j = 0; j < bullets.size(); j++){
+						bullet = bullets.get(j);
+						// Need to check if the client has recieved the bullet update yet; as it only needs it once.
+						if(!bullet.hasSentToOtherClients()){
+							client.send(new Packet(Packet.UPDATE_OTHER_BULLET, clients[i].id, bullet.x, bullet.y, bullet.xv, bullet.yv, bullet.r));
+							bullet.setSentToOtherClients(true);
+						}
+					}
 				}
 			}
 		}

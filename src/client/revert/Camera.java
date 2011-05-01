@@ -97,7 +97,6 @@ public class Camera {
       this.centerOn(new Vector2f(shape.getCenterX(), shape.getCenterY()));
    }
    
-   /**XXX: Temporarly set at server position for testing, should be client position.
    /**
     * Locks the camera on the center of the given Entity. If the entity doesn't exist, the camera
     * will focus on the default 200/200 position.
@@ -125,8 +124,8 @@ public class Camera {
    
    public void drawMap(int offsetX, int offsetY) {
        //calculate the offset to the next tile (needed by TiledMap.render())
-       int tileOffsetX = (int) - (cameraX % tileWidth);
-       int tileOffsetY = (int) - (cameraY % tileHeight);
+       int tileOffsetX = (int) - ((cameraX / 10) % tileWidth);
+       int tileOffsetY = (int) - ((cameraY / 10) % tileHeight);
       
        //calculate the index of the leftmost tile that is being displayed
        int tileIndexX = (int) (cameraX / tileWidth);

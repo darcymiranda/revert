@@ -28,7 +28,7 @@ public class Server implements Runnable{
 	private World world;
 	
 	private long time;
-	private final int tickRate = 50;
+	private final int tickRate = 17;
 	
 	public Server(int port){
 		address = new InetSocketAddress(port);
@@ -133,6 +133,9 @@ public class Server implements Runnable{
 					// so the client may chooose which attached objects should
 					// or should not be update.
 					client.getShip().update(packet);
+				// update the client's bullets
+				}else if(packet.type == Packet.UPDATE_SELF_BULLET){
+					client.getShip().updateBullets(packet);
 				}
 				// Performes a connection handshake with the client.
 				else if(packet.type == Packet.CONNECT){

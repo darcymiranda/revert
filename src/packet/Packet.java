@@ -1,5 +1,8 @@
 package packet;
 import java.io.Serializable;
+import java.util.ArrayList;
+
+import client.revert.Bullet;
 
 /**
  * 
@@ -14,11 +17,15 @@ public class Packet implements Serializable  {
 	public static final byte READY_MARKER = 2;
 	public static final byte CHAT = 3;
 	public static final byte UPDATE_SELF = 4;
+	public static final byte UPDATE_SELF_BULLET = 5;
 	public static final byte UPDATE_OTHER = 6;
+	public static final byte UPDATE_OTHER_BULLET = 7;
 	public static final byte CLIENT_INFO = 9;
 	public static final byte SERVER_MESSAGE = 10;
 
 	private static final long serialVersionUID = 1L;
+	
+	private ArrayList<Bullet> bullets;
 	
 	private float time;
 	private int id = -1;
@@ -122,6 +129,9 @@ public class Packet implements Serializable  {
 	
 	public float getTime(){ return time; }
 	public void setTime(float t){ this.time = t; }
+	
+	public ArrayList<Bullet> getBullets(){ return bullets; }
+	public void setBullets(ArrayList<Bullet> bullets){ this.bullets = bullets; }
 	
 	@Override
 	public String toString(){

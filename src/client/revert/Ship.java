@@ -1,32 +1,25 @@
 package client.revert;
 
-import java.awt.Font;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayList;
 
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.UnicodeFont;
-import org.newdawn.slick.font.effects.ColorEffect;
 import org.newdawn.slick.geom.Vector2f;
 
 import packet.Packet;
-
 
 public class Ship extends Entity {
 	
 	private final float ACCELERATION = 4f / 1000;
 	private final float maxVelocity = 5;
 	private long lastFire;
-	private int rate = 100;
-	private float accuracy = .97f;
+	private int rate = 125;
+	private float accuracy = .96f;
 	
-	public List<Bullet> bullets = new LinkedList<Bullet>();
+	public ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	
 	public Ship(){
 	}
@@ -34,13 +27,11 @@ public class Ship extends Entity {
 	public Ship(Vector2f clientPosition, int id, boolean c){
 		
 		super();
-		setControlled(c);
+		setLocal(c);
 		
 		this.clientPosition = clientPosition;
 		this.id = id;
 		
-		velocity = new Vector2f();
-		dirSpeed = new Vector2f();
 		
 		try{
 			this.setImage(new Image("img/ship.png"));
@@ -60,9 +51,9 @@ public class Ship extends Entity {
 		return new Ship(clientPosition, id, c);
 	}
 	
-	public void update(GameContainer gc, int delta){
+	public void update(GameContainer gc, int delta, boolean interpolate){
 	
-		super.update(gc, delta);
+		super.update(gc, delta, interpolate);
 		
 		float rotation = super.getRotation();
 		
@@ -70,7 +61,7 @@ public class Ship extends Entity {
 		 * Input controls
 		 */
 		
-		if(super.isControlled()){
+		if(super.isLocal()){
 			
 			Input in = gc.getInput();
 			
@@ -96,6 +87,7 @@ public class Ship extends Entity {
 						bullet = new Bullet(cx,cy);
 						bullet.setRotation(calcRotaiton);
 						bullet.setImage(new Image("img/bullet.png"));
+						bullet.setLocal(super.isLocal());
 						bullets.add(bullet);
 						
 					}
@@ -280,7 +272,7 @@ public class Ship extends Entity {
 		super.setRotation(rotation);
 		
 		for(int i = 0; i < bullets.size(); i++){
-			bullets.get(i).update(gc, delta);
+			bullets.get(i).update(gc, delta, false);
 			if(bullets.get(i).hasExpired()) bullets.remove(i);
 		}
 	
@@ -292,7 +284,24 @@ public class Ship extends Entity {
 		g.drawRect(serverPosition.x, serverPosition.y, width, height);
 		font.drawString(clientPosition.x + width - 50, clientPosition.y + height, username);
 		
-		for(Bullet bullet : bullets) bullet.render(g);
+		for(int i = 0; i < bullets.size(); i++){ bullets.get(i).render(g); }
+		
+	}
+	
+	public ArrayList<Bullet> getBullets(){ return bullets; }
+	public void addBullet(Packet packet){
+		
+		try {
+			Bullet bullet = new Bullet((packet.getPositionX() - packet.getVelocityX()),(packet.getPositionY() + packet.getVelocityY()));
+			bullet.setRotation(packet.getRotationR());
+			bullet.setImage(new Image("img/bullet.png"));
+			bullet.setLocal(false);
+			bullet.velocity.x = packet.getVelocityX();
+			bullet.velocity.y = packet.getVelocityY();
+			bullets.add(bullet);
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
 		
 	}
 

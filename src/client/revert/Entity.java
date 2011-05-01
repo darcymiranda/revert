@@ -31,24 +31,34 @@ public abstract class Entity {
 	protected Vector2f dirSpeed; 	// Holds the direction speed;
 	
 	protected int height, width;
-	protected int id; 				// refers to the client id that owns the entity
+	protected int id;
 	protected float rotation;
 	
-	private float timeSinceLastPacket = System.currentTimeMillis();
-	
-	private boolean isControlled; // determines if the player can control the ship
+	private boolean isLocal; // determines if the player can control the ship
 	private boolean isAlive;
 	
 	private Image image;
 	
-	/** TEMP **/
+	private long time;
+	
 	public String username = "";
 	public UnicodeFont font;
 	
+	// Network states
+	private EntityState displayState, previousState, simulateState;
+	private float curSmoothing = 0;
+	
 	public Entity(){
 		clientPosition = new Vector2f(200,200);
-		serverPosition = new Vector2f(200,200);
+		serverPosition = new Vector2f(-255,-255);
+		velocity = new Vector2f();
+		dirSpeed = new Vector2f();
 		isAlive = true;
+		
+		displayState = new EntityState(this);
+		previousState =  new EntityState(this);
+		simulateState =  new EntityState(this);
+		
 	}
 	
 	/**
@@ -57,36 +67,38 @@ public abstract class Entity {
 	 */
 	public void setPacket(Packet p){
 		
-		timeSinceLastPacket = (System.currentTimeMillis() - timeSinceLastPacket) / 1000.0f;
+		boolean justSpawned = (serverPosition.x == -255 && serverPosition.y == -255);
 		
 		serverPosition.x = p.getPositionX();
 		serverPosition.y = p.getPositionY();
 		
-		if(!isControlled){
-			velocity.x = p.getVelocityX();
-			velocity.y = p.getVelocityY();
+		if(!isLocal){
 			
-			if(timeSinceLastPacket == 0)
-				timeSinceLastPacket = 1;
+			curSmoothing = 1;
 			
-			// Smooth out rotation
-			//float velRotation = (p.getRotationR() - rotation) / timeSinceLastPacket;
-			//rotation += velRotation;
-			//System.out.println(timeSinceLastPacket + " " + + p.getRotationR() + ":" + rotation + " " + velRotation);
+			previousState.setState(simulateState);
+			
+			// TEMP - needed when a client spawns far away from starting position
+			if(justSpawned){
+				simulateState.setPosition(p.getPositionX(), p.getPositionY());
+				System.out.println("SET!");
+			}
+			
+			simulateState.setVelocity(p.getVelocityX(), p.getVelocityY());
+			simulateState.setRotation(p.getRotationR());
 		
+			// Teleport entity to proper location, if the client and server positions are out of sync.
 			float dx = serverPosition.x - clientPosition.x;
 			float dy = serverPosition.y - clientPosition.y;
-			
-			// Teleport entity to proper location, if the client and server positions are out of sync.
 			float xdistMax = 75+velocity.x;
 			float ydistMax = 75+velocity.y;
 			if((velocity.x == 0 || velocity.y == 0) ||
 					(dx > xdistMax || dx < -xdistMax) || (dy > ydistMax || dx < -ydistMax)){
 				
-				clientPosition.x = p.getPositionX();
-				clientPosition.y = p.getPositionY();
+				simulateState.setPosition(p.getPositionX(), p.getPositionY());
 				
 			}
+			
 		}
 	}
 	
@@ -111,7 +123,27 @@ public abstract class Entity {
 		
 	}
 	
-	public void update(GameContainer gc, int delta){
+	public void update(GameContainer gc, int delta, boolean interpolate){
+		
+		time = gc.getTime();
+		
+		// interpolate non-local entities
+		if(!isLocal && interpolate){
+			previousState.update();
+			simulateState.update();
+			
+			curSmoothing -= (1 / 6);
+			if(curSmoothing < 0) curSmoothing = 0;
+			
+			displayState.setPosition(previousState.getPosition().x + (simulateState.getPosition().x - previousState.getPosition().x) * curSmoothing, 
+					displayState.getPosition().y = previousState.getPosition().y + (simulateState.getPosition().y - previousState.getPosition().y) * curSmoothing);
+			displayState.setRotation(previousState.getRotation() + (simulateState.getRotation() - previousState.getRotation()) * curSmoothing);
+			
+			clientPosition.x = displayState.getPosition().x;
+			clientPosition.y = displayState.getPosition().y;
+			rotation = displayState.getRotation();
+			
+		}
 		
 		image.rotate(rotation - image.getRotation());
 		
@@ -129,13 +161,15 @@ public abstract class Entity {
 	public boolean isAlive(){ return isAlive; }
 	public void setAlive(boolean isAlive){ this.isAlive = isAlive; }
 	
-	public boolean isControlled(){ return isControlled; }
-	public void setControlled(boolean isControlled){ this.isControlled = isControlled; }
+	public boolean isLocal(){ return isLocal; }
+	public void setLocal(boolean isLocal){ this.isLocal = isLocal; }
 	
 	public int getId(){ return id; }
 	
 	public Vector2f getClientPosition(){ return new Vector2f(clientPosition); }
 	public Vector2f getServerPosition(){ return new Vector2f(serverPosition); }
+	public Vector2f getVelocity(){ return new Vector2f(velocity); }
+	
 	public void setPosition(float x, float y){
 		clientPosition.x = x;
 		clientPosition.y = y;

@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.newdawn.slick.AppGameContainer;
@@ -131,10 +132,25 @@ public class Revert extends BasicGame {
 		}
 		
 		// Send position update packet to server
-		if(counter > 7){
+		if(counter > 6){
 			if(thePlayer != null && thePlayer.ship != null){
 				if(ship.isAlive()){
+					
+					// send ship
 					net.send(thePlayer.ship.getPacket());
+					
+					// send bullets
+					ArrayList<Bullet> bullets = thePlayer.ship.getBullets();
+					for(int i = 0; i < bullets.size(); i++){
+						// check if a packet has been sent for this bullet yet -- could probably be done better..
+						if(!bullets.get(i).hasSentToOtherClients()){
+							Packet packet = bullets.get(i).getPacket();
+							packet.setId(thePlayer.ship.getId());
+							net.send(packet);
+							bullets.get(i).setSentToOtherClients(true);
+						}
+					}
+					
 				}
 			}
 			counter = 0;

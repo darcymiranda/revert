@@ -53,7 +53,7 @@ public class EntityController {
 		Entity e = null;
 		
 		for(int i = 0; i < pool.size(); i++){
-			if(pool.get(i).isControlled() == true){
+			if(pool.get(i).isLocal() == true){
 				e = pool.get(i);
 				break;
 			}
@@ -76,25 +76,8 @@ public class EntityController {
 		for(int i = 0; i < pool.size(); i++){
 			e = pool.get(i);
 			if(e != null)
-				e.update(gc, delta);
+				e.update(gc, delta, true);
 		}
-	}
-	
-	/**
-	 * Create an instance of ship with a passed id and add it to the pool.
-	 * @param id the unique id given to each entity
-	 */
-	public void createShip(int id, boolean c){
-
-		Ship ship = new Ship().createInstance(new Vector2f(200,200), id, c);
-		
-		try{
-			ship.setImage(new Image("img/fighter.png"));
-		}catch(SlickException ex){
-			ex.printStackTrace();
-		}
-		
-		pool.add(ship);
 	}
 	
 	public Iterator<Entity> getIterator(){
