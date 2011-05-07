@@ -1,8 +1,5 @@
 package server;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import packet.Packet;
 
 /**
@@ -57,7 +54,6 @@ public class World {
 					if(ship.hasShootingChanged()){
 						Packet packet = new Packet(Packet.UPDATE_OTHER_BULLET, clients[i].id);
 						packet.setKeySpace(ship.isShooting());
-						System.out.println(ship.hasShootingChanged() + "    " + ship.isShooting());
 						client.send(packet);
 					}
 				}

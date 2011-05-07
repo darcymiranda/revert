@@ -1,18 +1,12 @@
 package client.revert;
 
-import java.util.Properties;
-
-
 import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -27,20 +21,17 @@ import packet.Packet;
 
 import server.Constants;
 
-import client.ActionSender;
 import client.NetUser;
 import client.Player;
-import client.ex.NetException;
 
 public class Revert extends BasicGame {
 	
+	public static NetUser net;
+	
 	private TiledMap map;
 	private Camera cam;
-	private NetUser net;
-	public ActionSender actionSender;
 	
 	private Image imgShip;
-	private Image imgBullet;
 	private UnicodeFont font;
 	
 	public Player[] players = new Player[Constants.WORLD_PLAYER_SIZE];
@@ -91,7 +82,6 @@ public class Revert extends BasicGame {
 		
 		/** Init Images **/
 		try {
-			imgBullet = new Image("img/bullet.png");
 			imgShip = new Image("img/ship.png");
 			map = new TiledMap("maps/map01.tmx");
 		} catch (SlickException e) {
@@ -102,7 +92,6 @@ public class Revert extends BasicGame {
 		net = new NetUser(this, host, port);
 		new Thread(net).start();
 		net.username = username;
-		actionSender = new ActionSender(net);
 		
 		/** Init Game**/
 		ec = new EntityController();
@@ -143,26 +132,16 @@ public class Revert extends BasicGame {
 					// send ship
 					net.send(thePlayer.ship.getPacket());
 					
-					// send bullets
-					ArrayList<Bullet> bullets = thePlayer.ship.getBullets();
-					for(int i = 0; i < bullets.size(); i++){
-						// check if a packet has been sent for this bullet yet -- could probably be done better..
-						if(!bullets.get(i).hasSentToOtherClients()){
-							Packet packet = bullets.get(i).getPacket();
-							packet.setId(thePlayer.ship.getId());
-							net.send(packet);
-							bullets.get(i).setSentToOtherClients(true);
-						}
-					}
-					
 				}
 			}
 			counter = 0;
 		}
 		counter++;
 		
+		ec.checkCollisions();
+		
 		ec.update(gc, delta);
-		cam.centerOn(thePlayer.ship);
+		cam.centerOn(ship);
 		
 	}
 	
@@ -185,13 +164,36 @@ public class Revert extends BasicGame {
 	public void keyPressed(int key, char c){
 		
 		if(key == Input.KEY_ENTER){
-			try {
-				actionSender.sendReady(!net.readyStatus);
-				System.out.println(!net.readyStatus + " ready status sent to server.");
-			} catch (NetException e) {
-				e.printStackTrace();
-			}
+			net.send(new Packet(Packet.READY_MARKER, net.id, !net.readyStatus));
+			System.out.println(!net.readyStatus + " ready status sent to server.");
 		}
+		
+		Packet packet = new Packet(Packet.UPDATE_SELF_INPUT);
+		boolean hasChanged = false;
+		
+		if(key == Input.KEY_SPACE){
+			packet.setKeySpace(true);
+			hasChanged = true;
+			System.out.println("true");
+		}
+		
+		if(hasChanged)
+			net.send(packet);
+	}
+	
+	public void keyReleased(int key, char c){
+		
+		Packet packet = new Packet(Packet.UPDATE_SELF_INPUT);
+		boolean hasChanged = false;
+		
+		if(key == Input.KEY_SPACE){
+			packet.setKeySpace(false);
+			hasChanged = true;
+			System.out.println("false");
+		}
+		
+		if(hasChanged)
+			net.send(packet);
 	}
 	
 	public static void main(String args[]){

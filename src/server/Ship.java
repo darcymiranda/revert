@@ -1,9 +1,6 @@
 package server;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import packet.Packet;
 
@@ -12,10 +9,11 @@ public class Ship {
 	public float x, y, r;
 	public float xv, yv;
 	private float oldx, oldy, oldr, oldxv, oldyv;
+	private boolean space;
 	
 	private boolean posChanged;
 	private boolean isAlive;
-	private boolean oldShooting;
+	private boolean oldSpace;
 	private boolean isShooting;
 	
 	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
@@ -35,11 +33,16 @@ public class Ship {
 		// determines if the position has changed from the last one
 		posChanged = (oldx != x || oldy != y || oldr != r || oldxv != xv || oldyv != yv);
 		
+		// determine if there has been a change in inputs
+		isShooting = (space != oldSpace);
+		
 		oldx = x;
 		oldy = y;
 		oldr = r;
 		oldxv = xv;
 		oldyv = yv;
+		
+		oldSpace = space;
 		
 		// Bullets
 		for(int i = 0; i < bullets.size(); i++){
@@ -60,9 +63,6 @@ public class Ship {
 		r = packet.getRotationR();
 		xv = packet.getVelocityX();
 		yv = packet.getVelocityY();
-
-		oldShooting = (isShooting != packet.getPressedSpace());
-		isShooting = packet.getPressedSpace();
 		
 	}
 	
@@ -71,19 +71,22 @@ public class Ship {
 		bullets.add(bullet);
 	}
 	
+	public void updateInput(Packet packet) {
+		space = packet.getPressedSpace();
+	}
+	
 	public ArrayList<Bullet> getBullets(){
 		return bullets;
 	}
 	
 	public boolean hasPositionChanged(){ return posChanged; }
 	
-	public void setShooting(boolean s){ this.isShooting = s; }
-	public boolean isShooting(){ return isShooting; }
+	public boolean isShooting(){ return space; }
 	
 	/**
 	 * Returns if the shooting state changed.
 	 * @return
 	 */
-	public boolean hasShootingChanged(){ return oldShooting; }
+	public boolean hasShootingChanged(){ return isShooting; }
 
 }

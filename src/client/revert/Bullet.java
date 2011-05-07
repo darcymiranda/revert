@@ -3,28 +3,28 @@ package client.revert;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.geom.Vector2f;
 
-import packet.Packet;
-
-public class Bullet extends Entity {       
-	
-	private Vector2f startPosition;
+public class Bullet extends Entity {    
 	
 	private boolean hasSentToOtherClients;
+	private boolean dead;
 	
 	private float speed = 900f / 1000f;
 	private float maxTravelTime = 250;
 	private float travelTime;
 	
-	private int id = 0;
-	
 	public Bullet(float x, float y){
 		super();
 		velocity = new Vector2f(0,0);
-		startPosition = new Vector2f(x,y);
 		serverPosition.x = x;
 		serverPosition.y = y;
 		clientPosition.x = x;
 		clientPosition.y = y;
+		
+		collidable = true;
+	}
+	
+	public void collide(Entity e){
+		dead = true;
 	}
 	
 	public void update(GameContainer gc, int delta, boolean interpolate){
@@ -39,13 +39,8 @@ public class Bullet extends Entity {
 		clientPosition.y -= velocity.y;
 	}
 	
-	@Override
-	public Packet getPacket(){
-		return new Packet(Packet.UPDATE_SELF_BULLET, clientPosition.x, clientPosition.y, velocity.x, velocity.y, rotation);
-	}
-	
 	public boolean hasExpired(){
-		return travelTime > maxTravelTime;
+		return travelTime > maxTravelTime || dead;
 	}
 	
 	public boolean hasSentToOtherClients(){ return hasSentToOtherClients; }

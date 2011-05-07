@@ -30,6 +30,7 @@ public class Ship extends Entity {
 		
 		super();
 		setLocal(c);
+		collidable = true;
 		
 		this.clientPosition = clientPosition;
 		this.id = id;
@@ -51,6 +52,10 @@ public class Ship extends Entity {
 	 */
 	public Ship createInstance(Vector2f clientPosition, int id, boolean c){
 		return new Ship(clientPosition, id, c);
+	}
+	
+	public void collide(Entity e){
+		
 	}
 	
 	public void update(GameContainer gc, int delta, boolean interpolate){
@@ -87,7 +92,7 @@ public class Ship extends Entity {
 				dirSpeed.x = (float) Math.sin(Math.toRadians(rotation-90));
 				dirSpeed.y = (float) Math.cos(Math.toRadians(rotation-90));
 				
-				float xvelChange = velocity.x + ((ACCELERATION * delta) /5) * dirSpeed.x;
+				float xvelChange = velocity.x + (ACCELERATION * delta) * dirSpeed.x;
 				if(xvelChange <= maxVelocity && xvelChange >= -maxVelocity){
 					
 					velocity.x -= (xvelChange - velocity.x) ; // minus the x velocity as it was only needed for the if statement
@@ -101,7 +106,7 @@ public class Ship extends Entity {
 						velocity.x = -maxVelocity /2;
 				}
 				
-				float yvelChange = velocity.y + ((ACCELERATION * delta) /5) * dirSpeed.y;
+				float yvelChange = velocity.y + (ACCELERATION * delta) * dirSpeed.y;
 				if(yvelChange <= maxVelocity && yvelChange >= -maxVelocity){
 	
 					velocity.y -= (yvelChange - velocity.y) /5; // minus the y velocity as it was only needed for the if statement
@@ -122,7 +127,7 @@ public class Ship extends Entity {
 				dirSpeed.x = (float) Math.sin(Math.toRadians(rotation-90));
 				dirSpeed.y = (float) Math.cos(Math.toRadians(rotation-90));
 				
-				float xvelChange = velocity.x + ((ACCELERATION * delta) /5) * dirSpeed.x;
+				float xvelChange = velocity.x + (ACCELERATION * delta) * dirSpeed.x;
 				if(xvelChange <= maxVelocity && xvelChange >= -maxVelocity){
 					
 					velocity.x += (xvelChange - velocity.x) ; // minus the x velocity as it was only needed for the if statement
@@ -136,7 +141,7 @@ public class Ship extends Entity {
 						velocity.x = -maxVelocity /2;
 				}
 				
-				float yvelChange = velocity.y + ((ACCELERATION * delta) /5) * dirSpeed.y;
+				float yvelChange = velocity.y + (ACCELERATION * delta) * dirSpeed.y;
 				if(yvelChange <= maxVelocity && yvelChange >= -maxVelocity){
 	
 					velocity.y += (yvelChange - velocity.y) /5; // minus the y velocity as it was only needed for the if statement
@@ -292,6 +297,12 @@ public class Ship extends Entity {
 				bullet.setImage(new Image("img/bullet.png"));
 				bullet.setLocal(super.isLocal());
 				bullets.add(bullet);
+				
+				// REMOTE
+				if(super.isLocal()){
+					Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, clientPosition.x, clientPosition.y, velocity.x, velocity.y, rotation);
+					Revert.net.send(packet);
+				}
 			
 			} catch (SlickException e) {
 				e.printStackTrace();

@@ -1,13 +1,9 @@
 package client.revert;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Vector2f;
 
 public class EntityController {
 	
@@ -31,21 +27,14 @@ public class EntityController {
 		pool.remove(e);
 	}
 	
-	/**
-	 * Find an entity matching the passed id.
-	 * @param id the unique id given to each entity
-	 * @return Entity
-	 */
-	public Entity findById(int id){
-		
-		Entity e = null;
-		
-		for(int i = 0; i < pool.size(); i++){
-			if(pool.get(i).getId() == id)
-				e = pool.get(i);
+	public Entity getNext(int i){
+		if(i >= pool.size()){
+			i = 0;
 		}
-		
-		return e;
+		else{
+			i++;
+		}
+		return (Ship) pool.get(i);
 	}
 	
 	public Entity getControlledShip(){
@@ -60,6 +49,9 @@ public class EntityController {
 		}
 		
 		return e;
+	}
+	
+	public void checkCollisions(){
 	}
 	
 	public void render(Graphics g){
@@ -80,8 +72,8 @@ public class EntityController {
 		}
 	}
 	
-	public Iterator<Entity> getIterator(){
-		return pool.iterator();
+	public ArrayList<Entity> getPool(){
+		return pool;
 	}
 
 

@@ -1,8 +1,5 @@
 package packet;
 import java.io.Serializable;
-import java.util.ArrayList;
-
-import client.revert.Bullet;
 
 /**
  * 
@@ -20,6 +17,7 @@ public class Packet implements Serializable  {
 	public static final byte UPDATE_SELF_BULLET = 5;
 	public static final byte UPDATE_OTHER = 6;
 	public static final byte UPDATE_OTHER_BULLET = 7;
+	public static final byte UPDATE_SELF_INPUT = 44;
 	public static final byte CLIENT_INFO = 9;
 	public static final byte SERVER_MESSAGE = 10;
 

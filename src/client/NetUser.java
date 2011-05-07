@@ -1,20 +1,13 @@
 package client;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
-import java.util.LinkedList;
-import java.util.List;
-
-import client.revert.Entity;
 import client.revert.Revert;
 
 import packet.Packet;
 import packet.Snapshot;
-import server.Constants;
-
 	/**
 	 * This class is the network class that will be attached to the user's
 	 * game client. Visibility of objects and methods may need to be modified.

@@ -4,8 +4,6 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.LinkedList;
-import java.util.List;
 
 import packet.Packet;
 import packet.Snapshot;

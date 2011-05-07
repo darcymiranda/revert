@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -136,6 +135,8 @@ public class Server implements Runnable{
 				// update the client's bullets
 				}else if(packet.type == Packet.UPDATE_SELF_BULLET){
 					client.getShip().updateBullets(packet);
+				}else if(packet.type == Packet.UPDATE_SELF_INPUT){
+					client.getShip().updateInput(packet);
 				}
 				// Performes a connection handshake with the client.
 				else if(packet.type == Packet.CONNECT){

@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import packet.Packet;
 import packet.Snapshot;
 
 /**

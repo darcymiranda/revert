@@ -6,8 +6,6 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.geom.Vector2f;
 
-import client.ActionSender;
-
 import packet.Packet;
 
 /**
@@ -32,10 +30,11 @@ public abstract class Entity {
 	
 	private boolean isLocal; // determines if the player can control the ship
 	private boolean isAlive;
+	protected boolean collidable;
 	
 	private Image image;
 	
-	protected String username = "";
+	String username = "";
 	protected UnicodeFont font;
 	
 	// Network states
@@ -54,6 +53,8 @@ public abstract class Entity {
 		simulateState =  new EntityState(this);
 		
 	}
+	
+	abstract public void collide(Entity e);
 	
 	/**
 	 * Requires a packet object to set this ships x and y serverPosition.
