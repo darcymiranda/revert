@@ -53,7 +53,7 @@ public class Client extends Thread {
 		// start reading packets
 		receive.start();
 		
-		ship = new Ship(200,200,false);
+		ship = new Ship(Constants.SPAWN_POSITION_X,Constants.SPAWN_POSITION_Y,false);
 		
 	}
 	
@@ -64,15 +64,6 @@ public class Client extends Thread {
 		while(socket != null && !socket.isClosed()){
 			
 			try{
-				
-				// write packets to the server
-				/*
-				if(!outPackets.isEmpty()){
-					out.writeObject(outPackets.get(0));
-					out.flush();
-					outPackets.remove(0);
-				}
-				*/
 				
 				if(outSnapshot != null){
 					out.writeObject(outSnapshot);
@@ -96,10 +87,6 @@ public class Client extends Thread {
 	 */
 	public void process(){
 		ship.tick();
-	}
-	
-	public void spawnShip(){
-		ship = new Ship(100f,100f, true);
 	}
 	
 	/**

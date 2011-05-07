@@ -57,6 +57,7 @@ public class Revert extends BasicGame {
 	 * @param gc
 	 * @param g
 	 */
+	@SuppressWarnings("unchecked")
 	public void init(GameContainer gc){
 		
 		gc.setVSync(true);
@@ -137,7 +138,7 @@ public class Revert extends BasicGame {
 		// Send position update packet to server
 		if(counter > 6){
 			if(thePlayer != null && thePlayer.ship != null){
-				if(ship.isAlive()){
+				if(thePlayer.ship.isAlive()){
 					
 					// send ship
 					net.send(thePlayer.ship.getPacket());
@@ -161,13 +162,13 @@ public class Revert extends BasicGame {
 		counter++;
 		
 		ec.update(gc, delta);
-		cam.centerOn(ship);
+		cam.centerOn(thePlayer.ship);
 		
 	}
 	
 	public void createShip(int id, boolean c){
 
-		Ship ship = new Ship().createInstance(new Vector2f(200,200), id, c);
+		Ship ship = new Ship().createInstance(new Vector2f(Constants.SPAWN_POSITION_X,Constants.SPAWN_POSITION_Y), id, c);
 		ship.setImage(imgShip);
 		ship.username = players[id].username;
 		ship.font = font;

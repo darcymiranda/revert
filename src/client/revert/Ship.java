@@ -19,6 +19,8 @@ public class Ship extends Entity {
 	private int rate = 125;
 	private float accuracy = .96f;
 	
+	private boolean isShooting;
+	
 	public ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	
 	public Ship(){
@@ -68,33 +70,10 @@ public class Ship extends Entity {
 			/**
 			 * Shooting
 			 */
-			
-			Bullet bullet;
-			
-			if(in.isKeyDown(Input.KEY_SPACE)){
+			isShooting = in.isKeyDown(Input.KEY_SPACE);
+			if(isShooting){
 	
-				try{
-					
-					if (!(System.currentTimeMillis() - lastFire < rate)) {
-						
-						lastFire = System.currentTimeMillis();
-						
-						float calcRotaiton = rotation - (float)(Math.random() * ((-accuracy * 100) + 100));
-						
-						float cx = clientPosition.x + (super.width / 2 - 5), // (float)Math.sin(Math.toRadians(rotation/180))),
-							  cy = clientPosition.y + (super.height / 2 - 5); // (float)Math.cos(Math.toRadians(rotation/180)));
-						
-						bullet = new Bullet(cx,cy);
-						bullet.setRotation(calcRotaiton);
-						bullet.setImage(new Image("img/bullet.png"));
-						bullet.setLocal(super.isLocal());
-						bullets.add(bullet);
-						
-					}
-					
-				}catch(SlickException ex){
-					System.err.println("Error creating bullet for " + this.toString() + ".\nError Reported: " + ex.toString());
-				}
+				shoot();
 				
 			}
 			
@@ -265,6 +244,12 @@ public class Ship extends Entity {
 			}
 			
 		}
+		// REMOTE
+		else {
+			if(isShooting){
+				shoot();
+			}
+		}
 		
 		clientPosition.x += velocity.x;
 		clientPosition.y -= velocity.y;
@@ -288,21 +273,43 @@ public class Ship extends Entity {
 		
 	}
 	
-	public ArrayList<Bullet> getBullets(){ return bullets; }
-	public void addBullet(Packet packet){
+	public void shoot(){
 		
-		try {
-			Bullet bullet = new Bullet((packet.getPositionX() - packet.getVelocityX()),(packet.getPositionY() + packet.getVelocityY()));
-			bullet.setRotation(packet.getRotationR());
-			bullet.setImage(new Image("img/bullet.png"));
-			bullet.setLocal(false);
-			bullet.velocity.x = packet.getVelocityX();
-			bullet.velocity.y = packet.getVelocityY();
-			bullets.add(bullet);
-		} catch (SlickException e) {
-			e.printStackTrace();
+		Bullet bullet;
+		if (!(System.currentTimeMillis() - lastFire < rate)) {
+			
+			try {
+			
+				lastFire = System.currentTimeMillis();
+				
+				float calcRotaiton = rotation - (float)(Math.random() * ((-accuracy * 100) + 100));
+				
+				float cx = clientPosition.x + (super.width / 2 - 5), // (float)Math.sin(Math.toRadians(rotation/180))),
+					  cy = clientPosition.y + (super.height / 2 - 5); // (float)Math.cos(Math.toRadians(rotation/180)));
+				
+				bullet = new Bullet(cx,cy);
+				bullet.setRotation(calcRotaiton);
+				bullet.setImage(new Image("img/bullet.png"));
+				bullet.setLocal(super.isLocal());
+				bullets.add(bullet);
+			
+			} catch (SlickException e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}
+	
+	@Override
+	public Packet getPacket(){
+		Packet packet = new Packet(Packet.UPDATE_SELF, clientPosition.x, clientPosition.y, velocity.x, velocity.y, rotation);
+		packet.setKeySpace(isShooting);
+		return packet;
+	}
+	
+	public ArrayList<Bullet> getBullets(){ return bullets; }
+	public boolean isShooting(){ return isShooting; }
+	public void setShooting(boolean s){ this.isShooting = s; }
+
 
 }

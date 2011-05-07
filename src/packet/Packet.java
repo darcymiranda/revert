@@ -25,15 +25,12 @@ public class Packet implements Serializable  {
 
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList<Bullet> bullets;
-	
 	private float time;
 	private int id = -1;
-	private int delta = 0;
 	private String message;
 	private String username;
 	private boolean status;
-	private boolean w,s,d,a,q,e;
+	private boolean w,s,d,a,q,e,space;
 	private float x,y,r,xv,yv;
 	
 	public byte type;
@@ -120,6 +117,9 @@ public class Packet implements Serializable  {
 	public boolean getPressedD(){ return d; }
 	public boolean getPressedQ(){ return q; }
 	public boolean getPressedE(){ return e; }
+	public boolean getPressedSpace(){ return space; }
+	
+	public void setKeySpace(boolean s){ this.space = s; }
 	
 	public float getPositionX(){ return x; }
 	public float getPositionY(){ return y; }
@@ -129,9 +129,6 @@ public class Packet implements Serializable  {
 	
 	public float getTime(){ return time; }
 	public void setTime(float t){ this.time = t; }
-	
-	public ArrayList<Bullet> getBullets(){ return bullets; }
-	public void setBullets(ArrayList<Bullet> bullets){ this.bullets = bullets; }
 	
 	@Override
 	public String toString(){

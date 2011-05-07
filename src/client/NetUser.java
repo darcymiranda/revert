@@ -110,7 +110,7 @@ import server.Constants;
 				
 				int pId = packet.getId();
 				if(client.players[pId] != null){
-					client.players[pId].ship.setPacket(packet);
+					client.players[pId].ship.updatePacket(packet);
 				}
 				
 			}
@@ -118,12 +118,12 @@ import server.Constants;
 				
 				int pId = packet.getId();
 				if(client.players[pId] != null){
-					client.players[pId].ship.addBullet(packet);
+					client.players[pId].ship.setShooting(packet.getPressedSpace());
 				}
 			}
 			else if(packet.type == Packet.UPDATE_SELF){
 				
-				client.players[id].ship.setPacket(packet);
+				client.players[id].ship.updatePacket(packet);
 					
 			}
 			else if(packet.type == Packet.CHAT){

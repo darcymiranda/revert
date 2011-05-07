@@ -15,6 +15,8 @@ public class Ship {
 	
 	private boolean posChanged;
 	private boolean isAlive;
+	private boolean oldShooting;
+	private boolean isShooting;
 	
 	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	
@@ -58,6 +60,9 @@ public class Ship {
 		r = packet.getRotationR();
 		xv = packet.getVelocityX();
 		yv = packet.getVelocityY();
+
+		oldShooting = (isShooting != packet.getPressedSpace());
+		isShooting = packet.getPressedSpace();
 		
 	}
 	
@@ -71,4 +76,14 @@ public class Ship {
 	}
 	
 	public boolean hasPositionChanged(){ return posChanged; }
+	
+	public void setShooting(boolean s){ this.isShooting = s; }
+	public boolean isShooting(){ return isShooting; }
+	
+	/**
+	 * Returns if the shooting state changed.
+	 * @return
+	 */
+	public boolean hasShootingChanged(){ return oldShooting; }
+
 }

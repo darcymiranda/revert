@@ -12,13 +12,9 @@ import packet.Packet;
 
 /**
  * 
- * -- clientPosition & serverPosition --
- * 
- * The clientPosition is the client-side position that the entity is current in. It is value passed to the server each tick. The serverPosition is
- * the position that the entity is in on the server, that originated from the client's clientPosition.
- * 
- * Only the serverSide position get's rendered, while the clientSide position is the one that is updated
- * each game tick.
+ * Display State - entity information to be rendered
+ * Previous State - last ticks entity information
+ * Simulated State - information of entity ahead by one tick
  * 
  * @author dmiranda
  *
@@ -39,18 +35,16 @@ public abstract class Entity {
 	
 	private Image image;
 	
-	private long time;
-	
-	public String username = "";
-	public UnicodeFont font;
+	protected String username = "";
+	protected UnicodeFont font;
 	
 	// Network states
 	private EntityState displayState, previousState, simulateState;
-	private float curSmoothing = 0;
+	private float smoothing = 0;
 	
 	public Entity(){
 		clientPosition = new Vector2f(200,200);
-		serverPosition = new Vector2f(-255,-255);
+		serverPosition = new Vector2f(200,200);
 		velocity = new Vector2f();
 		dirSpeed = new Vector2f();
 		isAlive = true;
@@ -65,40 +59,25 @@ public abstract class Entity {
 	 * Requires a packet object to set this ships x and y serverPosition.
 	 * @param p the packet to be read
 	 */
-	public void setPacket(Packet p){
-		
-		boolean justSpawned = (serverPosition.x == -255 && serverPosition.y == -255);
+	public void updatePacket(Packet p){
 		
 		serverPosition.x = p.getPositionX();
 		serverPosition.y = p.getPositionY();
 		
 		if(!isLocal){
 			
-			curSmoothing = 1;
+			smoothing = 1;
 			
 			previousState.setState(simulateState);
-			
-			// TEMP - needed when a client spawns far away from starting position
-			if(justSpawned){
-				simulateState.setPosition(p.getPositionX(), p.getPositionY());
-				System.out.println("SET!");
-			}
 			
 			simulateState.setVelocity(p.getVelocityX(), p.getVelocityY());
 			simulateState.setRotation(p.getRotationR());
 		
 			// Teleport entity to proper location, if the client and server positions are out of sync.
-			float dx = serverPosition.x - clientPosition.x;
-			float dy = serverPosition.y - clientPosition.y;
-			float xdistMax = 75+velocity.x;
-			float ydistMax = 75+velocity.y;
-			if((velocity.x == 0 || velocity.y == 0) ||
-					(dx > xdistMax || dx < -xdistMax) || (dy > ydistMax || dx < -ydistMax)){
-				
-				simulateState.setPosition(p.getPositionX(), p.getPositionY());
-				
-			}
-			
+			float distance = serverPosition.distance(displayState.getPosition());
+			if(distance > 75 || distance < -75)
+				simulateState.setPosition((serverPosition.x - p.getVelocityX()), (serverPosition.y + p.getVelocityY()));
+
 		}
 	}
 	
@@ -125,20 +104,21 @@ public abstract class Entity {
 	
 	public void update(GameContainer gc, int delta, boolean interpolate){
 		
-		time = gc.getTime();
-		
 		// interpolate non-local entities
 		if(!isLocal && interpolate){
 			previousState.update();
 			simulateState.update();
 			
-			curSmoothing -= (1 / 6);
-			if(curSmoothing < 0) curSmoothing = 0;
+			// determine smoothing factor - six equals ticks per packet sent
+			smoothing -= (1 / 6);
+			if(smoothing < 0) smoothing = 0;
 			
-			displayState.setPosition(previousState.getPosition().x + (simulateState.getPosition().x - previousState.getPosition().x) * curSmoothing, 
-					displayState.getPosition().y = previousState.getPosition().y + (simulateState.getPosition().y - previousState.getPosition().y) * curSmoothing);
-			displayState.setRotation(previousState.getRotation() + (simulateState.getRotation() - previousState.getRotation()) * curSmoothing);
+			// interpolate
+			displayState.setPosition(previousState.getPosition().x + (simulateState.getPosition().x - previousState.getPosition().x) * smoothing, 
+					displayState.getPosition().y = previousState.getPosition().y + (simulateState.getPosition().y - previousState.getPosition().y) * smoothing);
+			displayState.setRotation(previousState.getRotation() + (simulateState.getRotation() - previousState.getRotation()) * smoothing);
 			
+			// set new positions
 			clientPosition.x = displayState.getPosition().x;
 			clientPosition.y = displayState.getPosition().y;
 			rotation = displayState.getRotation();
@@ -170,9 +150,7 @@ public abstract class Entity {
 	public Vector2f getServerPosition(){ return new Vector2f(serverPosition); }
 	public Vector2f getVelocity(){ return new Vector2f(velocity); }
 	
-	public void setPosition(float x, float y){
-		clientPosition.x = x;
-		clientPosition.y = y;
-	}
+	public Vector2f getPosition(){ return displayState.getPosition(); }
+	
 
 }
