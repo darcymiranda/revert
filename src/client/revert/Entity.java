@@ -4,6 +4,8 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.UnicodeFont;
+import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
 import packet.Packet;
@@ -29,7 +31,7 @@ public abstract class Entity {
 	protected float rotation;
 	
 	private boolean isLocal; // determines if the player can control the ship
-	private boolean isAlive;
+	protected boolean isAlive;
 	protected boolean collidable;
 	
 	private Image image;
@@ -101,6 +103,14 @@ public abstract class Entity {
 		
 		image = img.copy();
 		
+	}
+	
+	public Shape getHitBox(){
+		return new Rectangle(clientPosition.x, clientPosition.y, width, height);
+	}
+	
+	public void destroy(){
+		isAlive = false;
 	}
 	
 	public void update(GameContainer gc, int delta, boolean interpolate){

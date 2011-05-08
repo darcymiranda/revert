@@ -7,6 +7,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
 import packet.Packet;
@@ -18,14 +19,14 @@ public class Ship extends Entity {
 	private long lastFire;
 	private int rate = 125;
 	private float accuracy = .96f;
+	private int health = 15;
 	
 	private boolean isShooting;
 	
+	private int delta = 0;
+	
 	public ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	
-	public Ship(){
-	}
-
 	public Ship(Vector2f clientPosition, int id, boolean c){
 		
 		super();
@@ -44,25 +45,22 @@ public class Ship extends Entity {
 		
 	}
 	
-	/**
-	 * Creates a ship instance.
-	 * @param clientPosition the vector2f clientPosition of where it will spawn
-	 * @param id the created ship instance
-	 * @return
-	 */
-	public Ship createInstance(Vector2f clientPosition, int id, boolean c){
-		return new Ship(clientPosition, id, c);
-	}
-	
 	public void collide(Entity e){
-		
+		if(e instanceof Bullet){
+		}
 	}
 	
 	public void update(GameContainer gc, int delta, boolean interpolate){
 	
 		super.update(gc, delta, interpolate);
 		
+		this.delta = delta;
+		
 		float rotation = super.getRotation();
+		
+		if(health < 1){
+			isAlive = false;
+		}
 		
 		/**
 		 * Input controls
@@ -272,7 +270,7 @@ public class Ship extends Entity {
 		super.render(g);
 		
 		g.drawRect(serverPosition.x, serverPosition.y, width, height);
-		font.drawString(clientPosition.x + width - 50, clientPosition.y + height, username);
+		//font.drawString(clientPosition.x + width - 50, clientPosition.y + height, username);
 		
 		for(int i = 0; i < bullets.size(); i++){ bullets.get(i).render(g); }
 		
@@ -287,20 +285,20 @@ public class Ship extends Entity {
 			
 				lastFire = System.currentTimeMillis();
 				
-				float calcRotaiton = rotation - (float)(Math.random() * ((-accuracy * 100) + 100));
+				float calcRotation = rotation - (float)(Math.random() * ((-accuracy * 100) + 100));
 				
 				float cx = clientPosition.x + (super.width / 2 - 5), // (float)Math.sin(Math.toRadians(rotation/180))),
 					  cy = clientPosition.y + (super.height / 2 - 5); // (float)Math.cos(Math.toRadians(rotation/180)));
 				
-				bullet = new Bullet(cx,cy);
-				bullet.setRotation(calcRotaiton);
+				bullet = new Bullet(cx,cy, calcRotation, delta);
+				bullet.setRotation(calcRotation);
 				bullet.setImage(new Image("img/bullet.png"));
 				bullet.setLocal(super.isLocal());
 				bullets.add(bullet);
 				
 				// REMOTE
 				if(super.isLocal()){
-					Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, clientPosition.x, clientPosition.y, velocity.x, velocity.y, rotation);
+					Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, bullet.clientPosition.x, bullet.clientPosition.y, bullet.velocity.x, bullet.velocity.y, bullet.rotation);
 					Revert.net.send(packet);
 				}
 			
@@ -318,9 +316,15 @@ public class Ship extends Entity {
 		return packet;
 	}
 	
+	public void takeDamage(){
+		health -= 3;
+	}
+	
 	public ArrayList<Bullet> getBullets(){ return bullets; }
 	public boolean isShooting(){ return isShooting; }
 	public void setShooting(boolean s){ this.isShooting = s; }
+	
+	public void setVelocity(float x, float y){ velocity.x = x; velocity.y = y; }
 
 
 }

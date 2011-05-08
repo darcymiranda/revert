@@ -115,9 +115,10 @@ public class Revert extends BasicGame {
 		Entity ship = ec.getControlledShip();
 		Player thePlayer = null;
 		
-		// Get the player controlling this game
 		for(Player player : players){
 			if(player == null) continue;
+			
+			// get local player
 			if(player.id == net.id){
 				thePlayer = player;
 				break;
@@ -147,7 +148,7 @@ public class Revert extends BasicGame {
 	
 	public void createShip(int id, boolean c){
 
-		Ship ship = new Ship().createInstance(new Vector2f(Constants.SPAWN_POSITION_X,Constants.SPAWN_POSITION_Y), id, c);
+		Ship ship = new Ship(new Vector2f(Constants.SPAWN_POSITION_X,Constants.SPAWN_POSITION_Y), id, c);
 		ship.setImage(imgShip);
 		ship.username = players[id].username;
 		ship.font = font;
@@ -163,9 +164,9 @@ public class Revert extends BasicGame {
 	 */
 	public void keyPressed(int key, char c){
 		
-		if(key == Input.KEY_ENTER){
-			net.send(new Packet(Packet.READY_MARKER, net.id, !net.readyStatus));
-			System.out.println(!net.readyStatus + " ready status sent to server.");
+		if(key == Input.KEY_ENTER && !players[net.id].readyStatus){
+			net.send(new Packet(Packet.READY_MARKER, net.id, !players[net.id].readyStatus));
+			System.out.println(!players[net.id].readyStatus + " ready status sent to server.");
 		}
 		
 		Packet packet = new Packet(Packet.UPDATE_SELF_INPUT);
@@ -174,7 +175,6 @@ public class Revert extends BasicGame {
 		if(key == Input.KEY_SPACE){
 			packet.setKeySpace(true);
 			hasChanged = true;
-			System.out.println("true");
 		}
 		
 		if(hasChanged)
@@ -189,7 +189,6 @@ public class Revert extends BasicGame {
 		if(key == Input.KEY_SPACE){
 			packet.setKeySpace(false);
 			hasChanged = true;
-			System.out.println("false");
 		}
 		
 		if(hasChanged)

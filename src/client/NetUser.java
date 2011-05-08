@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
+
+import org.newdawn.slick.geom.Vector2f;
+
 import client.revert.Revert;
+import client.revert.Ship;
 
 import packet.Packet;
 import packet.Snapshot;
@@ -26,7 +30,6 @@ import packet.Snapshot;
 		// Game related
 		private Revert client;
 		public int id = -1;
-		public boolean readyStatus;
 		public String username;
 		
 		public NetUser(Revert client, String host, int port){
@@ -103,7 +106,9 @@ import packet.Snapshot;
 				
 				int pId = packet.getId();
 				if(client.players[pId] != null){
-					client.players[pId].ship.updatePacket(packet);
+					if(client.players[pId].ship != null){
+						client.players[pId].ship.updatePacket(packet);
+					}
 				}
 				
 			}
@@ -111,13 +116,37 @@ import packet.Snapshot;
 				
 				int pId = packet.getId();
 				if(client.players[pId] != null){
-					client.players[pId].ship.setShooting(packet.getPressedSpace());
+					if(client.players[pId].ship != null){
+						client.players[pId].ship.setShooting(packet.getPressedSpace());
+					}
 				}
 			}
 			else if(packet.type == Packet.UPDATE_SELF){
 				
 				client.players[id].ship.updatePacket(packet);
 					
+			}
+			else if(packet.type == Packet.UPDATE_DAMAGE){
+				
+				int pId = packet.getId();
+				if(client.players[pId] != null){
+					if(client.players[pId].ship != null){
+						client.players[pId].ship.takeDamage();
+						System.out.println(client.players[pId] + "  hit!");
+					}
+				}
+			}
+			else if(packet.type == Packet.UPDATE_DEATH){
+				
+				int pId = packet.getId();
+				if(client.players[pId] != null){
+					if(client.players[pId].ship != null){
+						client.players[pId].ship.setAlive(false);
+						client.ec.remove(client.players[pId].ship);
+						System.out.println("got death packet");
+					}
+				}		
+				
 			}
 			else if(packet.type == Packet.CHAT){
 				
@@ -131,15 +160,27 @@ import packet.Snapshot;
 				client.players[packet.getId()].readyStatus = packet.getStatus();
 				
 				if(packet.getId() == id){
-					readyStatus = packet.getStatus();
-					client.createShip(id, true);
+					client.players[id].readyStatus = packet.getStatus();
+					if(client.players[id].readyStatus){
+						if(client.players[packet.getId()].ship == null){
+							client.createShip(id, true);
+						}
+						else if(!client.players[id].ship.isAlive()){
+							client.createShip(id, true);
+						}
+					}
 				}
 				else{
 					names = client.players[packet.getId()].username + " is"; // debug
 					
 					// create a ship if they have true ready status and dont already have one
-					if(packet.getStatus() && client.players[packet.getId()].ship == null){
-						client.createShip(packet.getId(), false);
+					if(packet.getStatus()){
+						if(client.players[packet.getId()].ship == null){
+							client.createShip(packet.getId(), false);
+						}
+						else if(!client.players[packet.getId()].ship.isAlive()){
+							client.createShip(packet.getId(), false);
+						}
 					}
 					
 				}

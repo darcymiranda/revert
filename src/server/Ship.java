@@ -2,6 +2,9 @@ package server;
 
 import java.util.ArrayList;
 
+import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Shape;
+
 import packet.Packet;
 
 public class Ship {
@@ -14,7 +17,9 @@ public class Ship {
 	private boolean posChanged;
 	private boolean isAlive;
 	private boolean oldSpace;
-	private boolean isShooting;
+	private boolean shootChanged;
+	
+	private int health = 15;
 	
 	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	
@@ -30,11 +35,15 @@ public class Ship {
 		//x += xv;
 		//y -= yv;
 		
+		if(health < 1){
+			isAlive = false;
+		}
+		
 		// determines if the position has changed from the last one
 		posChanged = (oldx != x || oldy != y || oldr != r || oldxv != xv || oldyv != yv);
 		
-		// determine if there has been a change in inputs
-		isShooting = (space != oldSpace);
+		// determine if shooting on/off has changed
+		shootChanged = (space != oldSpace);
 		
 		oldx = x;
 		oldy = y;
@@ -50,6 +59,15 @@ public class Ship {
 			if(bullets.get(i).hasExpired()) bullets.remove(i);
 		}
 		
+	}
+	
+	public void collide(Bullet bullet){
+		health -=3 ;
+	}
+	
+	// TODO: get 'real' width/heights
+	public Shape getHitBox(){
+		return new Rectangle(x, y, 36, 45);
 	}
 	
 	/**
@@ -80,13 +98,13 @@ public class Ship {
 	}
 	
 	public boolean hasPositionChanged(){ return posChanged; }
-	
 	public boolean isShooting(){ return space; }
+	public boolean isAlive(){ return isAlive; }
 	
 	/**
 	 * Returns if the shooting state changed.
 	 * @return
 	 */
-	public boolean hasShootingChanged(){ return isShooting; }
+	public boolean hasShootingChanged(){ return shootChanged; }
 
 }

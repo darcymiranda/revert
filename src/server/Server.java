@@ -48,6 +48,7 @@ public class Server implements Runnable{
 		acceptConnections = true;
 		
 		world = World.getInstance();
+		world.setServer(this);
 		
 	}
 
@@ -128,13 +129,11 @@ public class Server implements Runnable{
 			
 				// update the client's game related data
 				if(packet.type == Packet.UPDATE_SELF){
-					// TODO: client class should have it's own update method
-					// so the client may chooose which attached objects should
-					// or should not be update.
 					client.getShip().update(packet);
 				// update the client's bullets
 				}else if(packet.type == Packet.UPDATE_SELF_BULLET){
 					client.getShip().updateBullets(packet);
+				// update client's keyboard
 				}else if(packet.type == Packet.UPDATE_SELF_INPUT){
 					client.getShip().updateInput(packet);
 				}
@@ -160,6 +159,9 @@ public class Server implements Runnable{
 				// Set ready status flag for clients
 				else if(packet.type == Packet.READY_MARKER && !client.getReadyStatus()){
 					client.setReadyStatus(packet.getStatus());
+					
+					if(client.getReadyStatus()) client.createShip();
+					
 					String rstatus = packet.getStatus() ? "ready" : "not ready";
 					System.out.println(client + " is " + rstatus + ".");
 					
@@ -227,7 +229,7 @@ public class Server implements Runnable{
 	 * @param packet
 	 * @param self true send to everyone including self, false send to everyone excluding self
 	 */
-	private final void sendToAll(Packet packet, boolean self){
+	public final void sendToAll(Packet packet, boolean self){
 		
 		// Send to all clients excluding the orginal sender.
 		if(!self){
@@ -250,7 +252,7 @@ public class Server implements Runnable{
 	 * @param client		the client receiving the packets
 	 * @param packet	the packet must have a type defined
 	 */
-	private void sendAllToClient(Client client, Packet packet){
+	public void sendAllToClient(Client client, Packet packet){
 		
 		// Sends data from currently connected clients to the newly connected client.
 		Client iClient;

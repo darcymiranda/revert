@@ -1,5 +1,7 @@
 package server;
 
+import java.util.ArrayList;
+
 import packet.Packet;
 
 /**
@@ -14,6 +16,7 @@ import packet.Packet;
 public class World {
 	
 	public static World instance = null;
+	private Server server;
 	
 	private Client[] clients = new Client[Constants.WORLD_PLAYER_SIZE];
 	
@@ -27,9 +30,15 @@ public class World {
 		for(Client client : clients){
 			if(client == null) continue;
 			Ship ship = client.getShip();
-			if( ship !=  null && client.getReadyStatus()){
+			if( ship !=  null && client.getReadyStatus() && client.isAlive()){
 				if( ship.hasPositionChanged() )
 					client.send(new Packet(Packet.UPDATE_SELF, ship.x, ship.y));
+				if( !ship.isAlive() && client.getReadyStatus()){
+					server.sendToAll(new Packet(Packet.UPDATE_DEATH, client.id), true);
+					client.setReadyStatus(false);
+					server.sendToAll(new Packet(Packet.READY_MARKER, client.id, false), true);
+					System.out.println("Sent death packet to " + client.id);
+				}
 			}
 			client.process();
 			
@@ -40,6 +49,7 @@ public class World {
 			if(client == null) continue;
 			
 			// TODO: Do a distance check to prevent unneeded update packets
+			// actions
 			for(int i = 0; i < clients.length; i++){
 				if(clients[i] == null ) continue;
 				if(clients[i].id == client.id) continue;	// dont send to self
@@ -58,6 +68,36 @@ public class World {
 					}
 				}
 			}
+			
+			// TODO: Do a distance check to prevent unneeded update packets
+			// collisons
+			ArrayList<Bullet> bullets = client.getShip().getBullets();
+			Bullet bullet;
+			for(int b = 0; b < bullets.size(); b++){
+				
+				bullet = bullets.get(b);
+				Client other;
+				for(int j = 0; j < clients.length; j++){
+					
+					other = clients[j];
+					if(other == null) continue;
+					
+					Ship otherShip = other.getShip();
+					if(client != other && other.isAlive()){
+						
+						//System.out.println(bullet.x + " " + bullet.y + "  /  " + otherShip.x + " " + otherShip.y);
+						if(bullet.getHitBox().intersects(otherShip.getHitBox())){
+							
+							otherShip.collide(bullet);
+							bullet.collide(otherShip);
+							server.sendToAll(new Packet(Packet.UPDATE_DAMAGE, other.id), true);
+							System.out.println(client + " hit " + other);
+							
+						}
+					}
+				}
+			}
+			
 		}
 		
 	}
@@ -93,6 +133,10 @@ public class World {
 		if(instance == null)
 			instance = new World();
 		return instance;
+	}
+	
+	public void setServer(Server server){
+		this.server = server;
 	}
 
 }

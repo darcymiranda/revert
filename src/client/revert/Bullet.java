@@ -23,6 +23,21 @@ public class Bullet extends Entity {
 		collidable = true;
 	}
 	
+	public Bullet(float x, float y, float rotation, int delta){
+		super();
+		velocity = new Vector2f(0,0);
+		serverPosition.x = x;
+		serverPosition.y = y;
+		clientPosition.x = x;
+		clientPosition.y = y;
+		this.rotation = rotation;
+		
+		velocity.x = -((speed * delta) * (float) Math.sin(Math.toRadians(rotation+180)));
+		velocity.y = -((speed * delta) * (float) Math.cos(Math.toRadians(rotation+180)));
+		
+		collidable = true;
+	}
+	
 	public void collide(Entity e){
 		dead = true;
 	}
@@ -32,8 +47,7 @@ public class Bullet extends Entity {
 		
 		travelTime++;
 		
-		velocity.x = -((speed * delta) * (float) Math.sin(Math.toRadians(rotation+180)));
-		velocity.y = -((speed * delta) * (float) Math.cos(Math.toRadians(rotation+180)));
+
 		
 		clientPosition.x += velocity.x;
 		clientPosition.y -= velocity.y;

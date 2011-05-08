@@ -50,8 +50,8 @@ public class Client extends Thread {
 		
 		// start reading packets
 		receive.start();
-		
-		ship = new Ship(Constants.SPAWN_POSITION_X,Constants.SPAWN_POSITION_Y,false);
+	
+		createShip();
 		
 	}
 	
@@ -79,12 +79,21 @@ public class Client extends Thread {
 		}
 	}
 	
+	public void update(Packet packet){
+		if(ship != null)
+			ship.update(packet);
+	}
+	
 	/**
 	 * This method is called from the World class and is used to do all calculations on
 	 * this current tick increment.
 	 */
 	public void process(){
 		ship.tick();
+	}
+	
+	public void createShip(){
+		ship = new Ship(Constants.SPAWN_POSITION_X, Constants.SPAWN_POSITION_Y, true);
 	}
 	
 	/**

@@ -18,8 +18,10 @@ public class Packet implements Serializable  {
 	public static final byte UPDATE_OTHER = 6;
 	public static final byte UPDATE_OTHER_BULLET = 7;
 	public static final byte UPDATE_SELF_INPUT = 44;
+	public static final byte UPDATE_DAMAGE = 8;
 	public static final byte CLIENT_INFO = 9;
 	public static final byte SERVER_MESSAGE = 10;
+	public static final byte UPDATE_DEATH = 11;
 
 	private static final long serialVersionUID = 1L;
 	
@@ -124,6 +126,7 @@ public class Packet implements Serializable  {
 	public float getRotationR(){ return r; }
 	public float getVelocityX(){ return xv; }
 	public float getVelocityY(){ return yv; }
+
 	
 	public float getTime(){ return time; }
 	public void setTime(float t){ this.time = t; }

@@ -52,6 +52,36 @@ public class EntityController {
 	}
 	
 	public void checkCollisions(){
+		
+		Entity owner, other, bullet;
+		ArrayList<Bullet> bullets;
+		for(int i = 0; i < pool.size(); i++){
+			
+			owner = pool.get(i);
+			if(owner instanceof Ship){
+				
+				bullets = ((Ship) owner).getBullets();
+				for(int b = 0; b < bullets.size(); b++){
+					
+					bullet = bullets.get(b);
+					for(int j = 0; j < pool.size(); j++){
+						
+						other = pool.get(j);
+						if(owner != other){		// own bullets cannot collide with self
+							if(other.getHitBox().intersects(bullet.getHitBox())){
+								bullet.collide(other);
+								other.collide(bullet);
+							}
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
 	}
 	
 	public void render(Graphics g){
