@@ -7,7 +7,6 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
 import packet.Packet;
@@ -19,18 +18,16 @@ public class Ship extends Entity {
 	private long lastFire;
 	private int rate = 125;
 	private float accuracy = .96f;
-	private int health = 15;
+	private int health = 35;
 	
 	private boolean isShooting;
 	
-	private int delta = 0;
-	
 	public ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	
-	public Ship(Vector2f clientPosition, int id, boolean c){
+	public Ship(Vector2f clientPosition, int id, boolean local){
 		
 		super();
-		setLocal(c);
+		setLocal(local);
 		collidable = true;
 		
 		this.clientPosition = clientPosition;
@@ -47,14 +44,14 @@ public class Ship extends Entity {
 	
 	public void collide(Entity e){
 		if(e instanceof Bullet){
+			velocity.x += (float) (Math.sin(Math.toRadians(e.getRotation())) *1.25f);
+			velocity.y += (float) (Math.cos(Math.toRadians(e.getRotation())) *1.25f);
 		}
 	}
 	
 	public void update(GameContainer gc, int delta, boolean interpolate){
 	
 		super.update(gc, delta, interpolate);
-		
-		this.delta = delta;
 		
 		float rotation = super.getRotation();
 		
@@ -99,23 +96,23 @@ public class Ship extends Entity {
 				else{
 					
 					if(velocity.x > 0)
-						velocity.x = maxVelocity /2;
+						velocity.x = maxVelocity /1.2f;
 					else
-						velocity.x = -maxVelocity /2;
+						velocity.x = -maxVelocity /1.2f;
 				}
 				
 				float yvelChange = velocity.y + (ACCELERATION * delta) * dirSpeed.y;
 				if(yvelChange <= maxVelocity && yvelChange >= -maxVelocity){
 	
-					velocity.y -= (yvelChange - velocity.y) /5; // minus the y velocity as it was only needed for the if statement
+					velocity.y -= (yvelChange - velocity.y); // minus the y velocity as it was only needed for the if statement
 					
 				}
 				else{
 					
 					if(velocity.y > 0)
-						velocity.y = maxVelocity /2;
+						velocity.y = maxVelocity /1.2f;
 					else
-						velocity.y = -maxVelocity /2;
+						velocity.y = -maxVelocity /1.2f;
 					
 				}
 			}
@@ -134,23 +131,23 @@ public class Ship extends Entity {
 				else{
 					
 					if(velocity.x > 0)
-						velocity.x = maxVelocity /2;
+						velocity.x = maxVelocity /1.2f;
 					else
-						velocity.x = -maxVelocity /2;
+						velocity.x = -maxVelocity /1.2f;
 				}
 				
 				float yvelChange = velocity.y + (ACCELERATION * delta) * dirSpeed.y;
 				if(yvelChange <= maxVelocity && yvelChange >= -maxVelocity){
 	
-					velocity.y += (yvelChange - velocity.y) /5; // minus the y velocity as it was only needed for the if statement
+					velocity.y += (yvelChange - velocity.y); // minus the y velocity as it was only needed for the if statement
 					
 				}
 				else{
 					
 					if(velocity.y > 0)
-						velocity.y = maxVelocity /2;
+						velocity.y = maxVelocity /1.2f;
 					else
-						velocity.y = -maxVelocity /2;
+						velocity.y = -maxVelocity /1.2f;
 					
 				}
 			}
@@ -270,7 +267,7 @@ public class Ship extends Entity {
 		super.render(g);
 		
 		g.drawRect(serverPosition.x, serverPosition.y, width, height);
-		//font.drawString(clientPosition.x + width - 50, clientPosition.y + height, username);
+		font.drawString(clientPosition.x + width - 50, clientPosition.y + height, displayText);
 		
 		for(int i = 0; i < bullets.size(); i++){ bullets.get(i).render(g); }
 		
@@ -290,8 +287,7 @@ public class Ship extends Entity {
 				float cx = clientPosition.x + (super.width / 2 - 5), // (float)Math.sin(Math.toRadians(rotation/180))),
 					  cy = clientPosition.y + (super.height / 2 - 5); // (float)Math.cos(Math.toRadians(rotation/180)));
 				
-				bullet = new Bullet(cx,cy, calcRotation, delta);
-				bullet.setRotation(calcRotation);
+				bullet = new Bullet(cx,cy, calcRotation);
 				bullet.setImage(new Image("img/bullet.png"));
 				bullet.setLocal(super.isLocal());
 				bullets.add(bullet);

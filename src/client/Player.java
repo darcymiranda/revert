@@ -11,8 +11,8 @@ public class Player {
 
 	public int id = -1;
 	public boolean readyStatus;
-	public String username = "unknown";
-	public Ship ship = null;
+	private String username = "unknown";
+	private Ship ship = null;
 	
 	public boolean tackingShip = false;
 	
@@ -26,6 +26,12 @@ public class Player {
 		this.username = username;
 		readyStatus = status;
 	}
+	
+	public Ship getShip(){ return ship; }
+	public void setShip(Ship ship){ this.ship = ship; }
+	
+	public String getUsername(){ return username; }
+	public void setUsername(String username){ this.username = username; }
 	
 	public String toString(){
 		return username + " id(" + id + ")";

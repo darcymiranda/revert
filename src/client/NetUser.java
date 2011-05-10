@@ -106,8 +106,8 @@ import packet.Snapshot;
 				
 				int pId = packet.getId();
 				if(client.players[pId] != null){
-					if(client.players[pId].ship != null){
-						client.players[pId].ship.updatePacket(packet);
+					if(client.players[pId].getShip() != null){
+						client.players[pId].getShip().updatePacket(packet);
 					}
 				}
 				
@@ -116,22 +116,22 @@ import packet.Snapshot;
 				
 				int pId = packet.getId();
 				if(client.players[pId] != null){
-					if(client.players[pId].ship != null){
-						client.players[pId].ship.setShooting(packet.getPressedSpace());
+					if(client.players[pId].getShip() != null){
+						client.players[pId].getShip().setShooting(packet.getPressedSpace());
 					}
 				}
 			}
 			else if(packet.type == Packet.UPDATE_SELF){
 				
-				client.players[id].ship.updatePacket(packet);
+				client.players[id].getShip().updatePacket(packet);
 					
 			}
 			else if(packet.type == Packet.UPDATE_DAMAGE){
 				
 				int pId = packet.getId();
 				if(client.players[pId] != null){
-					if(client.players[pId].ship != null){
-						client.players[pId].ship.takeDamage();
+					if(client.players[pId].getShip() != null){
+						client.players[pId].getShip().takeDamage();
 						System.out.println(client.players[pId] + "  hit!");
 					}
 				}
@@ -140,9 +140,9 @@ import packet.Snapshot;
 				
 				int pId = packet.getId();
 				if(client.players[pId] != null){
-					if(client.players[pId].ship != null){
-						client.players[pId].ship.setAlive(false);
-						client.ec.remove(client.players[pId].ship);
+					if(client.players[pId].getShip() != null){
+						client.players[pId].getShip().setAlive(false);
+						client.ec.remove(client.players[pId].getShip());
 						System.out.println("got death packet");
 					}
 				}		
@@ -162,23 +162,23 @@ import packet.Snapshot;
 				if(packet.getId() == id){
 					client.players[id].readyStatus = packet.getStatus();
 					if(client.players[id].readyStatus){
-						if(client.players[packet.getId()].ship == null){
+						if(client.players[packet.getId()].getShip() == null){
 							client.createShip(id, true);
 						}
-						else if(!client.players[id].ship.isAlive()){
+						else if(!client.players[id].getShip().isAlive()){
 							client.createShip(id, true);
 						}
 					}
 				}
 				else{
-					names = client.players[packet.getId()].username + " is"; // debug
+					names = client.players[packet.getId()].getUsername() + " is"; // debug
 					
 					// create a ship if they have true ready status and dont already have one
 					if(packet.getStatus()){
-						if(client.players[packet.getId()].ship == null){
+						if(client.players[packet.getId()].getShip() == null){
 							client.createShip(packet.getId(), false);
 						}
-						else if(!client.players[packet.getId()].ship.isAlive()){
+						else if(!client.players[packet.getId()].getShip().isAlive()){
 							client.createShip(packet.getId(), false);
 						}
 					}
@@ -198,7 +198,7 @@ import packet.Snapshot;
 						if(player.id == id) continue; // ignore yourself
 							
 						// Create a ship for the player if he connected ready
-						if(packet.getStatus() && player.ship == null)
+						if(packet.getStatus() && player.getShip() == null)
 							client.createShip(packet.getId(), false);
 							
 					}
@@ -232,8 +232,8 @@ import packet.Snapshot;
 					
 					// remove the player from the game
 					if(client.players[i].id == packet.getId()){
-						System.out.println(client.players[i].username + " has disconnected.");
-						client.ec.remove(client.players[i].ship);
+						System.out.println(client.players[i].getUsername() + " has disconnected.");
+						client.ec.remove(client.players[i].getShip());
 						client.players[i] = null;
 					}
 					break;
