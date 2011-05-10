@@ -27,6 +27,10 @@ public class MinimapHandler
 		
 	}
 	
+	/**
+	 * Draws minimap objects
+	 * @param g
+	 */
 	public void render(Graphics g)
 	{
 		ArrayList<Entity> pool = ec.getPool();

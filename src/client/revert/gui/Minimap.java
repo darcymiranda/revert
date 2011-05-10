@@ -35,6 +35,9 @@ public class Minimap extends UIComponent
 		
 	}
 	
+	/**
+	 * renders minimap components
+	 */
 	@Override
 	public void render(Graphics g)
 	{

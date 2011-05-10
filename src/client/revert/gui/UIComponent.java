@@ -15,6 +15,10 @@ public abstract class UIComponent
 		
 	}
 	
+	/**
+	 * Draws user interface component
+	 * @param g
+	 */
 	public void render(Graphics g)
 	{
 		g.drawImage(image, xpos, ypos);

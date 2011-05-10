@@ -30,6 +30,10 @@ public class UserInterface
 		
 	}
 	
+	/**
+	 * Draws all user interface components
+	 * @param g
+	 */
 	public void render(Graphics g)
 	{
 		for(int i = 0; i < components.size(); i++)
