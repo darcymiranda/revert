@@ -23,6 +23,7 @@ import server.Constants;
 
 import client.NetUser;
 import client.Player;
+import client.revert.gui.UserInterface;
 
 public class Revert extends BasicGame {
 	
@@ -37,7 +38,7 @@ public class Revert extends BasicGame {
 	public Player[] players = new Player[Constants.WORLD_PLAYER_SIZE];
 	public EntityController ec;
 	
-	
+	private UserInterface ui;
 
 	public Revert() {
 		super("Revert");
@@ -97,6 +98,9 @@ public class Revert extends BasicGame {
 		ec = new EntityController();
 		cam = new Camera(gc, map);
 		
+		/** Init User Interface **/
+		ui = new UserInterface();
+		
 	}
 
 	@Override
@@ -104,6 +108,11 @@ public class Revert extends BasicGame {
 		
 		cam.drawMap();
 		cam.translateGraphics();
+		
+		//draw user interface
+		ui.render(g);
+		cam.untranslateGraphics();
+		
 		ec.render(g);
 		
 	}
