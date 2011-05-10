@@ -8,32 +8,24 @@ public class Bullet extends Entity {
 	private boolean hasSentToOtherClients;
 	private boolean dead;
 	
-	private float speed = 900f / 1000f;
+	//private float speed = 900f / 1000f;
+	private float speed = 27;
 	private float maxTravelTime = 250;
 	private float travelTime;
 	
-	public Bullet(float x, float y){
+	public Bullet(float x, float y, float r){
 		super();
-		velocity = new Vector2f(0,0);
+		
 		serverPosition.x = x;
 		serverPosition.y = y;
 		clientPosition.x = x;
 		clientPosition.y = y;
+		rotation = r;
+		velocity = new Vector2f(-(speed * (float) Math.sin(Math.toRadians(rotation+180))),
+								-(speed * (float) Math.cos(Math.toRadians(rotation+180))));
 		
-		collidable = true;
-	}
-	
-	public Bullet(float x, float y, float rotation, int delta){
-		super();
-		velocity = new Vector2f(0,0);
-		serverPosition.x = x;
-		serverPosition.y = y;
-		clientPosition.x = x;
-		clientPosition.y = y;
-		this.rotation = rotation;
-		
-		velocity.x = -((speed * delta) * (float) Math.sin(Math.toRadians(rotation+180)));
-		velocity.y = -((speed * delta) * (float) Math.cos(Math.toRadians(rotation+180)));
+		//velocity.x = -((speed * delta) * (float) Math.sin(Math.toRadians(rotation+180)));
+		//velocity.y = -((speed * delta) * (float) Math.cos(Math.toRadians(rotation+180)));
 		
 		collidable = true;
 	}
@@ -47,14 +39,12 @@ public class Bullet extends Entity {
 		
 		travelTime++;
 		
-
-		
 		clientPosition.x += velocity.x;
 		clientPosition.y -= velocity.y;
 	}
 	
 	public boolean hasExpired(){
-		return travelTime > maxTravelTime || dead;
+		return (travelTime > maxTravelTime) || dead;
 	}
 	
 	public boolean hasSentToOtherClients(){ return hasSentToOtherClients; }

@@ -29,16 +29,18 @@ public class Revert extends BasicGame {
 	
 	public static NetUser net;
 	
+	public Player[] players = new Player[Constants.WORLD_PLAYER_SIZE];
+	public EntityController ec;
+	
 	private TiledMap map;
 	private Camera cam;
 	
 	private Image imgShip;
 	private UnicodeFont font;
 	
-	public Player[] players = new Player[Constants.WORLD_PLAYER_SIZE];
-	public EntityController ec;
-	
 	private UserInterface ui;
+	
+	private short ticks = 0;
 
 	public Revert() {
 		super("Revert");
@@ -111,47 +113,35 @@ public class Revert extends BasicGame {
 		
 		//draw user interface
 		ui.render(g);
-		cam.untranslateGraphics();
-		
 		ec.render(g);
 		
 	}
-	
-	short counter = 0;
+
 	@Override
 	public void update(GameContainer gc, int delta) throws SlickException {
 
-		Entity ship = ec.getControlledShip();
-		Player thePlayer = null;
-		
-		for(Player player : players){
-			if(player == null) continue;
-			
-			// get local player
-			if(player.id == net.id){
-				thePlayer = player;
-				break;
-			}
-		}
+		Player localPlayer = getLocalPlayer();
 		
 		// Send position update packet to server
-		if(counter > 6){
-			if(thePlayer != null && thePlayer.ship != null){
-				if(thePlayer.ship.isAlive()){
+		if(ticks > 6){
+			if(localPlayer != null && localPlayer.getShip() != null){
+				if(localPlayer.getShip().isAlive()){
 					
 					// send ship
-					net.send(thePlayer.ship.getPacket());
+					net.send(localPlayer.getShip().getPacket());
 					
 				}
 			}
-			counter = 0;
+			ticks = 0;
 		}
-		counter++;
+		ticks++;
 		
 		ec.checkCollisions();
-		
 		ec.update(gc, delta);
-		cam.centerOn(ship);
+		
+		if(localPlayer.getShip() != null)
+			cam.centerOn(localPlayer.getShip());
+		
 		
 	}
 	
@@ -159,13 +149,25 @@ public class Revert extends BasicGame {
 
 		Ship ship = new Ship(new Vector2f(Constants.SPAWN_POSITION_X,Constants.SPAWN_POSITION_Y), id, c);
 		ship.setImage(imgShip);
-		ship.username = players[id].username;
+		ship.displayText = players[id].getUsername();
 		ship.font = font;
 		
 		System.out.println("ship created for " + id + " " + net.username);
 		
-		players[id].ship = ship;
+		players[id].setShip(ship);
 		ec.add(ship);
+	}
+	
+	public Player getLocalPlayer(){
+		for(Player player : players){
+			if(player == null) continue;
+			
+			// get local player
+			if(player.id == net.id){
+				return player;
+			}
+		}
+		return null;
 	}
 
 	/**

@@ -36,7 +36,7 @@ public abstract class Entity {
 	
 	private Image image;
 	
-	String username = "";
+	protected String displayText = "";
 	protected UnicodeFont font;
 	
 	// Network states
