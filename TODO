@@ -12,6 +12,7 @@ Bullets
 --------
 
 -physics are still off, seems like it doesnt take into account the ships velocity (bullets speed might just be to fast)
+	(going backwards the bullets travel too fast forward)
 
 
 
