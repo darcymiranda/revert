@@ -1,0 +1,17 @@
+Minimap
+--------
+
+-check if there is a better way to distinguish the player
+-might need to change the order of rendering. ships may overlap the ui??
+-check the overall design/logic
+
+-will need to put some calculations into variables to allow for easier changes later
+
+
+Bullets
+--------
+
+-physics are still off, seems like it doesnt take into account the ships velocity (bullets speed might just be to fast)
+
+
+

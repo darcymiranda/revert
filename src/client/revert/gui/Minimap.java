@@ -1,12 +1,28 @@
 package client.revert.gui;
 
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
+import client.revert.EntityController;
+
 public class Minimap extends UIComponent 
 {
-	public Minimap()
+	
+	private MinimapHandler mh;
+	private int width, height;
+	
+	public Minimap(GameContainer gc, EntityController ec)
 	{
+		
+		width = 250;
+		height = 250;
+		
+		xpos = gc.getWidth() - (width + 10);
+		ypos = gc.getHeight() - (height + 10);
+		
+		mh = new MinimapHandler(xpos, ypos, width, height, ec);
 		
 		try 
 		{
@@ -18,10 +34,13 @@ public class Minimap extends UIComponent
 		}
 		
 	}
-
+	
 	@Override
-	public void setImage(Image image) { this.image = image; }
-
-	@Override
-	public Image getImage() { return image;	}
+	public void render(Graphics g)
+	{
+		g.drawImage(image, xpos, ypos);
+		
+		//renders objects on minimap
+		mh.render(g);
+	}
 }

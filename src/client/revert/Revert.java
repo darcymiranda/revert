@@ -99,7 +99,7 @@ public class Revert extends BasicGame {
 		cam = new Camera(gc, map);
 		
 		/** Init User Interface **/
-		ui = new UserInterface();
+		ui = new UserInterface(gc, ec);
 		
 	}
 
@@ -107,13 +107,13 @@ public class Revert extends BasicGame {
 	public void render(GameContainer gc, Graphics g) throws SlickException {
 		
 		cam.drawMap();
-		cam.translateGraphics();
 		
 		//draw user interface
-		ui.render(g);
-		cam.untranslateGraphics();
+		//ui.render(g);
+		cam.translateGraphics();
 		
 		ec.render(g);
+		
 		
 	}
 	
