@@ -23,6 +23,7 @@ public abstract class Entity {
 	
 	protected Vector2f clientPosition;
 	protected Vector2f serverPosition;
+	protected Vector2f minimapPosition;
 	protected Vector2f velocity;
 	protected Vector2f dirSpeed; 	// Holds the direction speed;
 	
@@ -46,6 +47,7 @@ public abstract class Entity {
 	public Entity(){
 		clientPosition = new Vector2f(200,200);
 		serverPosition = new Vector2f(200,200);
+		minimapPosition = new Vector2f(-1, -1);
 		velocity = new Vector2f();
 		dirSpeed = new Vector2f();
 		isAlive = true;
@@ -159,9 +161,12 @@ public abstract class Entity {
 	
 	public Vector2f getClientPosition(){ return new Vector2f(clientPosition); }
 	public Vector2f getServerPosition(){ return new Vector2f(serverPosition); }
+	public Vector2f getMinimapPosition() { return new Vector2f(minimapPosition); }
 	public Vector2f getVelocity(){ return new Vector2f(velocity); }
 	
 	public Vector2f getPosition(){ return displayState.getPosition(); }
+	
+	public void setMinimapPosition(Vector2f minimapPosition) { this.minimapPosition = minimapPosition; }
 	
 
 }

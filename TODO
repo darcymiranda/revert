@@ -3,7 +3,8 @@ Minimap
 
 -check if there is a better way to distinguish the player
 -might need to change the order of rendering. ships may overlap the ui??
--check the overall design/logic
+-check the overall design/logic **
+	-might need to have a better way of not drawing too far out entities
 
 -will need to put some calculations into variables to allow for easier changes later
 

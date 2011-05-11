@@ -46,4 +46,12 @@ public class Minimap extends UIComponent
 		//renders objects on minimap
 		mh.render(g);
 	}
+	
+	/**
+	 * updates minimap
+	 */
+	public void update()
+	{
+		mh.update();
+	}
 }

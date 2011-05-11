@@ -112,11 +112,14 @@ public class Revert extends BasicGame {
 		
 		//draw user interface
 
-		ui.render(g);
+		
 		cam.translateGraphics();
 		
 
 		ec.render(g);
+		
+		cam.untranslateGraphics();
+		ui.render(g);
 		
 	}
 	
@@ -144,8 +147,13 @@ public class Revert extends BasicGame {
 		ec.checkCollisions();
 		ec.update(gc, delta);
 		
-		if(localPlayer.getShip() != null)
-			cam.centerOn(localPlayer.getShip());
+		if(localPlayer != null)
+		{
+			if(localPlayer.getShip() != null)
+				cam.centerOn(localPlayer.getShip());
+		}
+		
+		ui.update();
 		
 		
 	}
