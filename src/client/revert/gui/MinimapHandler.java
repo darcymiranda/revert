@@ -13,10 +13,11 @@ public class MinimapHandler
 {
 	
 	private int xpos, ypos, width, height;
+	private final int MINIMAP_DISTANCE = 2000;
 	
 	private EntityController ec;
 	
-	private float entityXPos, entityYPos;
+	private float entityXPos, entityYPos, minimapScale;
 	
 	public MinimapHandler(int xpos, int ypos, int width, int height, EntityController ec)
 	{
@@ -26,6 +27,8 @@ public class MinimapHandler
 		this.width = width;
 		this.height = height;
 		this.ec = ec;
+		
+		minimapScale = (width/2) / MINIMAP_DISTANCE;
 		
 	}
 	
@@ -47,10 +50,12 @@ public class MinimapHandler
 		for(int i = 0; i < pool.size(); i++)
 		{
 			Entity temp = pool.get(i);
+			float minimapXPos = temp.getMinimapPosition().x;
+			float minimapYPos = temp.getMinimapPosition().y;
 			
 			if(temp != player)
-				if(temp.getMinimapPosition().x != -1 && temp.getMinimapPosition().y != -1)
-					g.fillRect(temp.getMinimapPosition().x, temp.getMinimapPosition().y, 3, 3);
+				if(minimapXPos != -1 && minimapYPos != -1)
+					g.fillRect(minimapXPos, minimapYPos, 3, 3);
 		}
 	}
 	
@@ -69,11 +74,11 @@ public class MinimapHandler
 			
 			if(player != null)
 			{
-				if(entityPosition.distance(player.getClientPosition()) < 2000)
+				if(entityPosition.distance(player.getClientPosition()) < MINIMAP_DISTANCE)
 				{				
 					//sets the position on the minimap relative to their normal position
-					entityXPos = (xpos + (width/2)) + ((entityPosition.x - player.getClientPosition().x) * 0.06f);
-					entityYPos = (ypos + (height/2)) + ((entityPosition.y - player.getClientPosition().y) * 0.06f);
+					entityXPos = (xpos + (width/2)) + ((entityPosition.x - player.getClientPosition().x) * minimapScale);
+					entityYPos = (ypos + (height/2)) + ((entityPosition.y - player.getClientPosition().y) * minimapScale);
 					temp.setMinimapPosition(new Vector2f(entityXPos, entityYPos));
 				}
 				else

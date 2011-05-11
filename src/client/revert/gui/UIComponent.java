@@ -11,8 +11,7 @@ public abstract class UIComponent
 	protected int xpos, ypos;
 	
 	public UIComponent()
-	{
-		
+	{		
 	}
 	
 	/**

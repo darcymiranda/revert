@@ -8,6 +8,8 @@ Minimap
 
 -will need to put some calculations into variables to allow for easier changes later
 
+-add if statement in render to change objects color to distinguish friend or foe
+
 
 Bullets
 --------
