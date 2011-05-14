@@ -8,7 +8,7 @@ public abstract class UIComponent
 	
 	protected Image image;
 	
-	protected int xpos, ypos;
+	protected float xpos, ypos;
 	
 	public UIComponent()
 	{		

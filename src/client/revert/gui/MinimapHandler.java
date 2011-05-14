@@ -12,14 +12,14 @@ import client.revert.EntityController;
 public class MinimapHandler 
 {
 	
-	private int xpos, ypos, width, height;
-	private final int MINIMAP_DISTANCE = 2000;
+	private float xpos, ypos, width, height;
+	private final float MINIMAP_DISTANCE = 2000;
 	
 	private EntityController ec;
 	
 	private float entityXPos, entityYPos, minimapScale;
 	
-	public MinimapHandler(int xpos, int ypos, int width, int height, EntityController ec)
+	public MinimapHandler(float xpos, float ypos, float width, float height, EntityController ec)
 	{
 		
 		this.xpos = xpos;

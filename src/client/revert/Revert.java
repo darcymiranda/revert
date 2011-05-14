@@ -16,6 +16,7 @@ import org.newdawn.slick.font.effects.ColorEffect;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.tiled.TiledMap;
+import org.newdawn.slick.util.BufferedImageUtil;
 
 import packet.Packet;
 
@@ -23,6 +24,7 @@ import server.Constants;
 
 import client.NetUser;
 import client.Player;
+import client.revert.gui.Broadcast;
 import client.revert.gui.UserInterface;
 
 public class Revert extends BasicGame {
@@ -39,6 +41,7 @@ public class Revert extends BasicGame {
 	private UnicodeFont font;
 	
 	private UserInterface ui;
+	public Broadcast bc;
 	
 	private short ticks = 0;
 
@@ -66,6 +69,7 @@ public class Revert extends BasicGame {
 		} catch (SlickException e1) {
 			e1.printStackTrace();
 		}
+		gc.setDefaultFont(font);
 	   
 		/** Init Configuration File **/
 		String host = null;
@@ -91,17 +95,28 @@ public class Revert extends BasicGame {
 			e.printStackTrace();
 		}
 		
-		/** Init Networking **/
-		net = new NetUser(this, host, port);
-		new Thread(net).start();
-		net.username = username;
-		
 		/** Init Game**/
 		ec = new EntityController();
 		cam = new Camera(gc, map);
 		
 		/** Init User Interface **/
 		ui = new UserInterface(gc, ec);
+		bc = new Broadcast(new Vector2f(gc.getWidth() /2, (gc.getHeight() /2) - 200), gc.getWidth(), gc.getHeight());
+		bc.setFont(font);
+		
+		/** Init Networking **/
+		net = new NetUser(this, host, port);
+		new Thread(net).start();
+		net.username = username;
+		bc.addMessage("connecting...");
+		while(net.id == -1){
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		bc.addMessage("connection established");
 		
 	}
 
@@ -109,8 +124,6 @@ public class Revert extends BasicGame {
 	public void render(GameContainer gc, Graphics g) throws SlickException {
 		
 		cam.drawMap();
-		
-		//draw user interface
 
 		
 		cam.translateGraphics();
@@ -120,6 +133,7 @@ public class Revert extends BasicGame {
 		
 		cam.untranslateGraphics();
 		ui.render(g);
+		bc.render(g);
 		
 	}
 	
@@ -154,6 +168,7 @@ public class Revert extends BasicGame {
 		}
 		
 		ui.update();
+		bc.update();
 		
 		
 	}
@@ -166,6 +181,7 @@ public class Revert extends BasicGame {
 		ship.font = font;
 		
 		System.out.println("ship created for " + id + " " + net.username);
+		bc.addMessage(players[id].getUsername() + " has spawned.");
 		
 		players[id].setShip(ship);
 		ec.add(ship);
@@ -213,6 +229,10 @@ public class Revert extends BasicGame {
 		if(key == Input.KEY_SPACE){
 			packet.setKeySpace(false);
 			hasChanged = true;
+		}
+		
+		if(key == Input.KEY_F){
+			bc.addMessage("hello therefffffffffffffffff");
 		}
 		
 		if(hasChanged)

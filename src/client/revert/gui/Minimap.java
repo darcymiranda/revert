@@ -11,7 +11,7 @@ public class Minimap extends UIComponent
 {
 	
 	private MinimapHandler mh;
-	private int width, height;
+	private float width, height;
 	
 	public Minimap(GameContainer gc, EntityController ec)
 	{

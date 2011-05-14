@@ -9,6 +9,7 @@ import org.newdawn.slick.geom.Vector2f;
 
 import client.revert.Revert;
 import client.revert.Ship;
+import client.revert.gui.Broadcast;
 
 import packet.Packet;
 import packet.Snapshot;
@@ -27,6 +28,8 @@ import packet.Snapshot;
 		private String host = "";
 		private int port = 0;
 		
+		private boolean connEstablished;
+		
 		// Game related
 		private Revert client;
 		public int id = -1;
@@ -42,7 +45,7 @@ import packet.Snapshot;
 		 * Initialize the networking classes.
 		 * @throws IOException
 		 */
-		private void init() throws IOException{
+		public void init() throws IOException{
 			this.socket = new Socket(host, port);
 			in = new NetUserRecieve(this);
 			out = new ObjectOutputStream(socket.getOutputStream());
@@ -132,7 +135,6 @@ import packet.Snapshot;
 				if(client.players[pId] != null){
 					if(client.players[pId].getShip() != null){
 						client.players[pId].getShip().takeDamage();
-						System.out.println(client.players[pId] + "  hit!");
 					}
 				}
 			}
@@ -143,7 +145,7 @@ import packet.Snapshot;
 					if(client.players[pId].getShip() != null){
 						client.players[pId].getShip().setAlive(false);
 						client.ec.remove(client.players[pId].getShip());
-						System.out.println("got death packet");
+						client.bc.addMessage(client.players[pId].getUsername() + " has died!.");
 					}
 				}		
 				
@@ -222,6 +224,7 @@ import packet.Snapshot;
 					client.players[packet.getId()] = tempPlayer;
 					
 					System.out.println(tempPlayer + " connected.");
+					client.bc.addMessage(tempPlayer.getUsername() + " has connected.");
 				}
 			}
 			else if(packet.type == Packet.DISCONNECT){
@@ -233,11 +236,13 @@ import packet.Snapshot;
 					// remove the player from the game
 					if(client.players[i].id == packet.getId()){
 						System.out.println(client.players[i].getUsername() + " has disconnected.");
+						client.bc.addMessage(client.players[i].getUsername() + " has disconnected.");
 						client.ec.remove(client.players[i].getShip());
 						client.players[i] = null;
 					}
 					break;
 				}
+				
 			}
 			else if(packet.type == Packet.SERVER_MESSAGE){
 				System.out.println("Server: " + packet.getMessage());
