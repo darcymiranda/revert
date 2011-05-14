@@ -9,11 +9,11 @@ public class Bullet extends Entity {
 	private boolean dead;
 	
 	//private float speed = 900f / 1000f;
-	private float speed = 27;
+	private float speed = 5;
 	private float maxTravelTime = 250;
 	private float travelTime;
 	
-	public Bullet(float x, float y, float r){
+	public Bullet(float x, float y, float r, Vector2f shipVel){
 		super();
 		
 		serverPosition.x = x;
@@ -21,8 +21,11 @@ public class Bullet extends Entity {
 		clientPosition.x = x;
 		clientPosition.y = y;
 		rotation = r;
-		velocity = new Vector2f(-(speed * (float) Math.sin(Math.toRadians(rotation+180))),
-								-(speed * (float) Math.cos(Math.toRadians(rotation+180))));
+		
+		velocity = new Vector2f(-(speed * (float) Math.sin(Math.toRadians(rotation+180))) + shipVel.x,
+								-(speed * (float) Math.cos(Math.toRadians(rotation+180))) + shipVel.y);
+		
+		
 		
 		//velocity.x = -((speed * delta) * (float) Math.sin(Math.toRadians(rotation+180)));
 		//velocity.y = -((speed * delta) * (float) Math.cos(Math.toRadians(rotation+180)));

@@ -287,7 +287,7 @@ public class Ship extends Entity {
 				float cx = clientPosition.x + (super.width / 2 - 5), // (float)Math.sin(Math.toRadians(rotation/180))),
 					  cy = clientPosition.y + (super.height / 2 - 5); // (float)Math.cos(Math.toRadians(rotation/180)));
 				
-				bullet = new Bullet(cx,cy, calcRotation);
+				bullet = new Bullet(cx,cy, calcRotation, velocity);
 				bullet.setImage(new Image("img/bullet.png"));
 				bullet.setLocal(super.isLocal());
 				bullets.add(bullet);

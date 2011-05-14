@@ -124,13 +124,16 @@ public class Revert extends BasicGame {
 	public void render(GameContainer gc, Graphics g) throws SlickException {
 		
 		cam.drawMap();
-
+		
+		//draw user interface
+		//cam.untranslateGraphics();
+		ui.render(g);
 		
 		cam.translateGraphics();
 		
 
 		ec.render(g);
-		
+
 		cam.untranslateGraphics();
 		ui.render(g);
 		bc.render(g);

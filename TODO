@@ -2,7 +2,6 @@ Minimap
 --------
 
 -check if there is a better way to distinguish the player
--might need to change the order of rendering. ships may overlap the ui??
 -check the overall design/logic **
 	-might need to have a better way of not drawing too far out entities
 
@@ -14,8 +13,7 @@ Minimap
 Bullets
 --------
 
--physics are still off, seems like it doesnt take into account the ships velocity (bullets speed might just be to fast)
-	(going backwards the bullets travel too fast forward)
+-physics look right needs testing
 
 
 
