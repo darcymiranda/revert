@@ -100,7 +100,7 @@ public class Revert extends BasicGame {
 		cam = new Camera(gc, map);
 		
 		/** Init User Interface **/
-		ui = new UserInterface(gc, ec);
+		ui = new UserInterface(gc, this);
 		bc = new Broadcast(new Vector2f(gc.getWidth() /2, (gc.getHeight() /2) - 200), gc.getWidth(), gc.getHeight());
 		bc.setFont(font);
 		
@@ -147,6 +147,25 @@ public class Revert extends BasicGame {
 
 		Player localPlayer = getLocalPlayer();
 		
+		
+		// end of map collision
+		Entity e = null;
+		for(int i = 0; i < ec.getPool().size(); i++){
+			
+			e = ec.getPool().get(i);
+			System.out.println(e.velocity);
+			if(e.getClientPosition().x < 0 && e.velocity.x < 0){
+				e.velocity.x *= -0.3;
+			}
+			else if(e.getClientPosition().y < 0 && e.velocity.y > 0){
+				e.velocity.y *= -0.3;
+				
+			}
+		}
+		
+		ec.checkCollisions();
+		ec.update(gc, delta);
+		
 		// Send position update packet to server
 		if(ticks > 6){
 			if(localPlayer != null && localPlayer.getShip() != null){
@@ -160,9 +179,6 @@ public class Revert extends BasicGame {
 			ticks = 0;
 		}
 		ticks++;
-		
-		ec.checkCollisions();
-		ec.update(gc, delta);
 		
 		if(localPlayer != null)
 		{

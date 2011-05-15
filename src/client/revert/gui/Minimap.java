@@ -6,6 +6,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 import client.revert.EntityController;
+import client.revert.Revert;
 
 public class Minimap extends UIComponent 
 {
@@ -13,7 +14,7 @@ public class Minimap extends UIComponent
 	private MinimapHandler mh;
 	private float width, height;
 	
-	public Minimap(GameContainer gc, EntityController ec)
+	public Minimap(GameContainer gc, Revert revert)
 	{
 		
 		width = 250;
@@ -22,7 +23,7 @@ public class Minimap extends UIComponent
 		xpos = gc.getWidth() - (width + 10);
 		ypos = gc.getHeight() - (height + 10);
 		
-		mh = new MinimapHandler(xpos, ypos, width, height, ec);
+		mh = new MinimapHandler(xpos, ypos, width, height, revert);
 		
 		try 
 		{

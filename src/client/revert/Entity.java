@@ -22,7 +22,6 @@ import packet.Packet;
 public abstract class Entity {
 	
 	protected Vector2f clientPosition;
-	protected Vector2f serverPosition;
 	protected Vector2f minimapPosition;
 	protected Vector2f velocity;
 	protected Vector2f dirSpeed; 	// Holds the direction speed;
@@ -31,7 +30,6 @@ public abstract class Entity {
 	protected int id;
 	protected float rotation;
 	
-	private boolean isLocal; // determines if the player can control the ship
 	protected boolean isAlive;
 	protected boolean collidable;
 	
@@ -40,59 +38,16 @@ public abstract class Entity {
 	protected String displayText = "";
 	protected UnicodeFont font;
 	
-	// Network states
-	private EntityState displayState, previousState, simulateState;
-	private float smoothing = 0;
-	
 	public Entity(){
 		clientPosition = new Vector2f(200,200);
-		serverPosition = new Vector2f(200,200);
 		minimapPosition = new Vector2f(-1, -1);
 		velocity = new Vector2f();
 		dirSpeed = new Vector2f();
 		isAlive = true;
 		
-		displayState = new EntityState(this);
-		previousState =  new EntityState(this);
-		simulateState =  new EntityState(this);
-		
 	}
 	
 	abstract public void collide(Entity e);
-	
-	/**
-	 * Requires a packet object to set this ships x and y serverPosition.
-	 * @param p the packet to be read
-	 */
-	public void updatePacket(Packet p){
-		
-		serverPosition.x = p.getPositionX();
-		serverPosition.y = p.getPositionY();
-		
-		if(!isLocal){
-			
-			smoothing = 1;
-			
-			previousState.setState(simulateState);
-			
-			simulateState.setVelocity(p.getVelocityX(), p.getVelocityY());
-			simulateState.setRotation(p.getRotationR());
-		
-			// Teleport entity to proper location, if the client and server positions are out of sync.
-			float distance = serverPosition.distance(displayState.getPosition());
-			if(distance > 75 || distance < -75)
-				simulateState.setPosition((serverPosition.x - p.getVelocityX()), (serverPosition.y + p.getVelocityY()));
-
-		}
-	}
-	
-	/**
-	 * Returns a packet object containing the rotation; x, y positions and x, y, velocities.
-	 * @return
-	 */
-	public Packet getPacket(){
-		return new Packet(Packet.UPDATE_SELF, clientPosition.x, clientPosition.y, velocity.x, velocity.y, rotation);
-	}
 	
 	/**
 	 * Add a graphic to the entity that will be rendered.
@@ -117,27 +72,6 @@ public abstract class Entity {
 	
 	public void update(GameContainer gc, int delta, boolean interpolate){
 		
-		// interpolate non-local entities
-		if(!isLocal && interpolate){
-			previousState.update();
-			simulateState.update();
-			
-			// determine smoothing factor - six equals ticks per packet sent
-			smoothing -= (1 / 6);
-			if(smoothing < 0) smoothing = 0;
-			
-			// interpolate
-			displayState.setPosition(previousState.getPosition().x + (simulateState.getPosition().x - previousState.getPosition().x) * smoothing, 
-					displayState.getPosition().y = previousState.getPosition().y + (simulateState.getPosition().y - previousState.getPosition().y) * smoothing);
-			displayState.setRotation(previousState.getRotation() + (simulateState.getRotation() - previousState.getRotation()) * smoothing);
-			
-			// set new positions
-			clientPosition.x = displayState.getPosition().x;
-			clientPosition.y = displayState.getPosition().y;
-			rotation = displayState.getRotation();
-			
-		}
-		
 		image.rotate(rotation - image.getRotation());
 		
 	}
@@ -154,17 +88,11 @@ public abstract class Entity {
 	public boolean isAlive(){ return isAlive; }
 	public void setAlive(boolean isAlive){ this.isAlive = isAlive; }
 	
-	public boolean isLocal(){ return isLocal; }
-	public void setLocal(boolean isLocal){ this.isLocal = isLocal; }
-	
 	public int getId(){ return id; }
 	
 	public Vector2f getClientPosition(){ return new Vector2f(clientPosition); }
-	public Vector2f getServerPosition(){ return new Vector2f(serverPosition); }
 	public Vector2f getMinimapPosition() { return new Vector2f(minimapPosition); }
 	public Vector2f getVelocity(){ return new Vector2f(velocity); }
-	
-	public Vector2f getPosition(){ return displayState.getPosition(); }
 	
 	public void setMinimapPosition(Vector2f minimapPosition) { this.minimapPosition = minimapPosition; }
 	

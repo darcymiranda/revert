@@ -9,15 +9,13 @@ public class Bullet extends Entity {
 	private boolean dead;
 	
 	//private float speed = 900f / 1000f;
-	private float speed = 5;
+	private float speed = 15;
 	private float maxTravelTime = 250;
 	private float travelTime;
 	
 	public Bullet(float x, float y, float r, Vector2f shipVel){
 		super();
 		
-		serverPosition.x = x;
-		serverPosition.y = y;
 		clientPosition.x = x;
 		clientPosition.y = y;
 		rotation = r;

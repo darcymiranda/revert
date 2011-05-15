@@ -4,10 +4,10 @@ import org.newdawn.slick.geom.Vector2f;
 
 public class EntityState {
 	
-	private Vector2f position;
-	private Vector2f velocity;
+	public Vector2f position;
+	public Vector2f velocity;
 	
-	private float rotation;
+	public float rotation;
 	
 	public EntityState(Entity entity){
 		position = entity.getClientPosition();

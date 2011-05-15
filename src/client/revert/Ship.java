@@ -11,7 +11,7 @@ import org.newdawn.slick.geom.Vector2f;
 
 import packet.Packet;
 
-public class Ship extends Entity {
+public class Ship extends NetEntity {
 	
 	private final float ACCELERATION = 4f / 1000;
 	private final float maxVelocity = 5;
@@ -266,7 +266,7 @@ public class Ship extends Entity {
 	public void render(Graphics g){
 		super.render(g);
 		
-		g.drawRect(serverPosition.x, serverPosition.y, width, height);
+		//g.drawRect(serverPosition.x, serverPosition.y, width, height);
 		font.drawString(clientPosition.x + width - 50, clientPosition.y + height, displayText);
 		
 		for(int i = 0; i < bullets.size(); i++){ bullets.get(i).render(g); }
@@ -289,7 +289,7 @@ public class Ship extends Entity {
 				
 				bullet = new Bullet(cx,cy, calcRotation, velocity);
 				bullet.setImage(new Image("img/bullet.png"));
-				bullet.setLocal(super.isLocal());
+				//bullet.setLocal(super.isLocal());
 				bullets.add(bullet);
 				
 				// REMOTE

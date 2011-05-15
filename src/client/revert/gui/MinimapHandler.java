@@ -8,6 +8,7 @@ import org.newdawn.slick.geom.Vector2f;
 
 import client.revert.Entity;
 import client.revert.EntityController;
+import client.revert.Revert;
 
 public class MinimapHandler 
 {
@@ -15,18 +16,18 @@ public class MinimapHandler
 	private float xpos, ypos, width, height;
 	private final float MINIMAP_DISTANCE = 2000;
 	
-	private EntityController ec;
+	private Revert revert;
 	
 	private float entityXPos, entityYPos, minimapScale;
 	
-	public MinimapHandler(float xpos, float ypos, float width, float height, EntityController ec)
+	public MinimapHandler(float xpos, float ypos, float width, float height, Revert revert)
 	{
 		
 		this.xpos = xpos;
 		this.ypos = ypos;
 		this.width = width;
 		this.height = height;
-		this.ec = ec;
+		this.revert = revert;
 		
 		minimapScale = (width/2) / MINIMAP_DISTANCE;
 		
@@ -38,8 +39,8 @@ public class MinimapHandler
 	 */
 	public void render(Graphics g)
 	{
-		ArrayList<Entity> pool = ec.getPool();
-		Entity player = ec.getControlledShip();
+		ArrayList<Entity> pool = revert.ec.getPool();
+		Entity player = revert.getLocalPlayer().getShip();
 		
 		//draw player position (center of circle)
 		g.setColor(new Color(0, 255, 0));
@@ -64,8 +65,8 @@ public class MinimapHandler
 	 */
 	public void update()
 	{
-		ArrayList<Entity> pool = ec.getPool();
-		Entity player = ec.getControlledShip();
+		ArrayList<Entity> pool = revert.ec.getPool();
+		Entity player = revert.getLocalPlayer().getShip();
 		
 		for(int i = 0; i < pool.size(); i++)
 		{

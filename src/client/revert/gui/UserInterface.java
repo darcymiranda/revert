@@ -7,6 +7,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Vector2f;
 
 import client.revert.EntityController;
+import client.revert.Revert;
 
 public class UserInterface 
 {
@@ -14,19 +15,19 @@ public class UserInterface
 	private ArrayList<UIComponent> components;
 	
 	private GameContainer gc;
-	private EntityController ec;
+	private Revert revert;
 	
 	private Minimap minimap;
 	
-	public UserInterface(GameContainer gc, EntityController ec)
+	public UserInterface(GameContainer gc, Revert revert)
 	{
 		
 		this.gc = gc;
-		this.ec = ec;
+		this.revert = revert;
 		
 		components = new ArrayList<UIComponent>();
 		
-		minimap = new Minimap(gc, ec);
+		minimap = new Minimap(gc, revert);
 		components.add(minimap);
 		
 	}

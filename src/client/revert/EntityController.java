@@ -37,20 +37,6 @@ public class EntityController {
 		return (Ship) pool.get(i);
 	}
 	
-	public Entity getControlledShip(){
-		
-		Entity e = null;
-		
-		for(int i = 0; i < pool.size(); i++){
-			if(pool.get(i).isLocal() == true){
-				e = pool.get(i);
-				break;
-			}
-		}
-		
-		return e;
-	}
-	
 	public void checkCollisions(){
 		
 		Entity owner, other, bullet;
