@@ -17,6 +17,7 @@ public class Broadcast {
 	private float width, height;
 	
 	final int decayTime = 4;
+	final int fadeTime = 2;
 	
 	/**
 	 * Display messages to the local player. Messages will be bumped up but will be deleted if
@@ -66,6 +67,11 @@ public class Broadcast {
 		for(int i = 0; i < messages.size(); i++){
 			msg = messages.get(i);
 			
+			//fade out messages
+			if((System.currentTimeMillis() / 1000) - msg.creationTime >= fadeTime){
+				messages.get(i).fade();
+			}
+			
 			// remove decayed messages
 			if((System.currentTimeMillis() / 1000) - msg.creationTime >= decayTime){
 				messages.remove(i);
@@ -95,7 +101,10 @@ public class Broadcast {
 		
 		private String msg;
 		
+		private int alpha = 255;
 		private long creationTime;
+		
+		private final int fadeSpeed = 4;
 		
 		public Message(String msg, Vector2f position){
 			this.msg = msg;
@@ -105,8 +114,12 @@ public class Broadcast {
 		
 		public void render(Graphics g){
 			
-			g.setColor(new Color(200, 200, 200));
+			g.setColor(new Color(200, 200, 200, alpha));
 			g.drawString(msg, position.x, position.y);
+		}
+		
+		public void fade(){
+			alpha -= fadeSpeed;
 		}
 		
 	}
