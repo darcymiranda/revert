@@ -30,6 +30,7 @@ import client.NetUser;
 import client.Player;
 import client.revert.gui.Broadcast;
 import client.revert.gui.UserInterface;
+import client.revert.map.PlayableMap;
 
 public class Revert extends BasicGame {
 	
@@ -150,7 +151,7 @@ public class Revert extends BasicGame {
 		bc.addMessage("connection established");
 		
 		
-		/**
+		
 		// Request Map
 		bc.addMessage("downloading map");
 		net.send(new Packet(Packet.REQUEST_MAP));
@@ -162,7 +163,7 @@ public class Revert extends BasicGame {
 			}
 		}
 		bc.addMessage("map complete");
-		*/
+		
 		
 
 	}
@@ -293,9 +294,9 @@ public class Revert extends BasicGame {
 		}
 		
 		if(key == Input.KEY_R){
-			Missile missile = new Missile(getLocalPlayer().getShip().getClientPosition(), getLocalPlayer().getShip().rotation);
-			missile.setImage((Image) cache.get("default_bullet"));
-			ec.add(missile);
+			//Missile missile = new Missile(getLocalPlayer().getShip().getClientPosition(), getLocalPlayer().getShip().rotation);
+			//missile.setImage((Image) cache.get("default_bullet"));
+			//ec.add(missile);
 		}
 		
 		if(hasChanged)
