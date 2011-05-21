@@ -127,7 +127,7 @@ public class Revert extends BasicGame {
 		/** Init Game**/
 		ec = new EntityController();
 
-		map = new PlayableMap();
+		map = new PlayableMap(this);
 		cam = new Camera(gc, tiledMap);
 
 		ps = new ParticleSystem("img/d_particle.png");
@@ -158,17 +158,15 @@ public class Revert extends BasicGame {
 		// Request Map
 		bc.addMessage("downloading map");
 		net.send(new Packet(Packet.REQUEST_MAP));
-		while(!map.isComplete()){
+/*		while(!map.isComplete()){
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		bc.addMessage("map complete");
-		
-		
-
+		bc.addMessage("map complete");				
+*/
 	}
 
 	@Override

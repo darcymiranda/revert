@@ -252,6 +252,7 @@ import packet.Snapshot;
 			}
 			else if(packet.type == Packet.LAST_MAP){
 				client.map.setComplete(true);
+				System.out.println("LAST MAP");
 			}
 		}
 		

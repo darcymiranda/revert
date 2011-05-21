@@ -1,5 +1,6 @@
 package client.revert;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -35,6 +36,7 @@ public abstract class Entity {
 	
 	protected String displayText = "";
 	protected UnicodeFont font;
+	protected Color minimapColor;
 	
 	public Entity(){
 		clientPosition = new Vector2f(200,200);
@@ -93,6 +95,8 @@ public abstract class Entity {
 	public Vector2f getVelocity(){ return new Vector2f(velocity); }
 	
 	public void setMinimapPosition(Vector2f minimapPosition) { this.minimapPosition = minimapPosition; }
+	
+	public Color getMinimapColor() { return minimapColor; }
 	
 
 }
