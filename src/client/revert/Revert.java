@@ -112,6 +112,9 @@ public class Revert extends BasicGame {
 		try {
 			cache.put("default_ship", new Image("img/ship.png"));
 			cache.put("default_bullet", new Image("img/bullet.png"));
+			cache.put("map_asteroid", new Image("img/asteroid_001.png"));
+			cache.put("map_ore", new Image("img/ore_001.png"));
+			cache.put("map_station", new Image("img/station_001.png"));
 			cache.put("particle_hit_bullet", ParticleIO.loadEmitter("particle/hit_bullet.xml"));
 			cache.put("particle_smoke", ParticleIO.loadEmitter("particle/smoke.xml"));
 			cache.put("particle_engine", ParticleIO.loadEmitter("particle/ship.xml"));
@@ -294,9 +297,9 @@ public class Revert extends BasicGame {
 		}
 		
 		if(key == Input.KEY_R){
-			//Missile missile = new Missile(getLocalPlayer().getShip().getClientPosition(), getLocalPlayer().getShip().rotation);
-			//missile.setImage((Image) cache.get("default_bullet"));
-			//ec.add(missile);
+			Missile missile = new Missile(getLocalPlayer().getShip().getClientPosition(), getLocalPlayer().getShip().rotation);
+			missile.setImage((Image) cache.get("default_bullet"));
+			ec.add(missile);
 		}
 		
 		if(hasChanged)

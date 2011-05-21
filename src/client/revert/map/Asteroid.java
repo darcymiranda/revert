@@ -1,43 +1,23 @@
 package client.revert.map;
 
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
 
 import client.revert.Entity;
+import client.revert.Revert;
 
 public class Asteroid extends Entity
 {
-
-	private float x, y;
-	private String path = "img/asteroid_001.png";
-	private Image img;
 	
 	public Asteroid(float x, float y)
 	{
-		
-		this.x = x;
-		this.y = y;
-		
-		try
-		{
-			this.img = new Image(path);
-		}
-		catch(SlickException e)
-		{
-			e.printStackTrace();
-		}
+		this.clientPosition.x = x;
+		this.clientPosition.y = y;
+		this.setImage((Image) Revert.cache.get("map_asteroid"));
 	}
 	
 	@Override
 	public void collide(Entity e) 
 	{
 		
-	}
-	
-	@Override
-	public void render(Graphics g)
-	{
-		g.drawImage(img, x, y);
 	}
 }
