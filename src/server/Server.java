@@ -3,8 +3,11 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.newdawn.slick.geom.Vector2f;
 
 import packet.Packet;
 import packet.Snapshot;
@@ -25,6 +28,7 @@ public class Server implements Runnable{
 	private InetSocketAddress address;
 	private List<Client> clients = new LinkedList<Client>();
 	private World world;
+	private Map map;
 	
 	private long time;
 	private final int tickRate = 17;
@@ -49,6 +53,8 @@ public class Server implements Runnable{
 		
 		world = World.getInstance();
 		world.setServer(this);
+		
+		map = new Map(Constants.MAP_001);
 		
 	}
 
@@ -144,6 +150,33 @@ public class Server implements Runnable{
 						
 					client.setConnectionStatus(true);
 					System.out.println(client + " connection established.");
+					
+					//send client the map
+					ArrayList<Vector2f> list;
+					list = map.getAsteroids();
+					
+					//sends asteroids
+					for(int i = 0; i < list.size(); i++)
+					{
+						Vector2f temp = list.get(i);
+						client.send(new Packet(Packet.UPDATE_ASTEROIDS, temp.x, temp.y));
+					}
+					//sends ores
+					list = map.getOres();
+					for(int i = 0; i < list.size(); i++)
+					{
+						Vector2f temp = list.get(i);
+						client.send(new Packet(Packet.UPDATE_ORES, temp.x, temp.y));
+					}
+					//sends stations
+					list = map.getStations();
+					for(int i = 0; i < list.size(); i++)
+					{
+						Vector2f temp = list.get(i);
+						client.send(new Packet(Packet.UPDATE_STATIONS, temp.x, temp.y));
+					}
+					
+					System.out.println("Sent map to - " + client);
 					
 					// Sends around the names of clients/ids to eachother.
 					// Send to all clients including self to confirm ready mark client side.
@@ -381,6 +414,8 @@ public class Server implements Runnable{
 						client.send(new Packet(Packet.CONNECT, client.id));
 						clients.add(client);
 						System.out.println(client + " connected.");
+						
+
 						
 					}catch(Exception e){
 						//e.printStackTrace();

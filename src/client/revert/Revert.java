@@ -34,7 +34,7 @@ public class Revert extends BasicGame {
 	public Player[] players = new Player[Constants.WORLD_PLAYER_SIZE];
 	public EntityController ec;
 	
-	private TiledMap map;
+	private TiledMap tiledMap;
 	private Camera cam;
 	
 	private Image imgShip;
@@ -42,6 +42,8 @@ public class Revert extends BasicGame {
 	
 	private UserInterface ui;
 	public Broadcast bc;
+	
+	public Map map;
 	
 	private short ticks = 0;
 
@@ -90,14 +92,15 @@ public class Revert extends BasicGame {
 		/** Init Images **/
 		try {
 			imgShip = new Image("img/ship.png");
-			map = new TiledMap("maps/map01.tmx");
+			tiledMap = new TiledMap("maps/map01.tmx");
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
 		
 		/** Init Game**/
 		ec = new EntityController();
-		cam = new Camera(gc, map);
+		map = new Map();
+		cam = new Camera(gc, tiledMap);
 		
 		/** Init User Interface **/
 		ui = new UserInterface(gc, this);
@@ -125,12 +128,8 @@ public class Revert extends BasicGame {
 		
 		cam.drawMap();
 		
-		//draw user interface
-		//cam.untranslateGraphics();
-		ui.render(g);
-		
 		cam.translateGraphics();
-		
+		map.render(g);
 
 		ec.render(g);
 

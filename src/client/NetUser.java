@@ -247,6 +247,15 @@ import packet.Snapshot;
 			else if(packet.type == Packet.SERVER_MESSAGE){
 				System.out.println("Server: " + packet.getMessage());
 			}
+			else if(packet.type == Packet.UPDATE_ASTEROIDS){
+				client.map.addAsteroid(packet.getPositionX(), packet.getPositionY());
+			}
+			else if(packet.type == Packet.UPDATE_ORES){
+				client.map.addOre(packet.getPositionX(), packet.getPositionY());
+			}
+			else if(packet.type == Packet.UPDATE_STATIONS){
+				client.map.addStation(packet.getPositionX(), packet.getPositionY());
+			}
 		}
 		
 		/**
