@@ -37,13 +37,9 @@ public class Ship extends NetEntity {
 		this.clientPosition = clientPosition;
 		this.id = id;
 		
-		
-		try {
-			particleEngine = ParticleIO.loadEmitter("particle/ship.xml");
-			Revert.ps.addEmitter(particleEngine);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		particleEngine = (ConfigurableEmitter) Revert.cache.get("particle_engine");
+		particleEngine = particleEngine.duplicate();
+		Revert.ps.addEmitter(particleEngine);
 		
 		try{
 			this.setImage(new Image("img/ship.png"));

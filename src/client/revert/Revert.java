@@ -114,6 +114,7 @@ public class Revert extends BasicGame {
 			cache.put("default_bullet", new Image("img/bullet.png"));
 			cache.put("particle_hit_bullet", ParticleIO.loadEmitter("particle/hit_bullet.xml"));
 			cache.put("particle_smoke", ParticleIO.loadEmitter("particle/smoke.xml"));
+			cache.put("particle_engine", ParticleIO.loadEmitter("particle/ship.xml"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (SlickException se){
@@ -290,6 +291,12 @@ public class Revert extends BasicGame {
 		
 		if(key == Input.KEY_F){
 			bc.addMessage("hello therefffffffffffffffff");
+		}
+		
+		if(key == Input.KEY_R){
+			//Missile missile = new Missile(getLocalPlayer().getShip().getClientPosition(), getLocalPlayer().getShip().rotation);
+			//missile.setImage((Image) cache.get("default_bullet"));
+			//ec.add(missile);
 		}
 		
 		if(hasChanged)
