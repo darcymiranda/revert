@@ -57,16 +57,20 @@ public class Ship extends NetEntity {
 		if(e instanceof Bullet){
 			velocity.x += (float) (Math.sin(Math.toRadians(e.getRotation())) *1.25f);
 			velocity.y += (float) (Math.cos(Math.toRadians(e.getRotation())) *1.25f);
-			try {
-				ConfigurableEmitter temp = ParticleIO.loadEmitter("particle/hit_bullet.xml"),
-									temp2 = ParticleIO.loadEmitter("particle/smoke.xml");
-				temp.setPosition(clientPosition.x, clientPosition.y);
-				temp2.setPosition(clientPosition.x, clientPosition.y);
-				Revert.ps.addEmitter(temp);
-				Revert.ps.addEmitter(temp2);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			
+			ConfigurableEmitter temp = (ConfigurableEmitter) Revert.cache.get("particle_hit_bullet"),
+								temp2 = (ConfigurableEmitter) Revert.cache.get("particle_smoke");
+			// duplicate the emitter from the cache so it doesnt overlap. not sure if it's worth caching
+			// if we have to duplicate to avoid overlap
+			temp = temp.duplicate();
+			temp2 = temp2.duplicate();
+			temp.setPosition(clientPosition.x + (width/2), clientPosition.y + (height/2));
+			temp2.setPosition(clientPosition.x + (width/2), clientPosition.y + (height/2));
+			temp.replay();
+			temp2.replay();
+			
+			Revert.ps.addEmitter(temp);
+			Revert.ps.addEmitter(temp2);
 		}
 	}
 	
@@ -76,7 +80,6 @@ public class Ship extends NetEntity {
 		float rotation = super.getRotation();
 		
 		particleEngine.setPosition(clientPosition.x + (width/2), clientPosition.y + (height/2));
-		
 		
 		if(health < 1){
 			isAlive = false;
@@ -99,7 +102,6 @@ public class Ship extends NetEntity {
 				shoot();
 				
 			}
-			
 			
 			/**
 			 * Movement
@@ -302,27 +304,21 @@ public class Ship extends NetEntity {
 		Bullet bullet;
 		if (!(System.currentTimeMillis() - lastFire < rate)) {
 			
-			try {
+			lastFire = System.currentTimeMillis();
 			
-				lastFire = System.currentTimeMillis();
-				
-				float calcRotation = rotation - (float)(Math.random() * ((-accuracy * 100) + 100));
-				
-				float cx = clientPosition.x + (super.width / 2 - 5), // (float)Math.sin(Math.toRadians(rotation/180))),
-					  cy = clientPosition.y + (super.height / 2 - 5); // (float)Math.cos(Math.toRadians(rotation/180)));
-				
-				bullet = new Bullet(cx,cy, calcRotation, velocity);
-				bullet.setImage(new Image("img/bullet.png"));
-				bullets.add(bullet);
-				
-				// REMOTE
-				if(super.isLocal()){
-					Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, bullet.clientPosition.x, bullet.clientPosition.y, bullet.velocity.x, bullet.velocity.y, bullet.rotation);
-					Revert.net.send(packet);
-				}
+			float calcRotation = rotation - (float)(Math.random() * ((-accuracy * 100) + 100));
 			
-			} catch (SlickException e) {
-				e.printStackTrace();
+			float cx = clientPosition.x + (super.width / 2 - 5), // (float)Math.sin(Math.toRadians(rotation/180))),
+				  cy = clientPosition.y + (super.height / 2 - 5); // (float)Math.cos(Math.toRadians(rotation/180)));
+			
+			bullet = new Bullet(cx,cy, calcRotation, velocity);
+			bullet.setImage((Image) Revert.cache.get("default_bullet"));
+			bullets.add(bullet);
+			
+			// REMOTE
+			if(super.isLocal()){
+				Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, bullet.clientPosition.x, bullet.clientPosition.y, bullet.velocity.x, bullet.velocity.y, bullet.rotation);
+				Revert.net.send(packet);
 			}
 		}
 		

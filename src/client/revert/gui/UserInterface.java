@@ -4,9 +4,7 @@ import java.util.ArrayList;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.geom.Vector2f;
 
-import client.revert.EntityController;
 import client.revert.Revert;
 
 public class UserInterface 

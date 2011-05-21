@@ -28,7 +28,7 @@ public class Server implements Runnable{
 	private InetSocketAddress address;
 	private List<Client> clients = new LinkedList<Client>();
 	private World world;
-	private Map map;
+	private PlayableMap map;
 	
 	private long time;
 	private final int tickRate = 17;
@@ -54,7 +54,7 @@ public class Server implements Runnable{
 		world = World.getInstance();
 		world.setServer(this);
 		
-		map = new Map(Constants.MAP_001);
+		map = new PlayableMap(Constants.MAP_001);
 		
 	}
 
@@ -151,33 +151,6 @@ public class Server implements Runnable{
 					client.setConnectionStatus(true);
 					System.out.println(client + " connection established.");
 					
-					//send client the map
-					ArrayList<Vector2f> list;
-					list = map.getAsteroids();
-					
-					//sends asteroids
-					for(int i = 0; i < list.size(); i++)
-					{
-						Vector2f temp = list.get(i);
-						client.send(new Packet(Packet.UPDATE_ASTEROIDS, temp.x, temp.y));
-					}
-					//sends ores
-					list = map.getOres();
-					for(int i = 0; i < list.size(); i++)
-					{
-						Vector2f temp = list.get(i);
-						client.send(new Packet(Packet.UPDATE_ORES, temp.x, temp.y));
-					}
-					//sends stations
-					list = map.getStations();
-					for(int i = 0; i < list.size(); i++)
-					{
-						Vector2f temp = list.get(i);
-						client.send(new Packet(Packet.UPDATE_STATIONS, temp.x, temp.y));
-					}
-					
-					System.out.println("Sent map to - " + client);
-					
 					// Sends around the names of clients/ids to eachother.
 					// Send to all clients including self to confirm ready mark client side.
 					sendToAll(new Packet(Packet.CONNECT, client.id, packet.getUsername(), client.getReadyStatus()), false);
@@ -203,7 +176,6 @@ public class Server implements Runnable{
 					// Send currently connected client ready info to this client
 					sendAllToClient(client, new Packet(Packet.READY_MARKER));
 				}
-				
 	
 				// Chat or Commands	-- has not been tested
 				else if(packet.type == Packet.CHAT){
@@ -225,6 +197,39 @@ public class Server implements Runnable{
 						sendToAll(new Packet(Packet.CHAT, packetId, tempUsername, packetMsg), false);
 						System.out.println(client + " says: " + packetMsg);
 					}
+				}
+				
+				else if(packet.type == Packet.REQUEST_MAP){
+					
+					//send client the map
+					ArrayList<Vector2f> list;
+					list = map.getAsteroids();
+					
+					//sends asteroids
+					for(int i = 0; i < list.size(); i++)
+					{
+						Vector2f temp = list.get(i);
+						client.send(new Packet(Packet.UPDATE_ASTEROIDS, temp.x, temp.y));
+					}
+					//sends ores
+					list = map.getOres();
+					for(int i = 0; i < list.size(); i++)
+					{
+						Vector2f temp = list.get(i);
+						client.send(new Packet(Packet.UPDATE_ORES, temp.x, temp.y));
+					}
+					//sends stations
+					list = map.getStations();
+					for(int i = 0; i < list.size(); i++)
+					{
+						Vector2f temp = list.get(i);
+						client.send(new Packet(Packet.UPDATE_STATIONS, temp.x, temp.y));
+					}
+					
+					// tell client that server finished sending map
+					client.send(new Packet(Packet.LAST_MAP));
+					
+					System.out.println("Sent map to - " + client);
 				}
 			}
 			

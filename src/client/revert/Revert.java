@@ -5,6 +5,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
@@ -19,7 +21,6 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.particles.ParticleIO;
 import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.tiled.TiledMap;
-import org.newdawn.slick.util.BufferedImageUtil;
 
 import packet.Packet;
 
@@ -34,20 +35,19 @@ public class Revert extends BasicGame {
 	
 	public static NetUser net;
 	public static ParticleSystem ps;
+	public static Map<String, Object> cache;
 	
 	public Player[] players = new Player[Constants.WORLD_PLAYER_SIZE];
 	public EntityController ec;
 	
+	public PlayableMap map;
 	private TiledMap tiledMap;
 	private Camera cam;
-	
-	private Image imgShip;
+
 	private UnicodeFont font;
 	
 	private UserInterface ui;
 	public Broadcast bc;
-	
-	public Map map;
 	
 	private short ticks = 0;
 
@@ -60,10 +60,17 @@ public class Revert extends BasicGame {
 	 * @param gc
 	 * @param g
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "serial" })
 	public void init(GameContainer gc){
 		
 		gc.setVSync(true);
+		
+		/** Init cache **/
+		cache = new LinkedHashMap<String, Object>(100, .75f, true){
+			public boolean removeOldEntry(java.util.Map.Entry oldest){
+				return size() > 100;
+			}
+		};
 		
 		/** Init Font **/
 	    Font awtFont = new Font("Verdana", Font.PLAIN, 12); 
@@ -93,18 +100,29 @@ public class Revert extends BasicGame {
 			e.printStackTrace();
 		}
 		
-		/** Init Images **/
+		/** Init tiles **/
 		try {
-			imgShip = new Image("img/ship.png");
 			tiledMap = new TiledMap("maps/map01.tmx");
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
 		
+		/** Load emitters and images **/
+		try {
+			cache.put("default_ship", new Image("img/ship.png"));
+			cache.put("default_bullet", new Image("img/bullet.png"));
+			cache.put("particle_hit_bullet", ParticleIO.loadEmitter("particle/hit_bullet.xml"));
+			cache.put("particle_smoke", ParticleIO.loadEmitter("particle/smoke.xml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SlickException se){
+			se.printStackTrace();
+		}
+		
 		/** Init Game**/
 		ec = new EntityController();
 
-		map = new Map();
+		map = new PlayableMap();
 		cam = new Camera(gc, tiledMap);
 
 		ps = new ParticleSystem("img/d_particle.png");
@@ -118,6 +136,8 @@ public class Revert extends BasicGame {
 		net = new NetUser(this, host, port);
 		new Thread(net).start();
 		net.username = username;
+		
+		// Handshake
 		bc.addMessage("connecting...");
 		while(net.id == -1){
 			try {
@@ -128,6 +148,22 @@ public class Revert extends BasicGame {
 		}
 		bc.addMessage("connection established");
 		
+		
+		/**
+		// Request Map
+		bc.addMessage("downloading map");
+		net.send(new Packet(Packet.REQUEST_MAP));
+		while(!map.isComplete()){
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		bc.addMessage("map complete");
+		*/
+		
+
 	}
 
 	@Override
@@ -138,7 +174,6 @@ public class Revert extends BasicGame {
 		cam.translateGraphics();
 
 		map.render(g);
-		
 		ps.render();
 		ec.render(g);
 
@@ -153,8 +188,8 @@ public class Revert extends BasicGame {
 	@Override
 	public void update(GameContainer gc, int delta) throws SlickException {
 
-		Player localPlayer = getLocalPlayer();
-		Ship localShip = getLocalPlayer().getShip();
+		Player localPlayer = getLocalPlayer();			// XXX: sometimes returns nulls
+		Ship localShip = getLocalPlayer().getShip();	
 		
 		if(localShip != null){
 			// map bounds collision (only left and top)
@@ -163,7 +198,6 @@ public class Revert extends BasicGame {
 			}
 			else if(localShip.getClientPosition().y < 0 && localShip.velocity.y > 0){
 				localShip.velocity.y *= -0.3;
-				
 			}
 		}
 		
@@ -183,21 +217,13 @@ public class Revert extends BasicGame {
 			ticks = 0;
 		}
 		ticks++;
-		
-		if(localPlayer != null)
-		{
-			if(localPlayer.getShip() != null)
-				cam.centerOn(localPlayer.getShip());
+
+		if(localPlayer != null && localPlayer.getShip() != null){
+			cam.centerOn(localPlayer.getShip());
 		}
 		
 		ui.update();
 		bc.update();
-		
-		for(int i = 0; i < ps.getEmitterCount(); i++){
-			if(ps.getEmitter(i).completed()){
-				ps.removeEmitter(ps.getEmitter(i));
-			}
-		}
 		ps.update(delta);
 		
 		
@@ -206,7 +232,7 @@ public class Revert extends BasicGame {
 	public void createShip(int id, boolean c){
 
 		Ship ship = new Ship(new Vector2f(Constants.SPAWN_POSITION_X,Constants.SPAWN_POSITION_Y), id, c);
-		ship.setImage(imgShip);
+		ship.setImage((Image) cache.get("default_ship"));
 		ship.displayText = players[id].getUsername();
 		ship.font = font;
 		

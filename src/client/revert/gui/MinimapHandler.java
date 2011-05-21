@@ -7,7 +7,6 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Vector2f;
 
 import client.revert.Entity;
-import client.revert.EntityController;
 import client.revert.Revert;
 
 public class MinimapHandler 

@@ -2,7 +2,6 @@ package client.revert;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.geom.Vector2f;
-import org.newdawn.slick.particles.ConfigurableEmitter;
 
 public class Bullet extends Entity {    
 	

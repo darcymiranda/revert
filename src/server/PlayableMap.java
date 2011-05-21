@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.geom.Vector2f;
 
-public class Map 
+public class PlayableMap 
 {
 	
 	private int offset = 25;
@@ -19,7 +19,7 @@ public class Map
 	private ArrayList<Vector2f> ores = new ArrayList<Vector2f>();
 	private ArrayList<Vector2f> stations = new ArrayList<Vector2f>();
 	
-	public Map(String map)
+	public PlayableMap(String map)
 	{
 		loadImageMap(map);
 	}

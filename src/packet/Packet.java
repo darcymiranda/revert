@@ -21,10 +21,13 @@ public class Packet implements Serializable  {
 	public static final byte UPDATE_DAMAGE = 8;
 	public static final byte CLIENT_INFO = 9;
 	public static final byte SERVER_MESSAGE = 10;
-	public static final byte UPDATE_DEATH = 11;
-	public static final byte UPDATE_ASTEROIDS = 12;
-	public static final byte UPDATE_ORES = 13;
-	public static final byte UPDATE_STATIONS = 14;
+	public static final byte REQUEST_MAP = 50;
+	public static final byte UPDATE_MAP = 55;
+	public static final byte LAST_MAP = 59;
+	public static final byte UPDATE_DEATH = 51;
+	public static final byte UPDATE_ASTEROIDS = 52;
+	public static final byte UPDATE_ORES = 53;
+	public static final byte UPDATE_STATIONS = 54;
 
 	private static final long serialVersionUID = 1L;
 	

@@ -5,11 +5,7 @@ import java.io.ObjectOutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
 
-import org.newdawn.slick.geom.Vector2f;
-
 import client.revert.Revert;
-import client.revert.Ship;
-import client.revert.gui.Broadcast;
 
 import packet.Packet;
 import packet.Snapshot;
@@ -27,8 +23,6 @@ import packet.Snapshot;
 		
 		private String host = "";
 		private int port = 0;
-		
-		private boolean connEstablished;
 		
 		// Game related
 		private Revert client;
@@ -255,6 +249,9 @@ import packet.Snapshot;
 			}
 			else if(packet.type == Packet.UPDATE_STATIONS){
 				client.map.addStation(packet.getPositionX(), packet.getPositionY());
+			}
+			else if(packet.type == Packet.LAST_MAP){
+				client.map.setComplete(true);
 			}
 		}
 		

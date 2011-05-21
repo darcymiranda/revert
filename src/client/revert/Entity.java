@@ -8,8 +8,6 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
-import packet.Packet;
-
 /**
  * 
  * Display State - entity information to be rendered

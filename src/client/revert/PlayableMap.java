@@ -7,7 +7,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 
-public class Map 
+public class PlayableMap 
 {
 	
 	private ArrayList<Vector2f> asteroids = new ArrayList<Vector2f>();
@@ -16,7 +16,10 @@ public class Map
 	
 	private Image asteroid, ore, station;
 	
-	public Map()
+	// false if map is missing pieces
+	private boolean complete;
+	
+	public PlayableMap()
 	{
 		try
 		{
@@ -33,21 +36,22 @@ public class Map
 	public void render(Graphics g)
 	{
 		//draws asteroids
+		Vector2f temp;
 		for(int i = 0; i < asteroids.size(); i++)
 		{
-			Vector2f temp = asteroids.get(i);
+			temp = asteroids.get(i);
 			g.drawImage(asteroid, temp.x, temp.y);
 		}
 		//draws ores
 		for(int i = 0; i < ores.size(); i++)
 		{
-			Vector2f temp = ores.get(i);
+			temp = asteroids.get(i);
 			g.drawImage(ore, temp.x, temp.y);
 		}
 		//draws stations
 		for(int i = 0; i < stations.size(); i++)
 		{
-			Vector2f temp = stations.get(i);
+			temp = asteroids.get(i);
 			g.drawImage(station, temp.x, temp.y);
 		}
 	}
@@ -55,4 +59,7 @@ public class Map
 	public void addAsteroid(float x, float y) { asteroids.add(new Vector2f(x, y)); }
 	public void addOre(float x, float y) { ores.add(new Vector2f(x, y)); }
 	public void addStation(float x, float y) { stations.add(new Vector2f(x, y)); }
+	
+	public boolean isComplete(){ return complete; }
+	public void setComplete(boolean c){ this.complete = c; }
 }
