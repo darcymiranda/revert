@@ -39,7 +39,7 @@ public class Ship extends NetEntity {
 		
 		
 		try {
-			particleEngine = ParticleIO.loadEmitter("img/ship.xml");
+			particleEngine = ParticleIO.loadEmitter("particle/ship.xml");
 			Revert.ps.addEmitter(particleEngine);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -58,8 +58,8 @@ public class Ship extends NetEntity {
 			velocity.x += (float) (Math.sin(Math.toRadians(e.getRotation())) *1.25f);
 			velocity.y += (float) (Math.cos(Math.toRadians(e.getRotation())) *1.25f);
 			try {
-				ConfigurableEmitter temp = ParticleIO.loadEmitter("img/hit_bullet.xml"),
-									temp2 = ParticleIO.loadEmitter("img/smoke.xml");
+				ConfigurableEmitter temp = ParticleIO.loadEmitter("particle/hit_bullet.xml"),
+									temp2 = ParticleIO.loadEmitter("particle/smoke.xml");
 				temp.setPosition(clientPosition.x, clientPosition.y);
 				temp2.setPosition(clientPosition.x, clientPosition.y);
 				Revert.ps.addEmitter(temp);
