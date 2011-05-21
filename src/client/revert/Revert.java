@@ -294,9 +294,9 @@ public class Revert extends BasicGame {
 		}
 		
 		if(key == Input.KEY_R){
-			//Missile missile = new Missile(getLocalPlayer().getShip().getClientPosition(), getLocalPlayer().getShip().rotation);
-			//missile.setImage((Image) cache.get("default_bullet"));
-			//ec.add(missile);
+			Missile missile = new Missile(getLocalPlayer().getShip().getClientPosition(), getLocalPlayer().getShip().rotation);
+			missile.setImage((Image) cache.get("default_bullet"));
+			ec.add(missile);
 		}
 		
 		if(hasChanged)
