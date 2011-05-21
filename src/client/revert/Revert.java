@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
@@ -15,6 +16,8 @@ import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.font.effects.ColorEffect;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.particles.ParticleIO;
+import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.tiled.TiledMap;
 import org.newdawn.slick.util.BufferedImageUtil;
 
@@ -30,6 +33,7 @@ import client.revert.gui.UserInterface;
 public class Revert extends BasicGame {
 	
 	public static NetUser net;
+	public static ParticleSystem ps;
 	
 	public Player[] players = new Player[Constants.WORLD_PLAYER_SIZE];
 	public EntityController ec;
@@ -98,6 +102,7 @@ public class Revert extends BasicGame {
 		/** Init Game**/
 		ec = new EntityController();
 		cam = new Camera(gc, map);
+		ps = new ParticleSystem("img/d_particle.png");
 		
 		/** Init User Interface **/
 		ui = new UserInterface(gc, this);
@@ -131,7 +136,7 @@ public class Revert extends BasicGame {
 		
 		cam.translateGraphics();
 		
-
+		ps.render();
 		ec.render(g);
 
 		cam.untranslateGraphics();
@@ -146,19 +151,15 @@ public class Revert extends BasicGame {
 	public void update(GameContainer gc, int delta) throws SlickException {
 
 		Player localPlayer = getLocalPlayer();
+		Ship localShip = getLocalPlayer().getShip();
 		
-		
-		// end of map collision
-		Entity e = null;
-		for(int i = 0; i < ec.getPool().size(); i++){
-			
-			e = ec.getPool().get(i);
-			System.out.println(e.velocity);
-			if(e.getClientPosition().x < 0 && e.velocity.x < 0){
-				e.velocity.x *= -0.3;
+		if(localShip != null){
+			// map bounds collision (only left and top)
+			if(localShip.getClientPosition().x < 0 && localShip.velocity.x < 0){
+				localShip.velocity.x *= -0.3;
 			}
-			else if(e.getClientPosition().y < 0 && e.velocity.y > 0){
-				e.velocity.y *= -0.3;
+			else if(localShip.getClientPosition().y < 0 && localShip.velocity.y > 0){
+				localShip.velocity.y *= -0.3;
 				
 			}
 		}
@@ -188,6 +189,13 @@ public class Revert extends BasicGame {
 		
 		ui.update();
 		bc.update();
+		
+		for(int i = 0; i < ps.getEmitterCount(); i++){
+			if(ps.getEmitter(i).completed()){
+				ps.removeEmitter(ps.getEmitter(i));
+			}
+		}
+		ps.update(delta);
 		
 		
 	}
