@@ -1,5 +1,6 @@
 package client.revert.map;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
 
 import client.revert.Entity;
@@ -13,6 +14,7 @@ public class Asteroid extends Entity
 		this.clientPosition.x = x;
 		this.clientPosition.y = y;
 		this.setImage((Image) Revert.cache.get("map_asteroid"));
+		this.minimapColor = new Color(128, 128, 128);
 	}
 	
 	@Override

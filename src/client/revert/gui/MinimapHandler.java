@@ -57,6 +57,25 @@ public class MinimapHandler
 				if(minimapXPos != -1 && minimapYPos != -1)
 					g.fillRect(minimapXPos, minimapYPos, 3, 3);
 		}
+		
+		
+		//draws map based on player position
+		pool = revert.map.getMap();
+		for(int i = 0; i < pool.size(); i++)
+		{
+			Entity temp = pool.get(i);
+			
+			//set color based on entity
+			g.setColor(temp.getMinimapColor());
+			
+			float minimapXPos = temp.getMinimapPosition().x;
+			float minimapYPos = temp.getMinimapPosition().y;
+			
+			if(temp != player)
+				if(minimapXPos != -1 && minimapYPos != -1)
+					g.fillRect(minimapXPos, minimapYPos, 3, 3);
+		}
+		
 	}
 	
 	/**
@@ -67,6 +86,29 @@ public class MinimapHandler
 		ArrayList<Entity> pool = revert.ec.getEntityPool();
 		Entity player = revert.getLocalPlayer().getShip();
 		
+		for(int i = 0; i < pool.size(); i++)
+		{
+			Entity temp = pool.get(i);
+			Vector2f entityPosition = temp.getClientPosition();
+			
+			if(player != null)
+			{
+				if(entityPosition.distance(player.getClientPosition()) < MINIMAP_DISTANCE)
+				{				
+					//sets the position on the minimap relative to their normal position
+					entityXPos = (xpos + (width/2)) + ((entityPosition.x - player.getClientPosition().x) * minimapScale);
+					entityYPos = (ypos + (height/2)) + ((entityPosition.y - player.getClientPosition().y) * minimapScale);
+					temp.setMinimapPosition(new Vector2f(entityXPos, entityYPos));
+				}
+				else
+				{
+					temp.setMinimapPosition(new Vector2f(-1, -1));
+				}
+			}
+		}
+		
+		//calculates map shit (asteroids, ores, etc)
+		pool = revert.map.getMap();
 		for(int i = 0; i < pool.size(); i++)
 		{
 			Entity temp = pool.get(i);

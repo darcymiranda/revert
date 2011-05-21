@@ -126,7 +126,9 @@ public class Revert extends BasicGame {
 		}
 		
 		/** Init Game**/
-		map = new PlayableMap();
+		ec = new EntityController();
+
+		map = new PlayableMap(this);
 		cam = new Camera(gc, tiledMap);
 		ec = new EntityController();
 
@@ -154,19 +156,19 @@ public class Revert extends BasicGame {
 		bc.addMessage("connection established");
 		
 		
-		/*
+		
 		// Request Map
 		bc.addMessage("downloading map");
 		net.send(new Packet(Packet.REQUEST_MAP));
-		while(!map.isComplete()){
+/*		while(!map.isComplete()){
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		bc.addMessage("map complete");
-		*/
+		bc.addMessage("map complete");				
+*/
 	}
 
 	@Override

@@ -228,7 +228,6 @@ public class Server implements Runnable{
 					
 					// tell client that server finished sending map
 					client.send(new Packet(Packet.LAST_MAP));
-					
 					System.out.println("Sent map to - " + client);
 				}
 			}
