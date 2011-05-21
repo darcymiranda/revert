@@ -6,12 +6,11 @@ import org.newdawn.slick.geom.Vector2f;
 public class Bullet extends Entity {    
 	
 	private boolean hasSentToOtherClients;
-	private boolean dead;
 	
-	//private float speed = 900f / 1000f;
-	private float speed = 15;
-	private float maxTravelTime = 250;
-	private float travelTime;
+	protected boolean dead;
+	protected float speed = 15;
+	protected float maxTravelTime = 250;
+	protected float travelTime;
 	
 	public Bullet(float x, float y, float r, Vector2f shipVel){
 		super();
@@ -33,13 +32,10 @@ public class Bullet extends Entity {
 		dead = true;
 	}
 	
-	public void update(GameContainer gc, int delta, boolean interpolate){
-		super.update(gc, delta, interpolate);
+	public void update(GameContainer gc, int delta){
+		super.update(gc, delta);
 		
 		travelTime++;
-		
-		clientPosition.x += velocity.x;
-		clientPosition.y -= velocity.y;
 	}
 	
 	public boolean hasExpired(){

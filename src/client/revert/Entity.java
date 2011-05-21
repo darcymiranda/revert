@@ -37,7 +37,7 @@ public abstract class Entity {
 	protected UnicodeFont font;
 	
 	public Entity(){
-		clientPosition = new Vector2f(200,200);
+		clientPosition = new Vector2f();
 		minimapPosition = new Vector2f(-1, -1);
 		velocity = new Vector2f();
 		dirSpeed = new Vector2f();
@@ -68,7 +68,13 @@ public abstract class Entity {
 		isAlive = false;
 	}
 	
-	public void update(GameContainer gc, int delta, boolean interpolate){
+	public void update(GameContainer gc, int delta){
+		
+		if(rotation < 0) rotation = 360;
+		if(rotation > 360) rotation = 0;
+		
+		clientPosition.x += velocity.x;
+		clientPosition.y -= velocity.y;
 		
 		image.rotate(rotation - image.getRotation());
 		

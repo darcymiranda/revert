@@ -1,16 +1,11 @@
 package client.revert;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.particles.ConfigurableEmitter;
-import org.newdawn.slick.particles.ParticleIO;
 
 import packet.Packet;
 
@@ -26,36 +21,28 @@ public class Ship extends NetEntity {
 	private boolean isShooting;
 	private ConfigurableEmitter particleEngine;
 	
-	public ArrayList<Bullet> bullets = new ArrayList<Bullet>();
-	
 	public Ship(Vector2f clientPosition, int id, boolean local){
 		
 		super();
 		setLocal(local);
 		collidable = true;
 		
-		this.clientPosition = clientPosition;
+		super.clientPosition = clientPosition;
 		this.id = id;
 		
 		particleEngine = (ConfigurableEmitter) Revert.cache.get("particle_engine");
 		particleEngine = particleEngine.duplicate();
 		Revert.ps.addEmitter(particleEngine);
 		
-		try{
-			this.setImage(new Image("img/ship.png"));
-		}catch(SlickException ex){
-			ex.printStackTrace();
-		}
-		
 	}
 	
 	public void collide(Entity e){
+		System.out.println("p");
 		if(e instanceof Bullet){
-			velocity.x += (float) (Math.sin(Math.toRadians(e.getRotation())) *1.25f);
-			velocity.y += (float) (Math.cos(Math.toRadians(e.getRotation())) *1.25f);
 			
 			ConfigurableEmitter temp = (ConfigurableEmitter) Revert.cache.get("particle_hit_bullet"),
 								temp2 = (ConfigurableEmitter) Revert.cache.get("particle_smoke");
+			
 			// duplicate the emitter from the cache so it doesnt overlap. not sure if it's worth caching
 			// if we have to duplicate to avoid overlap
 			temp = temp.duplicate();
@@ -67,12 +54,17 @@ public class Ship extends NetEntity {
 			
 			Revert.ps.addEmitter(temp);
 			Revert.ps.addEmitter(temp2);
+			
+		}
+		else if(e instanceof Missile){
+			velocity.x += (float) (Math.sin(Math.toRadians(e.getRotation())) *5f);
+			velocity.y += (float) (Math.cos(Math.toRadians(e.getRotation())) *5f);
 		}
 	}
 	
-	public void update(GameContainer gc, int delta, boolean interpolate){
+	public void update(GameContainer gc, int delta){
 	
-		super.update(gc, delta, interpolate);
+		super.update(gc, delta);
 		float rotation = super.getRotation();
 		
 		particleEngine.setPosition(clientPosition.x + (width/2), clientPosition.y + (height/2));
@@ -272,15 +264,7 @@ public class Ship extends NetEntity {
 			}
 		}
 		
-		clientPosition.x += velocity.x;
-		clientPosition.y -= velocity.y;
-		
 		super.setRotation(rotation);
-		
-		for(int i = 0; i < bullets.size(); i++){
-			bullets.get(i).update(gc, delta, false);
-			if(bullets.get(i).hasExpired()) bullets.remove(i);
-		}
 	
 	}
 	
@@ -288,10 +272,8 @@ public class Ship extends NetEntity {
 		super.render(g);
 		
 		//g.drawRect(serverPosition.x, serverPosition.y, width, height);
-		font.drawString(clientPosition.x + width - 50, clientPosition.y + height, displayText);
-		
-		
-		for(int i = 0; i < bullets.size(); i++){ bullets.get(i).render(g); }
+		if(font != null)
+			font.drawString(clientPosition.x + width - 50, clientPosition.y + height, displayText);
 		
 	}
 	
@@ -309,7 +291,8 @@ public class Ship extends NetEntity {
 			
 			bullet = new Bullet(cx,cy, calcRotation, velocity);
 			bullet.setImage((Image) Revert.cache.get("default_bullet"));
-			bullets.add(bullet);
+			bullet.id = id;
+			Revert.ec.addBullet(bullet);
 			
 			// REMOTE
 			if(super.isLocal()){
@@ -336,7 +319,6 @@ public class Ship extends NetEntity {
 		Revert.ps.removeEmitter(particleEngine);
 	}
 	
-	public ArrayList<Bullet> getBullets(){ return bullets; }
 	public boolean isShooting(){ return isShooting; }
 	public void setShooting(boolean s){ this.isShooting = s; }
 	

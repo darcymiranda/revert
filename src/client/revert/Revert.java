@@ -30,16 +30,17 @@ import client.NetUser;
 import client.Player;
 import client.revert.gui.Broadcast;
 import client.revert.gui.UserInterface;
+import client.revert.map.Asteroid;
 import client.revert.map.PlayableMap;
 
 public class Revert extends BasicGame {
 	
 	public static NetUser net;
 	public static ParticleSystem ps;
+	public static EntityController ec;
 	public static Map<String, Object> cache;
 	
 	public Player[] players = new Player[Constants.WORLD_PLAYER_SIZE];
-	public EntityController ec;
 	
 	public PlayableMap map;
 	private TiledMap tiledMap;
@@ -125,10 +126,9 @@ public class Revert extends BasicGame {
 		}
 		
 		/** Init Game**/
-		ec = new EntityController();
-
 		map = new PlayableMap();
 		cam = new Camera(gc, tiledMap);
+		ec = new EntityController();
 
 		ps = new ParticleSystem("img/d_particle.png");
 		
@@ -154,7 +154,7 @@ public class Revert extends BasicGame {
 		bc.addMessage("connection established");
 		
 		
-		
+		/*
 		// Request Map
 		bc.addMessage("downloading map");
 		net.send(new Packet(Packet.REQUEST_MAP));
@@ -166,9 +166,7 @@ public class Revert extends BasicGame {
 			}
 		}
 		bc.addMessage("map complete");
-		
-		
-
+		*/
 	}
 
 	@Override
@@ -245,7 +243,7 @@ public class Revert extends BasicGame {
 		bc.addMessage(players[id].getUsername() + " has spawned.");
 		
 		players[id].setShip(ship);
-		ec.add(ship);
+		ec.addEntity(ship);
 	}
 	
 	public Player getLocalPlayer(){
@@ -297,9 +295,23 @@ public class Revert extends BasicGame {
 		}
 		
 		if(key == Input.KEY_R){
-			Missile missile = new Missile(getLocalPlayer().getShip().getClientPosition(), getLocalPlayer().getShip().rotation);
+			Missile missile = new Missile(getLocalPlayer().getShip().getClientPosition().x,
+					getLocalPlayer().getShip().getClientPosition().y, getLocalPlayer().getShip().rotation,
+					new Vector2f(getLocalPlayer().getShip().velocity));
 			missile.setImage((Image) cache.get("default_bullet"));
-			ec.add(missile);
+			
+			Entity target = ec.getEntityById(55);
+			if(target != null){
+				missile.trackTarget(target);
+			}
+			
+			ec.addBullet(missile);
+		}
+		if(key == Input.KEY_1){
+			Asteroid ast = new Asteroid(800,500);
+			ast.id = 55;
+			ast.setImage((Image) cache.get("default_ship"));
+			ec.addEntity(ast);
 		}
 		
 		if(hasChanged)

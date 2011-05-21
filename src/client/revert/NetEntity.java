@@ -7,11 +7,11 @@ import packet.Packet;
 
 public abstract class NetEntity extends Entity {
 	
-	// Network 
 	private EntityState displayState, previousState, simulateState;
-	protected Vector2f serverPosition;
 	private float smoothing = 0;
 	private boolean isLocal;
+
+	protected Vector2f serverPosition;
 	
 	public NetEntity(){
 		super();
@@ -41,7 +41,7 @@ public abstract class NetEntity extends Entity {
 		
 			// Teleport entity to proper location, if the client and server positions are out of sync.
 			float distance = serverPosition.distance(displayState.position);
-			if(distance > 75 || distance < -75)
+			if(distance > 50 || distance < -50)
 				simulateState.setPosition((serverPosition.x - p.getVelocityX()),
 						(serverPosition.y + p.getVelocityY()));
 
@@ -57,12 +57,12 @@ public abstract class NetEntity extends Entity {
 				displayState.velocity.x, displayState.velocity.y, displayState.rotation);
 	}
 	
-	public void update(GameContainer gc, int delta, boolean interpolate){
+	public void update(GameContainer gc, int delta){
 		
-		super.update(gc, delta, interpolate);
+		super.update(gc, delta);
 		
 		// interpolate non-local entities
-		if(!isLocal && interpolate){
+		if(!isLocal){
 			previousState.update();
 			simulateState.update();
 			

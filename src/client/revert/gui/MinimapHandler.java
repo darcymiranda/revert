@@ -38,7 +38,7 @@ public class MinimapHandler
 	 */
 	public void render(Graphics g)
 	{
-		ArrayList<Entity> pool = revert.ec.getPool();
+		ArrayList<Entity> pool = revert.ec.getEntityPool();
 		Entity player = revert.getLocalPlayer().getShip();
 		
 		//draw player position (center of circle)
@@ -64,7 +64,7 @@ public class MinimapHandler
 	 */
 	public void update()
 	{
-		ArrayList<Entity> pool = revert.ec.getPool();
+		ArrayList<Entity> pool = revert.ec.getEntityPool();
 		Entity player = revert.getLocalPlayer().getShip();
 		
 		for(int i = 0; i < pool.size(); i++)

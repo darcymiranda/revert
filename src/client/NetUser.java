@@ -138,7 +138,7 @@ import packet.Snapshot;
 				if(client.players[pId] != null){
 					if(client.players[pId].getShip() != null){
 						client.players[pId].getShip().setAlive(false);
-						client.ec.remove(client.players[pId].getShip());
+						client.ec.removeEntity(client.players[pId].getShip());
 						client.bc.addMessage(client.players[pId].getUsername() + " has died!.");
 					}
 				}		
@@ -231,7 +231,7 @@ import packet.Snapshot;
 					if(client.players[i].id == packet.getId()){
 						System.out.println(client.players[i].getUsername() + " has disconnected.");
 						client.bc.addMessage(client.players[i].getUsername() + " has disconnected.");
-						client.ec.remove(client.players[i].getShip());
+						client.ec.removeEntity(client.players[i].getShip());
 						client.players[i] = null;
 					}
 					break;
