@@ -30,6 +30,7 @@ import client.NetUser;
 import client.Player;
 import client.revert.gui.Broadcast;
 import client.revert.gui.UserInterface;
+import client.revert.map.PlayableMap;
 
 public class Revert extends BasicGame {
 	
@@ -149,7 +150,7 @@ public class Revert extends BasicGame {
 		bc.addMessage("connection established");
 		
 		
-		/**
+		
 		// Request Map
 		bc.addMessage("downloading map");
 		net.send(new Packet(Packet.REQUEST_MAP));
@@ -161,7 +162,7 @@ public class Revert extends BasicGame {
 			}
 		}
 		bc.addMessage("map complete");
-		*/
+		
 		
 
 	}
