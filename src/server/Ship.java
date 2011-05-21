@@ -55,7 +55,7 @@ public class Ship {
 		
 		// Bullets
 		for(int i = 0; i < bullets.size(); i++){
-			bullets.get(i).update();
+			bullets.get(i).tick();
 			if(bullets.get(i).hasExpired()) bullets.remove(i);
 		}
 		

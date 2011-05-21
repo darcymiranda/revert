@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<emitter imageName="" name="ShipEngine" renderType="points" useAdditive="false" useOriented="false">
+<spawnInterval enabled="false" max="100.0" min="100.0"/>
+<spawnCount enabled="true" max="5.0" min="5.0"/>
+<initialLife enabled="true" max="1000.0" min="500.0"/>
+<initialSize enabled="false" max="10.0" min="10.0"/>
+<xOffset enabled="false" max="0.0" min="0.0"/>
+<yOffset enabled="false" max="0.0" min="0.0"/>
+<initialDistance enabled="false" max="0.0" min="0.0"/>
+<speed enabled="true" max="100.0" min="80.0"/>
+<length enabled="false" max="1000.0" min="1000.0"/>
+<emitCount enabled="false" max="1000.0" min="1000.0"/>
+<spread type="random" value="54.0"/>
+<angularOffset type="simple" value="183.0"/>
+<growthFactor type="simple" value="-12.0"/>
+<gravityFactor type="simple" value="0.0"/>
+<windFactor type="simple" value="0.0"/>
+<startAlpha type="simple" value="255.0"/>
+<endAlpha type="simple" value="0.0"/>
+<alpha active="true" max="255" min="0" type="linear">
+<point x="0.0" y="0.0"/>
+<point x="0.035123967" y="69.68023"/>
+<point x="0.11363637" y="127.5"/>
+<point x="0.22520661" y="169.01163"/>
+<point x="1.0" y="255.0"/>
+</alpha>
+<size active="true" max="255" min="0" type="linear">
+<point x="0.0" y="19.273254"/>
+<point x="1.0" y="0.0"/>
+</size>
+<velocity active="true" max="1" min="0" type="linear">
+<point x="0.0" y="0.075581394"/>
+<point x="0.66735536" y="0.046511628"/>
+<point x="1.0" y="0.0"/>
+</velocity>
+<scaleY active="false" max="1" min="0" type="linear">
+<point x="0.0" y="0.0"/>
+<point x="1.0" y="0.14534883"/>
+</scaleY>
+<color>
+<step b="1.0" g="1.0" offset="0.0" r="1.0"/>
+<step b="0.0" g="1.0" offset="0.144" r="1.0"/>
+<step b="0.0" g="0.0" offset="1.0" r="1.0"/>
+</color>
+</emitter>

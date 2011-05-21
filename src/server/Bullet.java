@@ -11,6 +11,8 @@ public class Bullet {
 	private float maxTravelTime = 250;
 	private float travelTime;
 	
+	private Shape hitBox;
+	
 	public Bullet(float x, float y, float xv, float yv, float r){
 		super();
 		this.x = x;
@@ -18,9 +20,12 @@ public class Bullet {
 		this.xv = xv;
 		this.yv = yv;
 		this.r = r;
+		
+		// TODO: get 'real' width/heights
+		hitBox = new Rectangle(x,y,10,10);
 	}
 	
-	public void update(){
+	public void tick(){
 		
 		travelTime++;
 		
@@ -32,9 +37,9 @@ public class Bullet {
 		
 	}
 	
-	// TODO: get 'real' width/heights
+	
 	public Shape getHitBox(){
-		return new Rectangle(x, y, 10, 10);
+		return hitBox;
 	}
 	
 	public void collide(Ship ship){

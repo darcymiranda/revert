@@ -1,5 +1,6 @@
 package client.revert;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.newdawn.slick.GameContainer;
@@ -8,6 +9,8 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
+import org.newdawn.slick.particles.ConfigurableEmitter;
+import org.newdawn.slick.particles.ParticleIO;
 
 import packet.Packet;
 
@@ -21,6 +24,7 @@ public class Ship extends NetEntity {
 	private int health = 35;
 	
 	private boolean isShooting;
+	private ConfigurableEmitter particleEngine;
 	
 	public ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	
@@ -34,6 +38,13 @@ public class Ship extends NetEntity {
 		this.id = id;
 		
 		
+		try {
+			particleEngine = ParticleIO.loadEmitter("particle/ship.xml");
+			Revert.ps.addEmitter(particleEngine);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		try{
 			this.setImage(new Image("img/ship.png"));
 		}catch(SlickException ex){
@@ -46,14 +57,26 @@ public class Ship extends NetEntity {
 		if(e instanceof Bullet){
 			velocity.x += (float) (Math.sin(Math.toRadians(e.getRotation())) *1.25f);
 			velocity.y += (float) (Math.cos(Math.toRadians(e.getRotation())) *1.25f);
+			try {
+				ConfigurableEmitter temp = ParticleIO.loadEmitter("particle/hit_bullet.xml"),
+									temp2 = ParticleIO.loadEmitter("particle/smoke.xml");
+				temp.setPosition(clientPosition.x, clientPosition.y);
+				temp2.setPosition(clientPosition.x, clientPosition.y);
+				Revert.ps.addEmitter(temp);
+				Revert.ps.addEmitter(temp2);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 	
 	public void update(GameContainer gc, int delta, boolean interpolate){
 	
 		super.update(gc, delta, interpolate);
-		
 		float rotation = super.getRotation();
+		
+		particleEngine.setPosition(clientPosition.x + (width/2), clientPosition.y + (height/2));
+		
 		
 		if(health < 1){
 			isAlive = false;
@@ -269,6 +292,7 @@ public class Ship extends NetEntity {
 		//g.drawRect(serverPosition.x, serverPosition.y, width, height);
 		font.drawString(clientPosition.x + width - 50, clientPosition.y + height, displayText);
 		
+		
 		for(int i = 0; i < bullets.size(); i++){ bullets.get(i).render(g); }
 		
 	}
@@ -289,7 +313,6 @@ public class Ship extends NetEntity {
 				
 				bullet = new Bullet(cx,cy, calcRotation, velocity);
 				bullet.setImage(new Image("img/bullet.png"));
-				//bullet.setLocal(super.isLocal());
 				bullets.add(bullet);
 				
 				// REMOTE
@@ -314,6 +337,11 @@ public class Ship extends NetEntity {
 	
 	public void takeDamage(){
 		health -= 3;
+	}
+	
+	public void destory(){
+		super.destroy();
+		Revert.ps.removeEmitter(particleEngine);
 	}
 	
 	public ArrayList<Bullet> getBullets(){ return bullets; }

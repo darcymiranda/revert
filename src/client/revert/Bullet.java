@@ -2,6 +2,7 @@ package client.revert;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.geom.Vector2f;
+import org.newdawn.slick.particles.ConfigurableEmitter;
 
 public class Bullet extends Entity {    
 	
@@ -22,8 +23,6 @@ public class Bullet extends Entity {
 		
 		velocity = new Vector2f(-(speed * (float) Math.sin(Math.toRadians(rotation+180))) + shipVel.x,
 								-(speed * (float) Math.cos(Math.toRadians(rotation+180))) + shipVel.y);
-		
-		
 		
 		//velocity.x = -((speed * delta) * (float) Math.sin(Math.toRadians(rotation+180)));
 		//velocity.y = -((speed * delta) * (float) Math.cos(Math.toRadians(rotation+180)));
