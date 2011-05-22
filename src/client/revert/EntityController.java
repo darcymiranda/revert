@@ -54,6 +54,34 @@ public class EntityController {
 	}
 	
 	/**
+	 * Returns the nearest entity to the passed entity.
+	 * @param owner
+	 * @return
+	 */
+	public Entity getNearestEntity(Entity owner, float range){
+		
+		float distance = range;
+		Entity target = null;
+		for(int i = 0; i < entityPool.size(); i++){
+			
+			Entity other = entityPool.get(i);
+			
+			if(owner == other) continue;
+			
+			float dx = (owner.clientPosition.x + owner.width /2) - (other.clientPosition.x + other.width /2);
+			float dy = (owner.clientPosition.y + owner.height /2) - (other.clientPosition.y + other.width /2);
+			
+			float tempDistance = (float) Math.sqrt((dx * dx) + (dy * dy));
+			if(tempDistance < distance)
+				target = other;
+			
+		}
+		
+		return target;
+		
+	}
+	
+	/**
 	 * Check collisions between entites/entites and entites/bullets. This method will fire the
 	 * entity/bullet collision methods.
 	 */

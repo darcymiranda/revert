@@ -6,8 +6,9 @@ import org.newdawn.slick.particles.ConfigurableEmitter;
 
 public class Missile extends Bullet {
 	
-	private final float TURN_SPEED = 100f;
+	private final float TURN_SPEED = 0.01f;
 	private final float speed = 300f / 1000f;
+	private final float acceleration = 1.1f;
 	
 	private boolean targetAquired;
 	
@@ -41,33 +42,20 @@ public class Missile extends Bullet {
 		dx /= distance;
 		dy /= distance;
 		
-		float vx = dx * (TURN_SPEED * delta);
-		float vy = dy * (TURN_SPEED * delta);
+		float vx = dx * TURN_SPEED;
+		float vy = dy * TURN_SPEED;
 		
-		float v = (float) Math.sqrt((vx * vx)+(vy * vy));
-		
-		if(v > speed){
-			vx = (vx * (speed * delta)) / v;
-			vy = (vy * (speed * delta)) / v;
-		}
+		float total = (float) Math.sqrt((vx * vx)+(vy * vy));
+
+		// ease the turn
+		vx = (vx * (speed * delta)) / total;
+		vy = (vy * (speed * delta)) / total;
 		
 		velocity.x = vx;
 		velocity.y = -vy;
 		
-		/*
-		if(targetAquired || !targetEntity.isAlive()){
-			float xDist = targetEntity.clientPosition.x - clientPosition.x;
-			float yDist = targetEntity.clientPosition.y - clientPosition.y;
-			System.out.println((velocity.x * xDist) - (velocity.y * yDist));
-			if((velocity.x * xDist) - (velocity.y * yDist) > 0)
-				rotation += TURN_SPEED;
-			else
-				rotation -= TURN_SPEED;
-		}
-		
-		velocity.x = (speed * delta) * (float) Math.sin(Math.toRadians(rotation+180));
-		velocity.y = (speed * delta) * (float) Math.cos(Math.toRadians(rotation+180));
-		*/
+		rotation = (Math.round(180 - ((Math.atan2(targetEntity.clientPosition.x - clientPosition.x,
+				targetEntity.clientPosition.y - clientPosition.y)) * 180/Math.PI)));
 		
 	}
 

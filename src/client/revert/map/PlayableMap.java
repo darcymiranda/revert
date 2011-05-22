@@ -47,7 +47,6 @@ public class PlayableMap
 				if(tempPos.distance(new Vector2f(Constants.SPAWN_POSITION_X, Constants.SPAWN_POSITION_Y)) < drawDistance){
 						temp.render(g);
 				}
-				System.out.println(player);
 			}
 						
 		}

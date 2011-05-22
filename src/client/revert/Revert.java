@@ -21,6 +21,7 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.particles.ParticleIO;
 import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.tiled.TiledMap;
+import org.newdawn.slick.util.FastTrig;
 
 import packet.Packet;
 
@@ -113,6 +114,7 @@ public class Revert extends BasicGame {
 		try {
 			cache.put("default_ship", new Image("img/ship.png"));
 			cache.put("default_bullet", new Image("img/bullet.png"));
+			cache.put("test_bullet", new Image("img/test_bullet.png"));
 			cache.put("map_asteroid", new Image("img/asteroid_001.png"));
 			cache.put("map_ore", new Image("img/ore_001.png"));
 			cache.put("map_station", new Image("img/station_001.png"));
@@ -294,26 +296,6 @@ public class Revert extends BasicGame {
 		
 		if(key == Input.KEY_F){
 			bc.addMessage("hello therefffffffffffffffff");
-		}
-		
-		if(key == Input.KEY_R){
-			Missile missile = new Missile(getLocalPlayer().getShip().getClientPosition().x,
-					getLocalPlayer().getShip().getClientPosition().y, getLocalPlayer().getShip().rotation,
-					new Vector2f(getLocalPlayer().getShip().velocity));
-			missile.setImage((Image) cache.get("default_bullet"));
-			
-			Entity target = ec.getEntityById(55);
-			if(target != null){
-				missile.trackTarget(target);
-			}
-			
-			ec.addBullet(missile);
-		}
-		if(key == Input.KEY_1){
-			Asteroid ast = new Asteroid(800,500);
-			ast.id = 55;
-			ast.setImage((Image) cache.get("default_ship"));
-			ec.addEntity(ast);
 		}
 		
 		if(hasChanged)

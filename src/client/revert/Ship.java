@@ -38,19 +38,19 @@ public class Ship extends NetEntity {
 	}
 	
 	public void collide(Entity e){
-		System.out.println("p");
+		
 		if(e instanceof Bullet){
 			
 			ConfigurableEmitter temp = (ConfigurableEmitter) Revert.cache.get("particle_hit_bullet"),
-								temp2 = (ConfigurableEmitter) Revert.cache.get("particle_smoke");
-			
+			temp2 = (ConfigurableEmitter) Revert.cache.get("particle_smoke");
+
 			// duplicate the emitter from the cache so it doesnt overlap. not sure if it's worth caching
 			// if we have to duplicate to avoid overlap
 			temp = temp.duplicate();
 			temp2 = temp2.duplicate();
 			
-			float centerx = clientPosition.x + width /2;
-			float centery = clientPosition.y + height /2;
+			float centerx = e.clientPosition.x + width /2;
+			float centery = e.clientPosition.y + height /2;
 			
 			temp.setPosition(centerx, centerx);
 			temp2.setPosition(centery, centery);
@@ -59,11 +59,7 @@ public class Ship extends NetEntity {
 			
 			Revert.ps.addEmitter(temp);
 			Revert.ps.addEmitter(temp2);
-			
-		}
-		else if(e instanceof Missile){
-			velocity.x += (float) (FastTrig.sin(Math.toRadians(e.getRotation())) *5f);
-			velocity.y += (float) (FastTrig.cos(Math.toRadians(e.getRotation())) *5f);
+
 		}
 	}
 	
@@ -99,6 +95,22 @@ public class Ship extends NetEntity {
 			if(isShooting){
 	
 				shoot();
+				
+			}
+			
+			if(in.isKeyPressed(Input.KEY_3)){
+				
+				Missile missile = new Missile(getClientPosition().x, getClientPosition().y, rotation,
+						new Vector2f(velocity));
+				missile.setImage((Image) Revert.cache.get("test_bullet"));
+				
+				// target nearest ship
+				Entity target = Revert.ec.getNearestEntity(this, 5000);
+				if(target != null){
+					missile.trackTarget(target);
+				}
+				
+				Revert.ec.addBullet(missile);
 				
 			}
 			
