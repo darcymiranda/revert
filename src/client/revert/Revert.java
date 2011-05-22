@@ -40,6 +40,7 @@ public class Revert extends BasicGame {
 	public static ParticleSystem ps;
 	public static EntityController ec;
 	public static Map<String, Object> cache;
+	public static Broadcast bc;
 	
 	public Player[] players = new Player[Constants.WORLD_PLAYER_SIZE];
 	
@@ -50,7 +51,6 @@ public class Revert extends BasicGame {
 	private UnicodeFont font;
 	
 	private UserInterface ui;
-	public Broadcast bc;
 	
 	private short ticks = 0;
 

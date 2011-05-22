@@ -100,17 +100,20 @@ public class Ship extends NetEntity {
 			
 			if(in.isKeyPressed(Input.KEY_3)){
 				
-				Missile missile = new Missile(getClientPosition().x, getClientPosition().y, rotation,
-						new Vector2f(velocity));
-				missile.setImage((Image) Revert.cache.get("test_bullet"));
-				
-				// target nearest ship
+				// target nearest ship and shoot
 				Entity target = Revert.ec.getNearestEntity(this, 5000);
 				if(target != null){
+					Missile missile = new Missile(getClientPosition().x, getClientPosition().y, rotation,
+							new Vector2f(velocity));
+					missile.setImage((Image) Revert.cache.get("test_bullet"));
+					
 					missile.trackTarget(target);
+					Revert.ec.addBullet(missile);
+				}
+				else{
+					Revert.bc.addMessage("no target in range");
 				}
 				
-				Revert.ec.addBullet(missile);
 				
 			}
 			
