@@ -7,6 +7,8 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 
+import server.Constants;
+
 import client.revert.Entity;
 import client.revert.Revert;
 
@@ -17,7 +19,7 @@ public class PlayableMap
 	
 	// false if map is missing pieces
 	private boolean complete;	
-	private int drawDistance = 1500;
+	private int drawDistance = 1500; // could be 800 with offsets
 	
 	private Revert revert;
 	
@@ -29,16 +31,24 @@ public class PlayableMap
 	public void render(Graphics g)
 	{
 		//draws map entities
+		Entity player = revert.getLocalPlayer().getShip();
 		for(int i = 0; i < entities.size(); i++)
 		{
 			Entity temp = entities.get(i);
 			Vector2f tempPos = temp.getClientPosition();
-			Entity player = revert.getLocalPlayer().getShip();
 			
-			if(player != null)
+			if(player != null){
 				//draws objects depending on distance from player
-				if(tempPos.distance(player.getClientPosition()) < drawDistance)
+				if(tempPos.distance(player.getClientPosition()) < drawDistance){
 					temp.render(g);
+				}
+			}else{
+				// draw map based on spawn position if a ship is not yet present
+				if(tempPos.distance(new Vector2f(Constants.SPAWN_POSITION_X, Constants.SPAWN_POSITION_Y)) < drawDistance){
+						temp.render(g);
+				}
+				System.out.println(player);
+			}
 						
 		}
 		

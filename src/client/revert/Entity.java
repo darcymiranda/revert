@@ -72,8 +72,8 @@ public abstract class Entity {
 	
 	public void update(GameContainer gc, int delta){
 		
-		if(rotation < 0) rotation = 360;
-		if(rotation > 360) rotation = 0;
+		if(rotation < 0) rotation += 360;
+		if(rotation > 360) rotation -= 360;
 		
 		clientPosition.x += velocity.x;
 		clientPosition.y -= velocity.y;

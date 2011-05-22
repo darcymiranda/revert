@@ -118,7 +118,7 @@ public class Revert extends BasicGame {
 			cache.put("map_station", new Image("img/station_001.png"));
 			cache.put("particle_hit_bullet", ParticleIO.loadEmitter("particle/hit_bullet.xml"));
 			cache.put("particle_smoke", ParticleIO.loadEmitter("particle/smoke.xml"));
-			cache.put("particle_engine", ParticleIO.loadEmitter("particle/ship.xml"));
+			cache.put("particle_ship_engine", ParticleIO.loadEmitter("particle/ship_engine.xml"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (SlickException se){
@@ -167,7 +167,7 @@ public class Revert extends BasicGame {
 				e.printStackTrace();
 			}
 		}
-		bc.addMessage("map complete");				
+						
 */
 	}
 

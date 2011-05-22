@@ -6,6 +6,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.particles.ConfigurableEmitter;
+import org.newdawn.slick.util.FastTrig;
 
 import packet.Packet;
 
@@ -30,7 +31,7 @@ public class Ship extends NetEntity {
 		super.clientPosition = clientPosition;
 		this.id = id;
 		
-		particleEngine = (ConfigurableEmitter) Revert.cache.get("particle_engine");
+		particleEngine = (ConfigurableEmitter) Revert.cache.get("particle_ship_engine");
 		particleEngine = particleEngine.duplicate();
 		Revert.ps.addEmitter(particleEngine);
 		
@@ -47,8 +48,12 @@ public class Ship extends NetEntity {
 			// if we have to duplicate to avoid overlap
 			temp = temp.duplicate();
 			temp2 = temp2.duplicate();
-			temp.setPosition(clientPosition.x + (width/2), clientPosition.y + (height/2));
-			temp2.setPosition(clientPosition.x + (width/2), clientPosition.y + (height/2));
+			
+			float centerx = clientPosition.x + width /2;
+			float centery = clientPosition.y + height /2;
+			
+			temp.setPosition(centerx, centerx);
+			temp2.setPosition(centery, centery);
 			temp.replay();
 			temp2.replay();
 			
@@ -57,8 +62,8 @@ public class Ship extends NetEntity {
 			
 		}
 		else if(e instanceof Missile){
-			velocity.x += (float) (Math.sin(Math.toRadians(e.getRotation())) *5f);
-			velocity.y += (float) (Math.cos(Math.toRadians(e.getRotation())) *5f);
+			velocity.x += (float) (FastTrig.sin(Math.toRadians(e.getRotation())) *5f);
+			velocity.y += (float) (FastTrig.cos(Math.toRadians(e.getRotation())) *5f);
 		}
 	}
 	
@@ -67,7 +72,13 @@ public class Ship extends NetEntity {
 		super.update(gc, delta);
 		float rotation = super.getRotation();
 		
-		particleEngine.setPosition(clientPosition.x + (width/2), clientPosition.y + (height/2));
+		float centerx = width /2;
+		float centery = height /2;
+		
+		// TODO: emitter is rotating the wrong way???
+		particleEngine.setPosition((float) FastTrig.sin(Math.toRadians(rotation-90)) * centerx + (clientPosition.x + centerx),
+									(float) FastTrig.cos(Math.toRadians(rotation-90)) * centery + (clientPosition.y + centery), false);
+		particleEngine.angularOffset.setValue(rotation-180);
 		
 		if(health < 1){
 			isAlive = false;
@@ -97,8 +108,8 @@ public class Ship extends NetEntity {
 	
 			if(in.isKeyDown(Input.KEY_E)){
 				
-				dirSpeed.x = (float) Math.sin(Math.toRadians(rotation-90));
-				dirSpeed.y = (float) Math.cos(Math.toRadians(rotation-90));
+				dirSpeed.x = (float) FastTrig.sin(Math.toRadians(rotation-90));
+				dirSpeed.y = (float) FastTrig.cos(Math.toRadians(rotation-90));
 				
 				float xvelChange = velocity.x + (ACCELERATION * delta) * dirSpeed.x;
 				if(xvelChange <= maxVelocity && xvelChange >= -maxVelocity){
@@ -132,8 +143,8 @@ public class Ship extends NetEntity {
 			
 			if(in.isKeyDown(Input.KEY_Q)){
 				
-				dirSpeed.x = (float) Math.sin(Math.toRadians(rotation-90));
-				dirSpeed.y = (float) Math.cos(Math.toRadians(rotation-90));
+				dirSpeed.x = (float) FastTrig.sin(Math.toRadians(rotation-90));
+				dirSpeed.y = (float) FastTrig.cos(Math.toRadians(rotation-90));
 				
 				float xvelChange = velocity.x + (ACCELERATION * delta) * dirSpeed.x;
 				if(xvelChange <= maxVelocity && xvelChange >= -maxVelocity){
@@ -168,16 +179,16 @@ public class Ship extends NetEntity {
 			if(in.isKeyDown(Input.KEY_D)){
 				
 				rotation += 0.2f * delta;
-				dirSpeed.x = (float) Math.sin(Math.toRadians(rotation));
-				dirSpeed.y = (float) Math.cos(Math.toRadians(rotation));
+				dirSpeed.x = (float) FastTrig.sin(Math.toRadians(rotation));
+				dirSpeed.y = (float) FastTrig.cos(Math.toRadians(rotation));
 				
 			}
 			
 			if(in.isKeyDown(Input.KEY_A)){
 				
 				rotation += -0.2f * delta;
-				dirSpeed.x = (float) Math.sin(Math.toRadians(rotation));
-				dirSpeed.y = (float) Math.cos(Math.toRadians(rotation));
+				dirSpeed.x = (float) FastTrig.sin(Math.toRadians(rotation));
+				dirSpeed.y = (float) FastTrig.cos(Math.toRadians(rotation));
 				
 			}
 			
