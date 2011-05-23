@@ -49,11 +49,11 @@ public class Ship extends NetEntity {
 			temp = temp.duplicate();
 			temp2 = temp2.duplicate();
 			
-			float centerx = e.clientPosition.x + width /2;
-			float centery = e.clientPosition.y + height /2;
+			float centerx = clientPosition.x + width /2;
+			float centery = clientPosition.y + height /2;
 			
-			temp.setPosition(centerx, centerx);
-			temp2.setPosition(centery, centery);
+			temp.setPosition(centerx, centery);
+			temp2.setPosition(centerx, centery);
 			temp.replay();
 			temp2.replay();
 			
@@ -109,11 +109,14 @@ public class Ship extends NetEntity {
 					
 					missile.trackTarget(target);
 					Revert.ec.addBullet(missile);
+					
+					Packet packet = new Packet(Packet.UPDATE_MISSILE, missile.clientPosition.x,
+							missile.clientPosition.y, missile.velocity.x, missile.velocity.y, missile.rotation);
+					Revert.net.send(packet);
 				}
 				else{
 					Revert.bc.addMessage("no target in range");
 				}
-				
 				
 			}
 			
@@ -322,7 +325,8 @@ public class Ship extends NetEntity {
 			
 			// REMOTE
 			if(super.isLocal()){
-				Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, bullet.clientPosition.x, bullet.clientPosition.y, bullet.velocity.x, bullet.velocity.y, bullet.rotation);
+				Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, bullet.clientPosition.x,
+						bullet.clientPosition.y, bullet.velocity.x, bullet.velocity.y, bullet.rotation);
 				Revert.net.send(packet);
 			}
 		}

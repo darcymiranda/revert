@@ -19,6 +19,9 @@ public class World {
 	private Server server;
 	
 	private Client[] clients = new Client[Constants.WORLD_PLAYER_SIZE];
+	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+	
+	private int unique_id = 0; // TESTING
 	
 	/**
 	 * Process everything within the game world. This includes velocity calculations, health,
@@ -33,6 +36,13 @@ public class World {
 			if( ship !=  null && client.getReadyStatus() && client.isAlive()){
 				if( ship.hasPositionChanged() )
 					client.send(new Packet(Packet.UPDATE_SELF, ship.x, ship.y));
+					
+					/* test to see server side position of bullets */
+					for(int i = 0; i < bullets.size(); i++){
+						Bullet b = bullets.get(i);
+						Packet packet = new Packet((byte) 105, b.test_id, b.x, b.y, b.xv, b.yv, b.r);
+						server.sendToAll(packet, true);
+					}
 				if( !ship.isAlive() && client.getReadyStatus()){
 					server.sendToAll(new Packet(Packet.UPDATE_DEATH, client.id), true);
 					client.setReadyStatus(false);
@@ -55,11 +65,17 @@ public class World {
 				if(clients[i].id == client.id) continue;	// dont send to self
 				
 				Ship ship = clients[i].getShip();
-				if(ship == null) continue;
+				if(ship == null || !ship.isAlive()) continue;
 				
-				if(clients[i].getReadyStatus()){
+				if(ship.isAlive()){
 					if(ship.hasPositionChanged())
 						client.send(new Packet(Packet.UPDATE_OTHER, clients[i].id, ship.x, ship.y, ship.xv, ship.yv, ship.r));
+					
+					for(int b = 0; b < bullets.size(); b++){
+						if(bullets.get(b) instanceof Missile){
+							System.out.println("test");
+						}
+					}
 					
 					if(ship.hasShootingChanged()){
 						Packet packet = new Packet(Packet.UPDATE_OTHER_BULLET, clients[i].id);
@@ -68,37 +84,58 @@ public class World {
 					}
 				}
 			}
+		}
+		
+		// Update and remove expired bullets
+		for(int i = 0; i < bullets.size(); i++){
+			bullets.get(i).tick();
+			if(bullets.get(i).hasExpired()) bullets.remove(i);
+		}
+		
+		// Check for collisions
+		for(int i = 0; i < bullets.size(); i++){
 			
-			// TODO: Do a distance check to prevent unneeded update packets
-			// collisons
-			ArrayList<Bullet> bullets = client.getShip().getBullets();
-			Bullet bullet;
-			for(int b = 0; b < bullets.size(); b++){
+			Bullet b = bullets.get(i);
+			
+			for(int j = 0; j < clients.length; j++){
 				
-				bullet = bullets.get(b);
-				Client other;
-				for(int j = 0; j < clients.length; j++){
+				if(clients[j] == null) continue;
+				if(clients[j].id == b.getId()) continue;	// ignore own bullets
+				
+				Ship s = clients[j].getShip();
+				if(s != null && s.isAlive()){
 					
-					other = clients[j];
-					if(other == null) continue;
-					
-					Ship otherShip = other.getShip();
-					if(client != other && other.isAlive()){
+					if(b.getHitBox().intersects(s.getHitBox())){
 						
-						//System.out.println(bullet.x + " " + bullet.y + "  /  " + otherShip.x + " " + otherShip.y);
-						if(bullet.getHitBox().intersects(otherShip.getHitBox())){
-							
-							otherShip.collide(bullet);
-							bullet.collide(otherShip);
-							server.sendToAll(new Packet(Packet.UPDATE_DAMAGE, other.id), true);
-							System.out.println(client + " hit " + other);
-							
-						}
+						b.collide(s);
+						s.collide(b);
+						server.sendToAll(new Packet(Packet.UPDATE_DAMAGE, clients[j].id), true);
+						System.out.println("HIT");
+						
+						// clean up bullet if need be
+						if(b.hasExpired())
+							bullets.remove(b);
+						
 					}
 				}
 			}
-			
 		}
+		
+	}
+	
+	public void addBullet(Packet packet, Client client){
+		Bullet bullet = new Bullet(packet.getPositionX(), packet.getPositionY(),
+				packet.getVelocityX(), packet.getVelocityY(), packet.getRotationR(),
+				client.id);
+		
+		/* testing client side view of bullets */
+		bullet.test_id = unique_id;
+		unique_id++;
+		/* */
+		
+		bullets.add(bullet);
+		
+		
 		
 	}
 	

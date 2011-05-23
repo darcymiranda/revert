@@ -5,6 +5,9 @@ import java.io.ObjectOutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
 
+import org.newdawn.slick.Image;
+import org.newdawn.slick.geom.Vector2f;
+
 import client.revert.Revert;
 
 import packet.Packet;
@@ -108,6 +111,43 @@ import packet.Snapshot;
 					}
 				}
 				
+			}
+			/** Test to see server side bullets **/
+			else if(packet.type == (byte) 105){
+				
+				boolean created = false;
+				
+				if(client.serverBullets.size() < 1){
+					client.revert.Bullet b = new client.revert.Bullet( packet.getPositionX(), packet.getPositionY(), packet.getRotationR(),
+							new Vector2f(0,0));
+					b.velocity.x = packet.getVelocityX();
+					b.velocity.y = packet.getVelocityY();
+					b.test_id = packet.getId();
+					b.setImage((Image) Revert.cache.get("test_bullet"));
+					client.serverBullets.add(b);
+				}
+				
+				for(int i = 0; i < client.serverBullets.size(); i++){
+					client.revert.Bullet b = client.serverBullets.get(i);
+					if(b.test_id == packet.getId()){
+						b.clientPosition.x = packet.getPositionX();
+						b.clientPosition.y = packet.getPositionY();
+						b.velocity.x = packet.getVelocityX();
+						b.velocity.y = packet.getVelocityY();
+						b.setRotation(packet.getRotationR());
+						created = true;
+					}
+
+				}
+				if(!created){
+					client.revert.Bullet b = new client.revert.Bullet( packet.getPositionX(), packet.getPositionY(), packet.getRotationR(),
+							new Vector2f(0,0));
+					b.velocity.x = packet.getVelocityX();
+					b.velocity.y = packet.getVelocityY();
+					b.test_id = packet.getId();
+					b.setImage((Image) Revert.cache.get("test_bullet"));
+					client.serverBullets.add(b);
+				}
 			}
 			else if(packet.type == Packet.UPDATE_OTHER_BULLET){
 				

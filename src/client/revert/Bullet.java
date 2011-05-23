@@ -7,6 +7,8 @@ public class Bullet extends Entity {
 	
 	private boolean hasSentToOtherClients;
 	
+	public int test_id = 0;
+	
 	protected boolean dead;
 	protected float speed = 15;
 	protected float maxTravelTime = 250;

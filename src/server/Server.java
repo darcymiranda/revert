@@ -138,7 +138,7 @@ public class Server implements Runnable{
 					client.getShip().update(packet);
 				// update the client's bullets
 				}else if(packet.type == Packet.UPDATE_SELF_BULLET){
-					client.getShip().updateBullets(packet);
+					world.addBullet(packet, client);
 				// update client's keyboard
 				}else if(packet.type == Packet.UPDATE_SELF_INPUT){
 					client.getShip().updateInput(packet);

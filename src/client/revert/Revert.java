@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -43,6 +44,7 @@ public class Revert extends BasicGame {
 	public static Broadcast bc;
 	
 	public Player[] players = new Player[Constants.WORLD_PLAYER_SIZE];
+	public ArrayList<Bullet> serverBullets = new ArrayList<Bullet>(); // test to see server side position of bullets
 	
 	public PlayableMap map;
 	private TiledMap tiledMap;
@@ -188,6 +190,11 @@ public class Revert extends BasicGame {
 		ui.render(g);
 		bc.render(g);
 		
+		// testing
+		for(int i = 0; i < serverBullets.size(); i++){
+			serverBullets.get(i).render(g);
+		}
+		
 	}
 	
 	short counter = 0;
@@ -232,6 +239,11 @@ public class Revert extends BasicGame {
 		ui.update();
 		bc.update();
 		ps.update(delta);
+		
+		// testing
+		for(int i = 0; i < serverBullets.size(); i++){
+			serverBullets.get(i).update(gc, delta);
+		}
 		
 		
 	}

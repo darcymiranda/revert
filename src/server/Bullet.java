@@ -8,21 +8,25 @@ public class Bullet {
 	public float x,y,r;
 	public float xv, yv;
 	
+	public int test_id = 0; // TESTING ID
+	
+	private int id;
+	
 	private float maxTravelTime = 250;
 	private float travelTime;
 	
 	private Shape hitBox;
 	
-	public Bullet(float x, float y, float xv, float yv, float r){
-		super();
+	public Bullet(float x, float y, float xv, float yv, float r, int id){
 		this.x = x;
 		this.y = y;
 		this.xv = xv;
 		this.yv = yv;
 		this.r = r;
+		this.id = id;
 		
 		// TODO: get 'real' width/heights
-		hitBox = new Rectangle(x,y,10,10);
+		hitBox = new Rectangle(x,y,10,2);
 	}
 	
 	public void tick(){
@@ -41,6 +45,7 @@ public class Bullet {
 	public Shape getHitBox(){
 		return hitBox;
 	}
+	public int getId(){ return id; }
 	
 	public void collide(Ship ship){
 		travelTime = maxTravelTime;

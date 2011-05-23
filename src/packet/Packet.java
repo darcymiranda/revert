@@ -28,6 +28,7 @@ public class Packet implements Serializable  {
 	public static final byte UPDATE_ASTEROIDS = 52;
 	public static final byte UPDATE_ORES = 53;
 	public static final byte UPDATE_STATIONS = 54;
+	public static final byte UPDATE_MISSILE = 11;
 
 	private static final long serialVersionUID = 1L;
 	

@@ -20,13 +20,13 @@ import org.newdawn.slick.geom.Vector2f;
  */
 public abstract class Entity {
 	
-	protected Vector2f clientPosition;
+	public Vector2f clientPosition;
+	public Vector2f velocity;
 	protected Vector2f minimapPosition;
-	protected Vector2f velocity;
 	protected Vector2f dirSpeed; 	// Holds the direction speed;
 	
+	public int id;
 	protected int height, width;
-	protected int id;
 	protected float rotation;
 	
 	protected boolean isAlive;

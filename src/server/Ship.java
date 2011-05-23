@@ -1,7 +1,5 @@
 package server;
 
-import java.util.ArrayList;
-
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 
@@ -21,7 +19,7 @@ public class Ship {
 	
 	private int health = 15;
 	
-	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+	//private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	
 	public Ship(float x, float y, boolean alive){
 		this.x = x; this.y = y; this.isAlive = alive;
@@ -53,16 +51,15 @@ public class Ship {
 		
 		oldSpace = space;
 		
-		// Bullets
-		for(int i = 0; i < bullets.size(); i++){
-			bullets.get(i).tick();
-			if(bullets.get(i).hasExpired()) bullets.remove(i);
-		}
-		
 	}
 	
 	public void collide(Bullet bullet){
-		health -=3 ;
+		if(bullet instanceof Missile){
+			health -=9;
+		}
+		else if(bullet instanceof Bullet){
+			health -=2;
+		}
 	}
 	
 	// TODO: get 'real' width/heights
@@ -84,17 +81,8 @@ public class Ship {
 		
 	}
 	
-	public void updateBullets(Packet packet){
-		Bullet bullet = new Bullet(packet.getPositionX(), packet.getPositionY(), packet.getVelocityX(), packet.getVelocityY(), packet.getRotationR());
-		bullets.add(bullet);
-	}
-	
 	public void updateInput(Packet packet) {
 		space = packet.getPressedSpace();
-	}
-	
-	public ArrayList<Bullet> getBullets(){
-		return bullets;
 	}
 	
 	public boolean hasPositionChanged(){ return posChanged; }
