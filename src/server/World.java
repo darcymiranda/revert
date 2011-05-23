@@ -71,11 +71,11 @@ public class World {
 					if(ship.hasPositionChanged())
 						client.send(new Packet(Packet.UPDATE_OTHER, clients[i].id, ship.x, ship.y, ship.xv, ship.yv, ship.r));
 					
-					for(int b = 0; b < bullets.size(); b++){
-						if(bullets.get(b) instanceof Missile){
-							System.out.println("test");
-						}
-					}
+					//for(int b = 0; b < bullets.size(); b++){
+					//	if(bullets.get(b) instanceof Missile){
+					//		System.out.println("test");
+					//	}
+					//}
 					
 					if(ship.hasShootingChanged()){
 						Packet packet = new Packet(Packet.UPDATE_OTHER_BULLET, clients[i].id);
