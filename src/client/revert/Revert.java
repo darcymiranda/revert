@@ -185,20 +185,18 @@ public class Revert extends BasicGame {
 		map.render(g);
 		ps.render();
 		ec.render(g);
-
-		cam.untranslateGraphics();
-		ui.render(g);
-		bc.render(g);
 		
 		// testing
 		for(int i = 0; i < serverBullets.size(); i++){
 			serverBullets.get(i).render(g);
 		}
+
+		cam.untranslateGraphics();
+		ui.render(g);
+		bc.render(g);
 		
 	}
 	
-	short counter = 0;
-
 	@Override
 	public void update(GameContainer gc, int delta) throws SlickException {
 

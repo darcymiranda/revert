@@ -7,6 +7,7 @@ import java.net.SocketException;
 
 import packet.Packet;
 import packet.Snapshot;
+import server.entites.Ship;
 
 /**
  * 
@@ -81,7 +82,7 @@ public class Client extends Thread {
 	
 	public void update(Packet packet){
 		if(ship != null)
-			ship.update(packet);
+			ship.netUpdate(packet);
 	}
 	
 	/**
@@ -89,11 +90,11 @@ public class Client extends Thread {
 	 * this current tick increment.
 	 */
 	public void process(){
-		ship.tick();
+		ship.update();
 	}
 	
 	public void createShip(){
-		ship = new Ship(Constants.SPAWN_POSITION_X, Constants.SPAWN_POSITION_Y, true);
+		ship = new Ship(Constants.SPAWN_POSITION_X, Constants.SPAWN_POSITION_Y, 36, 45, true);
 	}
 	
 	/**

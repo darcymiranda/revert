@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.lwjgl.Sys;
 import org.newdawn.slick.geom.Vector2f;
+import org.newdawn.slick.util.Log;
 
 import packet.Packet;
 import packet.Snapshot;
@@ -63,14 +65,16 @@ public class Server implements Runnable{
 		
 		try{
 			
-			System.out.println("Starting server on " + address);
+			Log.info("Starting server on " + address);
 			init();
-			System.out.println("Server online.\n");
+			Log.info("Server online.\n");
 			
 			for(;;){
 				
 				// Processes recieved packets.
+				
 				process();
+				
 				
 				/* Remove clients that have disconnected. */
 				Client client;
@@ -135,7 +139,7 @@ public class Server implements Runnable{
 			
 				// update the client's game related data
 				if(packet.type == Packet.UPDATE_SELF){
-					client.getShip().update(packet);
+					client.getShip().netUpdate(packet);
 				// update the client's bullets
 				}else if(packet.type == Packet.UPDATE_SELF_BULLET){
 					world.addBullet(packet, client);
@@ -358,37 +362,26 @@ public class Server implements Runnable{
 	}
 	
 	/**
-	 * Reset the server timer.
-	 */
-	private void resetTime(){
-		time = System.currentTimeMillis();
-	}
-	
-	/**
-	 * Return the difference between the last time the timer has been reset and the VM's time since start up.
-	 * @return elapsed time
-	 */
-	private long elapsedTime(){
-		return System.currentTimeMillis() - time;
-	}
-	
-	/**
 	 * Wait till the next ready tick. This is determined by the defined tick rate.
 	 */
 	private void sleep() throws InterruptedException {
 		
-		long sleepTime = tickRate - elapsedTime();
+		
+		
+		
+		long sleepTime = tickRate - (System.currentTimeMillis() - time);
 		if (sleepTime > 0) {
 			Thread.sleep(sleepTime);
 		} else {
 			// The server has reached maximum load, players may now experiance lag.
 			try{
-				System.out.println("Server load: " + (100 + (Math.abs(sleepTime) / (tickRate / 100))) + "%!");
+				Log.warn("Server load: " + (100 + (Math.abs(sleepTime) / (tickRate / 100))) + "%!");
 			}catch(ArithmeticException ae){
 				// WHAT YOU CANT DIVIDE BY ZERO!?!?!
 			}
 		}
-		resetTime();
+		time = System.currentTimeMillis();
+		
 	}
 	
 	/**

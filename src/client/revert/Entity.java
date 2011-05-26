@@ -9,15 +9,6 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
-/**
- * 
- * Display State - entity information to be rendered
- * Previous State - last ticks entity information
- * Simulated State - information of entity ahead by one tick
- * 
- * @author dmiranda
- *
- */
 public abstract class Entity {
 	
 	public Vector2f clientPosition;
@@ -75,8 +66,8 @@ public abstract class Entity {
 		if(rotation < 0) rotation += 360;
 		if(rotation > 360) rotation -= 360;
 		
-		clientPosition.x += velocity.x;
-		clientPosition.y -= velocity.y;
+		clientPosition.x += velocity.x * delta;
+		clientPosition.y -= velocity.y * delta;
 		
 		image.rotate(rotation - image.getRotation());
 		

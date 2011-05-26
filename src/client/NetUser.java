@@ -124,6 +124,7 @@ import packet.Snapshot;
 					b.velocity.y = packet.getVelocityY();
 					b.test_id = packet.getId();
 					b.setImage((Image) Revert.cache.get("test_bullet"));
+					b.test_real = true;
 					client.serverBullets.add(b);
 				}
 				
@@ -135,6 +136,7 @@ import packet.Snapshot;
 						b.velocity.x = packet.getVelocityX();
 						b.velocity.y = packet.getVelocityY();
 						b.setRotation(packet.getRotationR());
+						b.test_real = true;
 						created = true;
 					}
 
@@ -146,6 +148,7 @@ import packet.Snapshot;
 					b.velocity.y = packet.getVelocityY();
 					b.test_id = packet.getId();
 					b.setImage((Image) Revert.cache.get("test_bullet"));
+					b.test_real = true;
 					client.serverBullets.add(b);
 				}
 			}

@@ -2,16 +2,18 @@ package client.revert;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.geom.Vector2f;
+import org.newdawn.slick.util.Log;
 
 public class Bullet extends Entity {    
 	
 	private boolean hasSentToOtherClients;
 	
-	public int test_id = 0;
+	public int test_id = 99999;
+	public boolean test_real = false;
 	
 	protected boolean dead;
-	protected float speed = 15;
-	protected float maxTravelTime = 250;
+	protected float speed = 0.15f;
+	protected final float maxTravelTime = 250;
 	protected float travelTime;
 	
 	public Bullet(float x, float y, float r, Vector2f shipVel){
@@ -38,10 +40,12 @@ public class Bullet extends Entity {
 		super.update(gc, delta);
 		
 		travelTime++;
+		if(travelTime < maxTravelTime && test_real)
+		Log.info(clientPosition.x + " : " + clientPosition.y + " -- " + travelTime);
 	}
 	
 	public boolean hasExpired(){
-		return (travelTime > maxTravelTime) || dead;
+		return (travelTime >= maxTravelTime) || dead;
 	}
 	
 	public boolean hasSentToOtherClients(){ return hasSentToOtherClients; }

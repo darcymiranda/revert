@@ -3,6 +3,9 @@ package server;
 import java.util.ArrayList;
 
 import packet.Packet;
+import server.entites.Bullet;
+import server.entites.Entity;
+import server.entites.Ship;
 
 /**
  * The World is a controller class that handles all the processing requests by the server
@@ -35,12 +38,13 @@ public class World {
 			Ship ship = client.getShip();
 			if( ship !=  null && client.getReadyStatus() && client.isAlive()){
 				if( ship.hasPositionChanged() )
-					client.send(new Packet(Packet.UPDATE_SELF, ship.x, ship.y));
+					client.send(new Packet(Packet.UPDATE_SELF, ship.position.x, ship.position.y));
 					
 					/* test to see server side position of bullets */
 					for(int i = 0; i < bullets.size(); i++){
 						Bullet b = bullets.get(i);
-						Packet packet = new Packet((byte) 105, b.test_id, b.x, b.y, b.xv, b.yv, b.r);
+						Packet packet = new Packet((byte) 105, b.test_id, b.position.x, b.position.y,
+								b.velocity.x, b.velocity.y, b.rotation);
 						server.sendToAll(packet, true);
 					}
 				if( !ship.isAlive() && client.getReadyStatus()){
@@ -64,12 +68,13 @@ public class World {
 				if(clients[i] == null ) continue;
 				if(clients[i].id == client.id) continue;	// dont send to self
 				
-				Ship ship = clients[i].getShip();
+				Ship ship = (Ship) clients[i].getShip();
 				if(ship == null || !ship.isAlive()) continue;
 				
 				if(ship.isAlive()){
 					if(ship.hasPositionChanged())
-						client.send(new Packet(Packet.UPDATE_OTHER, clients[i].id, ship.x, ship.y, ship.xv, ship.yv, ship.r));
+						client.send(new Packet(Packet.UPDATE_OTHER, clients[i].id, ship.position.x,
+								ship.position.y, ship.velocity.x, ship.velocity.y, ship.rotation));
 					
 					//for(int b = 0; b < bullets.size(); b++){
 					//	if(bullets.get(b) instanceof Missile){
@@ -88,7 +93,7 @@ public class World {
 		
 		// Update and remove expired bullets
 		for(int i = 0; i < bullets.size(); i++){
-			bullets.get(i).tick();
+			bullets.get(i).update();
 			if(bullets.get(i).hasExpired()) bullets.remove(i);
 		}
 		
@@ -102,7 +107,7 @@ public class World {
 				if(clients[j] == null) continue;
 				if(clients[j].id == b.getId()) continue;	// ignore own bullets
 				
-				Ship s = clients[j].getShip();
+				Entity s = clients[j].getShip();
 				if(s != null && s.isAlive()){
 					
 					if(b.getHitBox().intersects(s.getHitBox())){

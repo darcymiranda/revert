@@ -11,6 +11,8 @@ public class Constants {
 	public static final float SPAWN_POSITION_X = 200;
 	public static final float SPAWN_POSITION_Y = 200;
 	
+	public static final int SERVER_DELTA = 16;
+	
 	public static final String MAP_001 = "img/map_001.png";
 	
 	public static final Color ASTEROID_RGB = new Color(185,122,87);

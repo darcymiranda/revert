@@ -15,10 +15,10 @@ public class EntityState {
 		rotation = entity.getRotation();
 	}
 	
-	public void update(){
+	public void update(int delta){
 		
-		position.x += velocity.x;
-		position.y -= velocity.y;
+		position.x += velocity.x * delta;
+		position.y -= velocity.y * delta;
 		
 	}
 	

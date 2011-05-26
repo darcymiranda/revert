@@ -99,6 +99,7 @@ public class EntityController {
 					if(bullet.getHitBox().intersects(entity.getHitBox())){
 						bullet.collide(entity);
 						entity.collide(bullet);
+						if(bullet.hasExpired()) bulletPool.remove(i);
 					}
 				}
 			}
@@ -130,7 +131,11 @@ public class EntityController {
 		Bullet b;
 		for(int i = 0; i < bulletPool.size(); i++){
 			b = bulletPool.get(i);
-			if(b.hasExpired()) bulletPool.remove(i);
+			if(b.hasExpired()){ 
+				bulletPool.remove(i);
+				System.gc();
+				continue;
+			}
 			
 			b.update(gc, delta);
 		}

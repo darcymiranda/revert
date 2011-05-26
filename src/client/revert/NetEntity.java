@@ -5,6 +5,15 @@ import org.newdawn.slick.geom.Vector2f;
 
 import packet.Packet;
 
+/**
+ * 
+ * Display State - entity information to be rendered
+ * Previous State - last ticks entity information
+ * Simulated State - information of entity ahead by one tick
+ * 
+ * @author dmiranda
+ *
+ */
 public abstract class NetEntity extends Entity {
 	
 	private EntityState displayState, previousState, simulateState;
@@ -63,8 +72,8 @@ public abstract class NetEntity extends Entity {
 		
 		// interpolate non-local entities
 		if(!isLocal){
-			previousState.update();
-			simulateState.update();
+			previousState.update(delta);
+			simulateState.update(delta);
 			
 			// determine smoothing factor - six equals ticks per packet sent
 			smoothing -= (1 / 6);

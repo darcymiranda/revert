@@ -16,6 +16,8 @@ public class Broadcast {
 	private UnicodeFont font;
 	private float width, height;
 	
+	private boolean isFade = true;
+	
 	final int decayTime = 4;
 	final int fadeTime = 2;
 	
@@ -61,19 +63,24 @@ public class Broadcast {
 		this.font = font;
 	}
 	
+	/**
+	 * Determines if the text will fade out or just disappear. Default to true.
+	 * @param f
+	 */
+	public void setFade(boolean f){
+		this.isFade = f;
+	}
+	
 	public void update(){
 		
 		Message msg;
 		for(int i = 0; i < messages.size(); i++){
 			msg = messages.get(i);
 			
-			//fade out messages
-			if((System.currentTimeMillis() / 1000) - msg.creationTime >= fadeTime){
-				messages.get(i).fade();
-			}
+			float time = System.currentTimeMillis() / 1000;
 			
 			// remove decayed messages
-			if((System.currentTimeMillis() / 1000) - msg.creationTime >= decayTime){
+			if(time - msg.creationTime >= decayTime){
 				messages.remove(i);
 				continue;
 			}
@@ -81,6 +88,11 @@ public class Broadcast {
 			if(msg.position.y > (position.y + height)){
 				messages.remove(i);
 				continue;
+			}
+			
+			//fade out messages
+			if(isFade && (time - msg.creationTime) >= fadeTime){
+				messages.get(i).fade();
 			}
 			
 		}
