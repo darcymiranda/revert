@@ -1,7 +1,6 @@
 package server.entites;
 
 import org.newdawn.slick.geom.Vector2f;
-import org.newdawn.slick.util.Log;
 
 
 public class Bullet extends Entity{
@@ -34,8 +33,6 @@ public class Bullet extends Entity{
 		super.update();
 		
 		travelTime++;
-		
-		Log.info(position.x + " : " + position.y + " -- " + travelTime);
 
 	}
 	

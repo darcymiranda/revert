@@ -30,7 +30,7 @@ public class Server implements Runnable{
 	private InetSocketAddress address;
 	private List<Client> clients = new LinkedList<Client>();
 	private World world;
-	private PlayableMap map;
+	
 	
 	private long time;
 	private final int tickRate = 16;
@@ -45,18 +45,21 @@ public class Server implements Runnable{
 	 * @throws IOException
 	 */
 	public void init() throws IOException{
+		
+		// Start the world.
+		Log.info(" Starting world");
+		world = World.getInstance();
+		world.setServer(this);
+		world.init();
+		
+		// Begin accepting connections.
+		Log.info(" Starting server on " + address);
 		serverSocket = new ServerSocket();
 		serverSocket.bind(address);
-		
 		accepter = new AcceptConnections();
 		accepter.start();
 		isGameStarted = false;
 		acceptConnections = true;
-		
-		world = World.getInstance();
-		world.setServer(this);
-		
-		map = new PlayableMap(Constants.MAP_001);
 		
 	}
 
@@ -65,18 +68,16 @@ public class Server implements Runnable{
 		
 		try{
 			
-			Log.info("Starting server on " + address);
 			init();
-			Log.info("Server online.\n");
+			Log.info(" Server online.\n");
 			
 			for(;;){
 				
 				// Processes recieved packets.
-				
 				process();
 				
 				
-				/* Remove clients that have disconnected. */
+				// Remove clients that have disconnected.
 				Client client;
 				for(int i = 0; i < clients.size(); i ++){
 					client = clients.get(i);
@@ -92,7 +93,6 @@ public class Server implements Runnable{
 						for(int j = 0; j < clients.size(); j++){
 							Client disClient = clients.get(j);
 							disClient.send(new Packet(Packet.DISCONNECT, tempId));
-							//System.out.println("Sent disconnect notifcation about " + tempId + " to " + clients.get(j).id);
 						}
 						
 					}
@@ -114,11 +114,7 @@ public class Server implements Runnable{
 	}
 	
 	/**
-	 * Main game processor. Determines what to do with packets.
-	 */
-	/**
-	 * TODO: Thinking about putting this on the client process method...may cause a lot
-	 * of headaches.
+	 * Main loop.
 	 */
 	public void process(){
 		
@@ -157,20 +153,20 @@ public class Server implements Runnable{
 					
 					// Sends around the names of clients/ids to eachother.
 					// Send to all clients including self to confirm ready mark client side.
-					sendToAll(new Packet(Packet.CONNECT, client.id, packet.getUsername(), client.getReadyStatus()), false);
+					sendToAll(new Packet(Packet.CONNECT, client.id, packet.getUsername(), client.getSpawnStatus()), false);
 					
 					// Sends data from currently connected clients to the newly connected client.
 					sendAllToClient(client, new Packet(Packet.CONNECT));
 					sendAllToClient(client, new Packet(Packet.READY_MARKER));	// make sure new client knows of everyones ready status
-																													// additional client info sent here
 	
 				}
 				
 				// Set ready status flag for clients
-				else if(packet.type == Packet.READY_MARKER && !client.getReadyStatus()){
-					client.setReadyStatus(packet.getStatus());
+				else if(packet.type == Packet.READY_MARKER && !client.getSpawnStatus()){
+					client.setSpawnStatus(packet.getStatus());
 					
-					if(client.getReadyStatus()) client.createShip();
+					if(client.getSpawnStatus()) 
+						client.createShip();
 					
 					String rstatus = packet.getStatus() ? "ready" : "not ready";
 					System.out.println(client + " is " + rstatus + ".");
@@ -207,6 +203,7 @@ public class Server implements Runnable{
 					
 					//send client the map
 					ArrayList<Vector2f> list;
+					PlayableMap map = world.getCurrentMap();
 					list = map.getAsteroids();
 					
 					//sends asteroids
@@ -239,22 +236,6 @@ public class Server implements Runnable{
 		}
 		
 		world.process();
-		
-		/*
-		// Check if all clients are ready
-		int countReadyStatus = 0;
-		if(!isGameStarted){
-			for(Client client : clients){
-				if(client.getReadyStatus()){
-					countReadyStatus++;
-				}
-			}
-			// All clients are ready and host wants to start, start the game!
-			if(countReadyStatus == clients.size() && startGameASAP){
-				startGame();
-			}
-		}
-		*/
 		
 	}
 	
@@ -309,12 +290,12 @@ public class Server implements Runnable{
 			// Determine what kind of packet it is and fill accordingly.
 			if(packet.type == Packet.READY_MARKER){
 				tempPacket.setId(iClient.id);
-				tempPacket.setStatus(iClient.getReadyStatus());
+				tempPacket.setStatus(iClient.getSpawnStatus());
 			}
 			else if(packet.type == Packet.CONNECT){
 				tempPacket.setId(iClient.id);
 				tempPacket.setUsername(iClient.getUsername());
-				tempPacket.setStatus(iClient.getReadyStatus());
+				tempPacket.setStatus(iClient.getSpawnStatus());
 			}
 			else{
 				tempPacket.type = Packet.SERVER_MESSAGE;
@@ -366,9 +347,6 @@ public class Server implements Runnable{
 	 */
 	private void sleep() throws InterruptedException {
 		
-		
-		
-		
 		long sleepTime = tickRate - (System.currentTimeMillis() - time);
 		if (sleepTime > 0) {
 			Thread.sleep(sleepTime);
@@ -411,8 +389,6 @@ public class Server implements Runnable{
 						client.send(new Packet(Packet.CONNECT, client.id));
 						clients.add(client);
 						System.out.println(client + " connected.");
-						
-
 						
 					}catch(Exception e){
 						//e.printStackTrace();

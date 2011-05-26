@@ -2,14 +2,16 @@ package server;
 
 import java.util.ArrayList;
 
+import org.newdawn.slick.util.Log;
+
 import packet.Packet;
 import server.entites.Bullet;
 import server.entites.Entity;
 import server.entites.Ship;
 
 /**
- * The World is a controller class that handles all the processing requests by the server
- * and keeps track of all the clients ship locations, projectiles, health, etc.
+ * The World handles all the processing requests by the server and keeps track of 
+ * all the clients ship locations, projectiles, health, etc.
  * 
  * Important Note: This class is not the source of the clients, it just holds a reference
  * to clients.
@@ -20,11 +22,19 @@ public class World {
 	
 	public static World instance = null;
 	private Server server;
+	private PlayableMap map;
 	
 	private Client[] clients = new Client[Constants.WORLD_PLAYER_SIZE];
 	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	
 	private int unique_id = 0; // TESTING
+	
+	public void init(){
+		// Load the map.
+		Log.info(" Loading map " + Constants.MAP_001);
+		map = new PlayableMap(Constants.MAP_001);
+		Log.info(" Complete.");
+	}
 	
 	/**
 	 * Process everything within the game world. This includes velocity calculations, health,
@@ -36,7 +46,7 @@ public class World {
 		for(Client client : clients){
 			if(client == null) continue;
 			Ship ship = client.getShip();
-			if( ship !=  null && client.getReadyStatus() && client.isAlive()){
+			if( ship !=  null && client.getSpawnStatus() && client.isAlive()){
 				if( ship.hasPositionChanged() )
 					client.send(new Packet(Packet.UPDATE_SELF, ship.position.x, ship.position.y));
 					
@@ -47,9 +57,9 @@ public class World {
 								b.velocity.x, b.velocity.y, b.rotation);
 						server.sendToAll(packet, true);
 					}
-				if( !ship.isAlive() && client.getReadyStatus()){
+				if( !ship.isAlive() && client.getSpawnStatus()){
 					server.sendToAll(new Packet(Packet.UPDATE_DEATH, client.id), true);
-					client.setReadyStatus(false);
+					client.setSpawnStatus(false);
 					server.sendToAll(new Packet(Packet.READY_MARKER, client.id, false), true);
 					System.out.println("Sent death packet to " + client.id);
 				}
@@ -128,19 +138,27 @@ public class World {
 		
 	}
 	
+	/**
+	 * Add a bullet to the game world.
+	 * @param packet
+	 * @param client
+	 */
 	public void addBullet(Packet packet, Client client){
-		Bullet bullet = new Bullet(packet.getPositionX(), packet.getPositionY(),
-				packet.getVelocityX(), packet.getVelocityY(), packet.getRotationR(),
-				client.id);
 		
+		Ship ship = client.getShip();
+		if(ship == null){
+			Log.warn(client + " tried to shoot with a null ship.");
+			return;
+		}
+		
+		Bullet bullet = ship.shoot(packet);
+
 		/* testing client side view of bullets */
 		bullet.test_id = unique_id;
 		unique_id++;
 		/* */
 		
 		bullets.add(bullet);
-		
-		
 		
 	}
 	
@@ -180,5 +198,7 @@ public class World {
 	public void setServer(Server server){
 		this.server = server;
 	}
+	
+	public PlayableMap getCurrentMap(){ return map; }
 
 }

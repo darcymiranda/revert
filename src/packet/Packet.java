@@ -106,6 +106,11 @@ public class Packet implements Serializable  {
 		this.yv = yv;
 	}
 	
+	public Packet(byte t, float r) {
+		this.type = t;
+		this.r = r;
+	}
+
 	public void setMessage(String message){ this.message = message; }
 	public String getMessage(){ return message; }
 	

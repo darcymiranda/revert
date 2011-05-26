@@ -94,7 +94,7 @@ public class Ship extends NetEntity {
 			isShooting = in.isKeyDown(Input.KEY_SPACE);
 			if(isShooting){
 	
-				shoot(delta);
+				shoot();
 				
 			}
 			
@@ -289,7 +289,7 @@ public class Ship extends NetEntity {
 		// REMOTE
 		else {
 			if(isShooting){
-				shoot(delta);
+				shoot();
 			}
 		}
 		
@@ -307,7 +307,10 @@ public class Ship extends NetEntity {
 		
 	}
 	
-	private void shoot(int delta){
+	/**
+	 * Shoot a bullet from the ship.
+	 */
+	private void shoot(){
 		
 		Bullet bullet;
 		if (!(System.currentTimeMillis() - lastFire < rate)) {
@@ -326,10 +329,7 @@ public class Ship extends NetEntity {
 			
 			// REMOTE
 			if(super.isLocal()){
-				
-				// !! sending the ships velocity on purpose
-				Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, bullet.clientPosition.x,
-						bullet.clientPosition.y, velocity.x, velocity.y, bullet.rotation);
+				Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, bullet.rotation);
 				Revert.net.send(packet);
 			}
 		}

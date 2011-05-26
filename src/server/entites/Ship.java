@@ -12,10 +12,15 @@ public class Ship extends Entity {
 	private boolean shootChanged;
 	
 	private int health = 15;
+
+	private int rate = 125;
+	private float accuracy = .96f;
 	
 	public Ship(float x, float y, int height, int width, boolean alive){
 		super(new Vector2f(x,y));
 		this.isAlive = alive;
+		this.height = height;
+		this.width = width;
 	}
 	
 	public void update(){
@@ -38,6 +43,24 @@ public class Ship extends Entity {
 		else if(e instanceof Bullet){
 			health -=2;
 		}
+	}
+	
+	/**
+	 * TODO: A packet should not be required here. Eventually, the accuracy should be
+	 * caculated server side and a packet should be shipped out to the client; of which,
+	 * the client will interpolate it, with it's local side bullet.
+	 * @param packet
+	 * @return
+	 */
+	public Bullet shoot(Packet packet){
+		
+		float cr = packet.getRotationR();
+		
+		float cx = position.x + (super.width / 2 - 5),
+			  cy = position.y + (super.height / 2 - 5); 
+		
+		return new Bullet(cx, cy, velocity.x, velocity.y, cr, id);
+		
 	}
 	
 	/**
