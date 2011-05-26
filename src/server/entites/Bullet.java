@@ -14,6 +14,8 @@ public class Bullet extends Entity{
 	private float maxTravelTime = 250;
 	private float travelTime;
 	
+	private float speed = 0.45f;	/* dont forget to change on client //ya ya duplicate code blah blah// */
+	
 	public Bullet(float x, float y, float xv, float yv, float r, int id){
 		super(new Vector2f(x,y));
 		velocity.x = xv;
@@ -22,6 +24,9 @@ public class Bullet extends Entity{
 		super.id = id;
 		super.height = HEIGHT;
 		super.width = WIDTH;
+		
+		velocity = new Vector2f(-(speed * (float) Math.sin(Math.toRadians(rotation+180))) + xv,
+				-(speed * (float) Math.cos(Math.toRadians(rotation+180))) + yv);
 		
 	}
 

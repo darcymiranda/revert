@@ -33,7 +33,7 @@ public class Server implements Runnable{
 	private PlayableMap map;
 	
 	private long time;
-	private final int tickRate = 17;
+	private final int tickRate = 16;
 	
 	public Server(int port){
 		address = new InetSocketAddress(port);

@@ -12,7 +12,7 @@ public class Bullet extends Entity {
 	public boolean test_real = false;
 	
 	protected boolean dead;
-	protected float speed = 0.15f;
+	protected float speed = 0.45f;		/* dont forget to change on server //ya ya duplicate code blah blah// */
 	protected final float maxTravelTime = 250;
 	protected float travelTime;
 	

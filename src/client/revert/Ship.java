@@ -326,10 +326,11 @@ public class Ship extends NetEntity {
 			
 			// REMOTE
 			if(super.isLocal()){
+				
+				// !! sending the ships velocity on purpose
 				Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, bullet.clientPosition.x,
-						bullet.clientPosition.y, bullet.velocity.x * delta, bullet.velocity.y * delta, bullet.rotation);
+						bullet.clientPosition.y, velocity.x, velocity.y, bullet.rotation);
 				Revert.net.send(packet);
-				System.out.println("SENT!");
 			}
 		}
 		
