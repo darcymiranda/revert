@@ -66,7 +66,7 @@ public class EntityController {
 			
 			Entity other = entityPool.get(i);
 			
-			if(owner == other) continue;
+			if(owner.id == other.id) continue;
 			
 			float dx = (owner.clientPosition.x + owner.width /2) - (other.clientPosition.x + other.width /2);
 			float dy = (owner.clientPosition.y + owner.height /2) - (other.clientPosition.y + other.width /2);
@@ -99,6 +99,7 @@ public class EntityController {
 					if(bullet.getHitBox().intersects(entity.getHitBox())){
 						bullet.collide(entity);
 						entity.collide(bullet);
+						if(bullet.hasExpired()) bulletPool.remove(i);
 					}
 				}
 			}
@@ -107,32 +108,37 @@ public class EntityController {
 	}
 	
 	public void render(Graphics g){
-		Entity e;
-		for(int i = 0; i < entityPool.size(); i++){
-			e = entityPool.get(i);
-			e.render(g);
-		}
 		Bullet b;
 		for(int i = 0; i < bulletPool.size(); i++){
 			b = bulletPool.get(i);
 			b.render(g);
-		}		
+		}	
+		
+		Entity e;
+		for(int i = 0; i < entityPool.size(); i++){
+			e = entityPool.get(i);
+			e.render(g);
+		}	
 	}
 	
 	public void update(GameContainer gc, int delta){
+		Bullet b;
+		for(int i = 0; i < bulletPool.size(); i++){
+			b = bulletPool.get(i);
+			if(b.hasExpired()){ 
+				bulletPool.remove(i);
+				System.gc();
+				continue;
+			}
+			
+			b.update(gc, delta);
+		}
+		
 		Entity e;
 		for(int i = 0; i < entityPool.size(); i++){
 			e = entityPool.get(i);
 			if(e != null)
 				e.update(gc, delta);
-		}
-		
-		Bullet b;
-		for(int i = 0; i < bulletPool.size(); i++){
-			b = bulletPool.get(i);
-			if(b.hasExpired()) bulletPool.remove(i);
-			
-			b.update(gc, delta);
 		}
 	}
 	

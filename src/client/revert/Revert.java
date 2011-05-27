@@ -127,6 +127,7 @@ public class Revert extends BasicGame {
 			cache.put("particle_hit_bullet", ParticleIO.loadEmitter("particle/hit_bullet.xml"));
 			cache.put("particle_smoke", ParticleIO.loadEmitter("particle/smoke.xml"));
 			cache.put("particle_ship_engine", ParticleIO.loadEmitter("particle/ship_engine.xml"));
+			cache.put("particle_missile_trail", ParticleIO.loadEmitter("particle/missile_trail.xml"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (SlickException se){
@@ -189,20 +190,18 @@ public class Revert extends BasicGame {
 		map.render(g);
 		ps.render();
 		ec.render(g);
-
-		cam.untranslateGraphics();
-		ui.render(g);
-		bc.render(g);
 		
 		// testing
 		for(int i = 0; i < serverBullets.size(); i++){
 			serverBullets.get(i).render(g);
 		}
+
+		cam.untranslateGraphics();
+		ui.render(g);
+		bc.render(g);
 		
 	}
 	
-	short counter = 0;
-
 	@Override
 	public void update(GameContainer gc, int delta) throws SlickException {
 

@@ -9,15 +9,6 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
-/**
- * 
- * Display State - entity information to be rendered
- * Previous State - last ticks entity information
- * Simulated State - information of entity ahead by one tick
- * 
- * @author dmiranda
- *
- */
 public abstract class Entity {
 	
 	public Vector2f clientPosition;
@@ -32,11 +23,12 @@ public abstract class Entity {
 	protected boolean isAlive;
 	protected boolean collidable;
 	
-	private Image image;
-	
 	protected String displayText = "";
 	protected UnicodeFont font;
 	protected Color minimapColor;
+	protected Rectangle hitBox;
+	
+	private Image image;
 	
 	public Entity(){
 		clientPosition = new Vector2f();
@@ -44,6 +36,8 @@ public abstract class Entity {
 		velocity = new Vector2f();
 		dirSpeed = new Vector2f();
 		isAlive = true;
+		
+		hitBox = new Rectangle(clientPosition.x, clientPosition.y, height, width);
 		
 	}
 	
@@ -75,8 +69,10 @@ public abstract class Entity {
 		if(rotation < 0) rotation += 360;
 		if(rotation > 360) rotation -= 360;
 		
-		clientPosition.x += velocity.x;
-		clientPosition.y -= velocity.y;
+		clientPosition.x += velocity.x * delta;
+		clientPosition.y -= velocity.y * delta;
+		
+		hitBox.setLocation(clientPosition.x, clientPosition.y);
 		
 		image.rotate(rotation - image.getRotation());
 		
@@ -84,7 +80,8 @@ public abstract class Entity {
 	
 	public void render(Graphics g){
 		
-		g.drawImage(image, clientPosition.x, clientPosition.y);
+		if(image != null)
+			g.drawImage(image, clientPosition.x, clientPosition.y);
 		
 	}
 	
@@ -95,6 +92,16 @@ public abstract class Entity {
 	public void setAlive(boolean isAlive){ this.isAlive = isAlive; }
 	
 	public int getId(){ return id; }
+	
+	public void setHeight(int h){
+		this.height = h;
+		hitBox.setHeight(h);
+	}
+	
+	public void setWidth(int w){
+		this.width = w;
+		hitBox.setWidth(w);
+	}
 	
 	public Vector2f getClientPosition(){ return new Vector2f(clientPosition); }
 	public Vector2f getMinimapPosition() { return new Vector2f(minimapPosition); }

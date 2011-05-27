@@ -7,6 +7,7 @@ import java.net.SocketException;
 
 import packet.Packet;
 import packet.Snapshot;
+import server.entities.Ship;
 
 /**
  * 
@@ -24,7 +25,7 @@ public class Client extends Thread {
 	private InetAddress host;
 	
 	/* is the client ready to start a game (Ready button has been clicked) */
-	private boolean isReady;
+	private boolean isSpawned;
 	
 	/* determines wiether a connection is fully established ( a connection packet went back and forth ) */
 	private boolean connEstablished;
@@ -81,7 +82,7 @@ public class Client extends Thread {
 	
 	public void update(Packet packet){
 		if(ship != null)
-			ship.update(packet);
+			ship.netUpdate(packet);
 	}
 	
 	/**
@@ -89,11 +90,12 @@ public class Client extends Thread {
 	 * this current tick increment.
 	 */
 	public void process(){
-		ship.tick();
+		ship.update();
 	}
 	
 	public void createShip(){
-		ship = new Ship(Constants.SPAWN_POSITION_X, Constants.SPAWN_POSITION_Y, true);
+		ship = new Ship(Constants.SPAWN_POSITION_X, Constants.SPAWN_POSITION_Y, 36, 45, true);
+		ship.id = id;
 	}
 	
 	/**
@@ -128,13 +130,13 @@ public class Client extends Thread {
 	}
 	
 	public void reset(){
-		isReady = false;
+		isSpawned = false;
 		connEstablished = false;
 		username = "unkown";
 	}
 	
-	public boolean getReadyStatus(){ return isReady; }
-	public void setReadyStatus(boolean r){ this.isReady = r; }
+	public boolean getSpawnStatus(){ return isSpawned; }
+	public void setSpawnStatus(boolean r){ this.isSpawned = r; }
 	
 	public boolean getConnectionStatus(){ return connEstablished; }
 	public void setConnectionStatus(boolean s){ this.connEstablished = s; }

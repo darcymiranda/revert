@@ -12,7 +12,7 @@ import packet.Packet;
 
 public class Ship extends NetEntity {
 	
-	private final float ACCELERATION = 4f / 1000;
+	private final float ACCELERATION = 0.005f;
 	private final float maxVelocity = 5;
 	private long lastFire;
 	private int rate = 125;
@@ -101,22 +101,22 @@ public class Ship extends NetEntity {
 			if(in.isKeyPressed(Input.KEY_3)){
 				
 				// target nearest ship and shoot
-				Entity target = Revert.ec.getNearestEntity(this, 5000);
-				if(target != null){
+				//Entity target = Revert.ec.getNearestEntity(this, 5000);
+				//if(target != null){
 					Missile missile = new Missile(getClientPosition().x, getClientPosition().y, rotation,
 							new Vector2f(velocity));
 					missile.setImage((Image) Revert.cache.get("test_bullet"));
 					
-					missile.trackTarget(target);
+					//missile.trackTarget(target);
 					Revert.ec.addBullet(missile);
 					
-					Packet packet = new Packet(Packet.UPDATE_MISSILE, missile.clientPosition.x,
-							missile.clientPosition.y, missile.velocity.x, missile.velocity.y, missile.rotation);
-					Revert.net.send(packet);
-				}
-				else{
-					Revert.bc.addMessage("no target in range");
-				}
+					//Packet packet = new Packet(Packet.UPDATE_MISSILE, missile.clientPosition.x,
+					//		missile.clientPosition.y, missile.velocity.x, missile.velocity.y, missile.rotation);
+					//Revert.net.send(packet);
+				//}
+				//else{
+				//	Revert.bc.addMessage("no target in range");
+				//}
 				
 			}
 			
@@ -129,7 +129,7 @@ public class Ship extends NetEntity {
 				dirSpeed.x = (float) FastTrig.sin(Math.toRadians(rotation-90));
 				dirSpeed.y = (float) FastTrig.cos(Math.toRadians(rotation-90));
 				
-				float xvelChange = velocity.x + (ACCELERATION * delta) * dirSpeed.x;
+				float xvelChange = velocity.x + (ACCELERATION * dirSpeed.x);
 				if(xvelChange <= maxVelocity && xvelChange >= -maxVelocity){
 					
 					velocity.x -= (xvelChange - velocity.x) ; // minus the x velocity as it was only needed for the if statement
@@ -143,7 +143,7 @@ public class Ship extends NetEntity {
 						velocity.x = -maxVelocity /1.2f;
 				}
 				
-				float yvelChange = velocity.y + (ACCELERATION * delta) * dirSpeed.y;
+				float yvelChange = velocity.y + (ACCELERATION * dirSpeed.y);
 				if(yvelChange <= maxVelocity && yvelChange >= -maxVelocity){
 	
 					velocity.y -= (yvelChange - velocity.y); // minus the y velocity as it was only needed for the if statement
@@ -164,7 +164,7 @@ public class Ship extends NetEntity {
 				dirSpeed.x = (float) FastTrig.sin(Math.toRadians(rotation-90));
 				dirSpeed.y = (float) FastTrig.cos(Math.toRadians(rotation-90));
 				
-				float xvelChange = velocity.x + (ACCELERATION * delta) * dirSpeed.x;
+				float xvelChange = velocity.x + (ACCELERATION * dirSpeed.x);
 				if(xvelChange <= maxVelocity && xvelChange >= -maxVelocity){
 					
 					velocity.x += (xvelChange - velocity.x) ; // minus the x velocity as it was only needed for the if statement
@@ -178,7 +178,7 @@ public class Ship extends NetEntity {
 						velocity.x = -maxVelocity /1.2f;
 				}
 				
-				float yvelChange = velocity.y + (ACCELERATION * delta) * dirSpeed.y;
+				float yvelChange = velocity.y + (ACCELERATION * dirSpeed.y);
 				if(yvelChange <= maxVelocity && yvelChange >= -maxVelocity){
 	
 					velocity.y += (yvelChange - velocity.y); // minus the y velocity as it was only needed for the if statement
@@ -213,7 +213,7 @@ public class Ship extends NetEntity {
 			if(in.isKeyDown(Input.KEY_W)){
 				
 				// the calculation for increasing the x-axis velocity for forward movement
-				float xvelChange = velocity.x + (ACCELERATION * delta) * dirSpeed.x;
+				float xvelChange = velocity.x + (ACCELERATION * dirSpeed.x);
 				
 				if(xvelChange <= maxVelocity && xvelChange >= -maxVelocity){
 					
@@ -229,7 +229,7 @@ public class Ship extends NetEntity {
 				}
 				
 				// the calculation for increasing the y-axis velocity for forward movement
-				float yvelChange = velocity.y + (ACCELERATION * delta) * dirSpeed.y;
+				float yvelChange = velocity.y + (ACCELERATION * dirSpeed.y);
 				
 				if(yvelChange <= maxVelocity && yvelChange >= -maxVelocity){
 	
@@ -250,7 +250,7 @@ public class Ship extends NetEntity {
 			if(in.isKeyDown(Input.KEY_S)){
 				
 				// the calculation for increasing the x-axis velocity for backwards movement
-				float xvelChange = velocity.x + ((ACCELERATION * delta) * dirSpeed.x) / 2;
+				float xvelChange = velocity.x + (ACCELERATION * dirSpeed.x) / 2;
 				
 				if(xvelChange <= maxVelocity && xvelChange >= -maxVelocity){
 					
@@ -267,7 +267,7 @@ public class Ship extends NetEntity {
 				}
 				
 				// the calculation for increasing the y-axis velocity for backwards movement
-				float yvelChange = velocity.y + ((ACCELERATION * delta) * dirSpeed.y) / 2;
+				float yvelChange = velocity.y + (ACCELERATION * dirSpeed.y) / 2;
 				
 				if(yvelChange <= maxVelocity && yvelChange >= -maxVelocity){
 					
@@ -293,6 +293,7 @@ public class Ship extends NetEntity {
 			}
 		}
 		
+		
 		super.setRotation(rotation);
 	
 	}
@@ -300,13 +301,16 @@ public class Ship extends NetEntity {
 	public void render(Graphics g){
 		super.render(g);
 		
-		//g.drawRect(serverPosition.x, serverPosition.y, width, height);
+		g.drawRect(serverPosition.x, serverPosition.y, width, height);
 		if(font != null)
 			font.drawString(clientPosition.x + width - 50, clientPosition.y + height, displayText);
 		
 	}
 	
-	public void shoot(){
+	/**
+	 * Shoot a bullet from the ship.
+	 */
+	private void shoot(){
 		
 		Bullet bullet;
 		if (!(System.currentTimeMillis() - lastFire < rate)) {
@@ -325,8 +329,7 @@ public class Ship extends NetEntity {
 			
 			// REMOTE
 			if(super.isLocal()){
-				Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, bullet.clientPosition.x,
-						bullet.clientPosition.y, bullet.velocity.x, bullet.velocity.y, bullet.rotation);
+				Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, 1, bullet.rotation);
 				Revert.net.send(packet);
 			}
 		}

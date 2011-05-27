@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.lwjgl.Sys;
 import org.newdawn.slick.geom.Vector2f;
+import org.newdawn.slick.util.Log;
 
 import packet.Packet;
 import packet.Snapshot;
@@ -28,10 +30,10 @@ public class Server implements Runnable{
 	private InetSocketAddress address;
 	private List<Client> clients = new LinkedList<Client>();
 	private World world;
-	private PlayableMap map;
+	
 	
 	private long time;
-	private final int tickRate = 17;
+	private final int tickRate = 16;
 	
 	public Server(int port){
 		address = new InetSocketAddress(port);
@@ -43,18 +45,21 @@ public class Server implements Runnable{
 	 * @throws IOException
 	 */
 	public void init() throws IOException{
+		
+		// Start the world.
+		Log.info(" Starting world");
+		world = World.getInstance();
+		world.setServer(this);
+		world.init();
+		
+		// Begin accepting connections.
+		Log.info(" Starting server on " + address);
 		serverSocket = new ServerSocket();
 		serverSocket.bind(address);
-		
 		accepter = new AcceptConnections();
 		accepter.start();
 		isGameStarted = false;
 		acceptConnections = true;
-		
-		world = World.getInstance();
-		world.setServer(this);
-		
-		map = new PlayableMap(Constants.MAP_001);
 		
 	}
 
@@ -63,16 +68,16 @@ public class Server implements Runnable{
 		
 		try{
 			
-			System.out.println("Starting server on " + address);
 			init();
-			System.out.println("Server online.\n");
+			Log.info(" Server online.\n");
 			
 			for(;;){
 				
 				// Processes recieved packets.
 				process();
 				
-				/* Remove clients that have disconnected. */
+				
+				// Remove clients that have disconnected.
 				Client client;
 				for(int i = 0; i < clients.size(); i ++){
 					client = clients.get(i);
@@ -88,7 +93,6 @@ public class Server implements Runnable{
 						for(int j = 0; j < clients.size(); j++){
 							Client disClient = clients.get(j);
 							disClient.send(new Packet(Packet.DISCONNECT, tempId));
-							//System.out.println("Sent disconnect notifcation about " + tempId + " to " + clients.get(j).id);
 						}
 						
 					}
@@ -110,11 +114,7 @@ public class Server implements Runnable{
 	}
 	
 	/**
-	 * Main game processor. Determines what to do with packets.
-	 */
-	/**
-	 * TODO: Thinking about putting this on the client process method...may cause a lot
-	 * of headaches.
+	 * Main loop.
 	 */
 	public void process(){
 		
@@ -135,7 +135,7 @@ public class Server implements Runnable{
 			
 				// update the client's game related data
 				if(packet.type == Packet.UPDATE_SELF){
-					client.getShip().update(packet);
+					client.getShip().netUpdate(packet);
 				// update the client's bullets
 				}else if(packet.type == Packet.UPDATE_SELF_BULLET){
 					world.addBullet(packet, client);
@@ -153,20 +153,20 @@ public class Server implements Runnable{
 					
 					// Sends around the names of clients/ids to eachother.
 					// Send to all clients including self to confirm ready mark client side.
-					sendToAll(new Packet(Packet.CONNECT, client.id, packet.getUsername(), client.getReadyStatus()), false);
+					sendToAll(new Packet(Packet.CONNECT, client.id, packet.getUsername(), client.getSpawnStatus()), false);
 					
 					// Sends data from currently connected clients to the newly connected client.
 					sendAllToClient(client, new Packet(Packet.CONNECT));
 					sendAllToClient(client, new Packet(Packet.READY_MARKER));	// make sure new client knows of everyones ready status
-																													// additional client info sent here
 	
 				}
 				
 				// Set ready status flag for clients
-				else if(packet.type == Packet.READY_MARKER && !client.getReadyStatus()){
-					client.setReadyStatus(packet.getStatus());
+				else if(packet.type == Packet.READY_MARKER && !client.getSpawnStatus()){
+					client.setSpawnStatus(packet.getStatus());
 					
-					if(client.getReadyStatus()) client.createShip();
+					if(client.getSpawnStatus()) 
+						client.createShip();
 					
 					String rstatus = packet.getStatus() ? "ready" : "not ready";
 					System.out.println(client + " is " + rstatus + ".");
@@ -203,21 +203,25 @@ public class Server implements Runnable{
 					
 					//send client the map
 					ArrayList<Vector2f> list;
-					list = map.getAsteroidsLG();
+					PlayableMap map = world.getCurrentMap();
+					
 					
 					//sends large asteroids
+					list = map.getAsteroidsLG();
 					for(int i = 0; i < list.size(); i++)
 					{
 						Vector2f temp = list.get(i);
 						client.send(new Packet(Packet.UPDATE_ASTEROIDS_LG, temp.x, temp.y));
 					}
 					//sends medium asteroids
+					list = map.getAsteroidsMD();
 					for(int i = 0; i < list.size(); i++)
 					{
 						Vector2f temp = list.get(i);
 						client.send(new Packet(Packet.UPDATE_ASTEROIDS_MD, temp.x, temp.y));
 					}
 					//sends small asteroids
+					list = map.getAsteroidsSM();
 					for(int i = 0; i < list.size(); i++)
 					{
 						Vector2f temp = list.get(i);
@@ -247,22 +251,6 @@ public class Server implements Runnable{
 		}
 		
 		world.process();
-		
-		/*
-		// Check if all clients are ready
-		int countReadyStatus = 0;
-		if(!isGameStarted){
-			for(Client client : clients){
-				if(client.getReadyStatus()){
-					countReadyStatus++;
-				}
-			}
-			// All clients are ready and host wants to start, start the game!
-			if(countReadyStatus == clients.size() && startGameASAP){
-				startGame();
-			}
-		}
-		*/
 		
 	}
 	
@@ -317,12 +305,12 @@ public class Server implements Runnable{
 			// Determine what kind of packet it is and fill accordingly.
 			if(packet.type == Packet.READY_MARKER){
 				tempPacket.setId(iClient.id);
-				tempPacket.setStatus(iClient.getReadyStatus());
+				tempPacket.setStatus(iClient.getSpawnStatus());
 			}
 			else if(packet.type == Packet.CONNECT){
 				tempPacket.setId(iClient.id);
 				tempPacket.setUsername(iClient.getUsername());
-				tempPacket.setStatus(iClient.getReadyStatus());
+				tempPacket.setStatus(iClient.getSpawnStatus());
 			}
 			else{
 				tempPacket.type = Packet.SERVER_MESSAGE;
@@ -370,37 +358,23 @@ public class Server implements Runnable{
 	}
 	
 	/**
-	 * Reset the server timer.
-	 */
-	private void resetTime(){
-		time = System.currentTimeMillis();
-	}
-	
-	/**
-	 * Return the difference between the last time the timer has been reset and the VM's time since start up.
-	 * @return elapsed time
-	 */
-	private long elapsedTime(){
-		return System.currentTimeMillis() - time;
-	}
-	
-	/**
 	 * Wait till the next ready tick. This is determined by the defined tick rate.
 	 */
 	private void sleep() throws InterruptedException {
 		
-		long sleepTime = tickRate - elapsedTime();
+		long sleepTime = tickRate - (System.currentTimeMillis() - time);
 		if (sleepTime > 0) {
 			Thread.sleep(sleepTime);
 		} else {
 			// The server has reached maximum load, players may now experiance lag.
 			try{
-				System.out.println("Server load: " + (100 + (Math.abs(sleepTime) / (tickRate / 100))) + "%!");
+				Log.warn("Server load: " + (100 + (Math.abs(sleepTime) / (tickRate / 100))) + "%!");
 			}catch(ArithmeticException ae){
 				// WHAT YOU CANT DIVIDE BY ZERO!?!?!
 			}
 		}
-		resetTime();
+		time = System.currentTimeMillis();
+		
 	}
 	
 	/**
@@ -430,8 +404,6 @@ public class Server implements Runnable{
 						client.send(new Packet(Packet.CONNECT, client.id));
 						clients.add(client);
 						System.out.println(client + " connected.");
-						
-
 						
 					}catch(Exception e){
 						//e.printStackTrace();

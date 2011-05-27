@@ -7,11 +7,12 @@ public class Bullet extends Entity {
 	
 	private boolean hasSentToOtherClients;
 	
-	public int test_id = 0;
+	public int test_id = 99999;
+	public boolean test_real = false;
 	
 	protected boolean dead;
-	protected float speed = 15;
-	protected float maxTravelTime = 250;
+	protected float speed = 0.45f;		/* dont forget to change on server //ya ya duplicate code blah blah// */
+	protected final float maxTravelTime = 250;
 	protected float travelTime;
 	
 	public Bullet(float x, float y, float r, Vector2f shipVel){
@@ -23,9 +24,6 @@ public class Bullet extends Entity {
 		
 		velocity = new Vector2f(-(speed * (float) Math.sin(Math.toRadians(rotation+180))) + shipVel.x,
 								-(speed * (float) Math.cos(Math.toRadians(rotation+180))) + shipVel.y);
-		
-		//velocity.x = -((speed * delta) * (float) Math.sin(Math.toRadians(rotation+180)));
-		//velocity.y = -((speed * delta) * (float) Math.cos(Math.toRadians(rotation+180)));
 		
 		collidable = true;
 	}
@@ -41,7 +39,7 @@ public class Bullet extends Entity {
 	}
 	
 	public boolean hasExpired(){
-		return (travelTime > maxTravelTime) || dead;
+		return (travelTime >= maxTravelTime) || dead;
 	}
 	
 	public boolean hasSentToOtherClients(){ return hasSentToOtherClients; }
