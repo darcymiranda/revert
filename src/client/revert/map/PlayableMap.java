@@ -53,7 +53,9 @@ public class PlayableMap
 		
 	}
 	
-	public void addAsteroid(float x, float y) { entities.add(new Asteroid(x, y)); }
+	public void addAsteroidSmall(float x, float y) { entities.add(new Asteroid(x, y, Asteroid.SMALL)); }
+	public void addAsteroidMedium(float x, float y) { entities.add(new Asteroid(x, y, Asteroid.MEDIUM)); }
+	public void addAsteroidLarge(float x, float y) { entities.add(new Asteroid(x, y, Asteroid.LARGE)); }
 	public void addOre(float x, float y) { entities.add(new Ore(x, y)); }
 	public void addStation(float x, float y) { entities.add(new Station(x, y)); }
 	

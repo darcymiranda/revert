@@ -281,8 +281,14 @@ import packet.Snapshot;
 			else if(packet.type == Packet.SERVER_MESSAGE){
 				System.out.println("Server: " + packet.getMessage());
 			}
-			else if(packet.type == Packet.UPDATE_ASTEROIDS){
-				client.map.addAsteroid(packet.getPositionX(), packet.getPositionY());
+			else if(packet.type == Packet.UPDATE_ASTEROIDS_SM){
+				client.map.addAsteroidSmall(packet.getPositionX(), packet.getPositionY());
+			}
+			else if(packet.type == Packet.UPDATE_ASTEROIDS_MD){
+				client.map.addAsteroidMedium(packet.getPositionX(), packet.getPositionY());
+			}
+			else if(packet.type == Packet.UPDATE_ASTEROIDS_LG){
+				client.map.addAsteroidLarge(packet.getPositionX(), packet.getPositionY());
 			}
 			else if(packet.type == Packet.UPDATE_ORES){
 				client.map.addOre(packet.getPositionX(), packet.getPositionY());

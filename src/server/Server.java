@@ -203,13 +203,25 @@ public class Server implements Runnable{
 					
 					//send client the map
 					ArrayList<Vector2f> list;
-					list = map.getAsteroids();
+					list = map.getAsteroidsLG();
 					
-					//sends asteroids
+					//sends large asteroids
 					for(int i = 0; i < list.size(); i++)
 					{
 						Vector2f temp = list.get(i);
-						client.send(new Packet(Packet.UPDATE_ASTEROIDS, temp.x, temp.y));
+						client.send(new Packet(Packet.UPDATE_ASTEROIDS_LG, temp.x, temp.y));
+					}
+					//sends medium asteroids
+					for(int i = 0; i < list.size(); i++)
+					{
+						Vector2f temp = list.get(i);
+						client.send(new Packet(Packet.UPDATE_ASTEROIDS_MD, temp.x, temp.y));
+					}
+					//sends small asteroids
+					for(int i = 0; i < list.size(); i++)
+					{
+						Vector2f temp = list.get(i);
+						client.send(new Packet(Packet.UPDATE_ASTEROIDS_SM, temp.x, temp.y));
 					}
 					//sends ores
 					list = map.getOres();
