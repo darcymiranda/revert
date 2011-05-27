@@ -123,6 +123,7 @@ public class Revert extends BasicGame {
 			cache.put("particle_hit_bullet", ParticleIO.loadEmitter("particle/hit_bullet.xml"));
 			cache.put("particle_smoke", ParticleIO.loadEmitter("particle/smoke.xml"));
 			cache.put("particle_ship_engine", ParticleIO.loadEmitter("particle/ship_engine.xml"));
+			cache.put("particle_missile_trail", ParticleIO.loadEmitter("particle/missile_trail.xml"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (SlickException se){

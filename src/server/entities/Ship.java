@@ -1,4 +1,4 @@
-package server.entites;
+package server.entities;
 
 import org.newdawn.slick.geom.Vector2f;
 
@@ -60,6 +60,18 @@ public class Ship extends Entity {
 			  cy = position.y + (super.height / 2 - 5); 
 		
 		return new Bullet(cx, cy, velocity.x, velocity.y, cr, id);
+		
+	}
+		
+	public Missile shootTrackable(Packet packet, Entity entity){
+		
+		float cx = position.x + (super.width / 2 - 5),
+		  cy = position.y + (super.height / 2 - 5); 
+		
+		Missile missile = new Missile(cx, cy, velocity.x, velocity.y, packet.getRotationR(), id);
+		//missile.trackEntity(entity);
+		
+		return missile;
 		
 	}
 	

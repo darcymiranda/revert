@@ -39,8 +39,10 @@ public class Packet implements Serializable  {
 	private boolean status;
 	private boolean w,s,d,a,q,e,space;
 	private float x,y,r,xv,yv;
+	private byte bulletType;
 	
 	public byte type;
+	
 	
 	public Packet(byte t){
 		this.type = t;
@@ -106,9 +108,16 @@ public class Packet implements Serializable  {
 		this.yv = yv;
 	}
 	
-	public Packet(byte t, float r) {
+	public Packet(byte t, byte bt, float r) {
 		this.type = t;
+		this.bulletType = bt;
 		this.r = r;
+	}
+	
+	public Packet(byte t, byte bt, int id){
+		this.type = t;
+		this.bulletType = bt;
+		this.id = id;
 	}
 
 	public void setMessage(String message){ this.message = message; }
@@ -138,6 +147,8 @@ public class Packet implements Serializable  {
 	public float getRotationR(){ return r; }
 	public float getVelocityX(){ return xv; }
 	public float getVelocityY(){ return yv; }
+	
+	public byte getBulletType(){ return bulletType; }
 
 	
 	public float getTime(){ return time; }

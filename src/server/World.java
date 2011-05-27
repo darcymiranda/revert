@@ -5,9 +5,10 @@ import java.util.ArrayList;
 import org.newdawn.slick.util.Log;
 
 import packet.Packet;
-import server.entites.Bullet;
-import server.entites.Entity;
-import server.entites.Ship;
+import server.entities.Bullet;
+import server.entities.Entity;
+import server.entities.Missile;
+import server.entities.Ship;
 
 /**
  * The World handles all the processing requests by the server and keeps track of 
@@ -86,11 +87,15 @@ public class World {
 						client.send(new Packet(Packet.UPDATE_OTHER, clients[i].id, ship.position.x,
 								ship.position.y, ship.velocity.x, ship.velocity.y, ship.rotation));
 					
-					//for(int b = 0; b < bullets.size(); b++){
-					//	if(bullets.get(b) instanceof Missile){
-					//		System.out.println("test");
-					//	}
-					//}
+					for(int b = 0; b < bullets.size(); b++){
+						Bullet bullet = bullets.get(b);
+						if(bullet instanceof Missile){
+							if(bullet.id != client.id) continue;	// get the owner's bullets only
+							if(bullet.hasPositionChanged())
+								client.send(new Packet(Packet.UPDATE_MISSILE, clients[i].id, bullet.position.x,
+										bullet.position.y, bullet.velocity.x, bullet.velocity.y));
+						}
+					}
 					
 					if(ship.hasShootingChanged()){
 						Packet packet = new Packet(Packet.UPDATE_OTHER_BULLET, clients[i].id);
@@ -151,14 +156,33 @@ public class World {
 			return;
 		}
 		
-		Bullet bullet = ship.shoot(packet);
-
-		/* testing client side view of bullets */
-		bullet.test_id = unique_id;
-		unique_id++;
-		/* */
+		switch(packet.getBulletType()){
 		
-		bullets.add(bullet);
+			case 1:
+				Bullet bullet = ship.shoot(packet);
+		
+				/* testing client side view of bullets */
+				bullet.test_id = unique_id;
+				unique_id++;
+				/* */
+				
+				bullets.add(bullet);
+				break;
+			case 2:
+				Client trackClient = getPlayerById(packet.getId());
+				Ship trackShip = null;
+				Missile missile = null;
+				
+				if(trackClient != null) 
+					trackShip = client.getShip();
+				
+				if(ship != null)
+					missile = ship.shootTrackable(packet, trackShip);
+				
+				bullets.add(missile);
+				break;
+			
+		}
 		
 	}
 	
@@ -187,6 +211,18 @@ public class World {
 				clients[i] = null;
 			}
 		}
+	}
+	
+	public Client getPlayerById(int id){
+		
+		Client client = null;
+		for(int i = 0; i < clients.length; i++){
+			if(clients[i] == null) continue;
+			if(clients[i].id == id)
+				client = clients[i];
+		}
+		
+		return client;
 	}
 	
 	public static World getInstance(){

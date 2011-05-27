@@ -7,7 +7,7 @@ import java.net.SocketException;
 
 import packet.Packet;
 import packet.Snapshot;
-import server.entites.Ship;
+import server.entities.Ship;
 
 /**
  * 

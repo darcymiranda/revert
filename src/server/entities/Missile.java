@@ -1,12 +1,16 @@
-package client.revert;
+package server.entities;
 
-import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.geom.Vector2f;
-import org.newdawn.slick.particles.ConfigurableEmitter;
 
+import server.entities.Entity;
+
+import server.Constants;
 import util.Stopwatch;
 
-public class Missile extends Bullet {
+public class Missile extends Bullet{
+
+	private final int HEIGHT = 10,
+					WIDTH = 2;
 	
 	private final float TURN_SPEED = 0.11f;
 	private final float ACCELERATION = 0.003f;
@@ -20,16 +24,11 @@ public class Missile extends Bullet {
 	
 	private Entity targetEntity;
 	private Stopwatch timer = new Stopwatch();
-	private ConfigurableEmitter trail;
 	
-	public Missile(float x, float y, float r, Vector2f shipVel){
-		super(x, y, r, shipVel);
-		
-		collidable = true;
-		trail = (ConfigurableEmitter) Revert.cache.get("particle_missile_trail");
-		trail = trail.duplicate();
-		Revert.ps.addEmitter(trail);
-		
+	public Missile(float x, float y, float xv, float yv, float r, int id) {
+		super(x, y, xv, yv, r, id);
+		super.height = HEIGHT;
+		super.width = WIDTH;
 	}
 	
 	public void trackTarget(Entity e){
@@ -40,14 +39,14 @@ public class Missile extends Bullet {
 	}
 	
 	private void findTarget(){
-		targetEntity = Revert.ec.getNearestEntity(this, 2000);
+		//targetEntity = Revert.ec.getNearestEntity(this, 2000);
 		if(targetEntity != null)
 			state++;
 	}
 	
 	private void preping(){
 		
-		if(timer.elapsed() >= PREP_TIME*delta){
+		if(timer.elapsed() >= PREP_TIME*Constants.SERVER_DELTA){
 			state++;
 		}
 	}
@@ -58,15 +57,15 @@ public class Missile extends Bullet {
 			velocity.x = -(speed * (float) Math.sin(Math.toRadians(rotation+180)));
 			velocity.y = -(speed * (float) Math.cos(Math.toRadians(rotation+180)));
 			
-			Vector2f targetDir = new Vector2f(targetEntity.clientPosition.x + (targetEntity.width /2) - clientPosition.x + (width /2),
-											targetEntity.clientPosition.y + (targetEntity.height /2) - clientPosition.y + (height/2));
+			Vector2f targetDir = new Vector2f(targetEntity.position.x + (targetEntity.width /2) - position.x + (width /2),
+											targetEntity.position.y + (targetEntity.height /2) - position.y + (height/2));
 			
 			
 			if(velocity.y * targetDir.x + velocity.x * targetDir.y > 0){
-				rotation += TURN_SPEED * delta;
+				rotation += TURN_SPEED * Constants.SERVER_DELTA;
 			}
 			else{
-				rotation -= TURN_SPEED * delta;
+				rotation -= TURN_SPEED * Constants.SERVER_DELTA;
 			}
 			
 		}
@@ -75,13 +74,8 @@ public class Missile extends Bullet {
 		}
 	}
 	
-	public void update(GameContainer gc, int delta){
-		super.update(gc, delta);
-		
-		this.delta = delta;
-		
-		trail.setPosition(clientPosition.x + (width/2), clientPosition.y + (height/2), false);
-		trail.angularOffset.setValue(rotation);
+	public void update(){
+		super.update();
 		
 		velocity.x = -(speed * (float) Math.sin(Math.toRadians(rotation+180)));
 		velocity.y = -(speed * (float) Math.cos(Math.toRadians(rotation+180)));
@@ -96,12 +90,5 @@ public class Missile extends Bullet {
 		if(state == 2) chaseTarget();
 		
 	}
-
-	@Override
-	public void collide(Entity e) {
-		dead = true;
-		targetEntity = null;
-		state = -1;
-	}
-
+		
 }

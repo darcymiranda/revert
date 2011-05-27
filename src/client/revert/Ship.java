@@ -101,22 +101,22 @@ public class Ship extends NetEntity {
 			if(in.isKeyPressed(Input.KEY_3)){
 				
 				// target nearest ship and shoot
-				Entity target = Revert.ec.getNearestEntity(this, 5000);
-				if(target != null){
+				//Entity target = Revert.ec.getNearestEntity(this, 5000);
+				//if(target != null){
 					Missile missile = new Missile(getClientPosition().x, getClientPosition().y, rotation,
 							new Vector2f(velocity));
 					missile.setImage((Image) Revert.cache.get("test_bullet"));
 					
-					missile.trackTarget(target);
+					//missile.trackTarget(target);
 					Revert.ec.addBullet(missile);
 					
-					Packet packet = new Packet(Packet.UPDATE_MISSILE, missile.clientPosition.x,
-							missile.clientPosition.y, missile.velocity.x, missile.velocity.y, missile.rotation);
-					Revert.net.send(packet);
-				}
-				else{
-					Revert.bc.addMessage("no target in range");
-				}
+					//Packet packet = new Packet(Packet.UPDATE_MISSILE, missile.clientPosition.x,
+					//		missile.clientPosition.y, missile.velocity.x, missile.velocity.y, missile.rotation);
+					//Revert.net.send(packet);
+				//}
+				//else{
+				//	Revert.bc.addMessage("no target in range");
+				//}
 				
 			}
 			
@@ -329,7 +329,7 @@ public class Ship extends NetEntity {
 			
 			// REMOTE
 			if(super.isLocal()){
-				Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, bullet.rotation);
+				Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, 1, bullet.rotation);
 				Revert.net.send(packet);
 			}
 		}

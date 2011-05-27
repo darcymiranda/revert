@@ -1,4 +1,4 @@
-package server.entites;
+package server.entities;
 
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
@@ -65,10 +65,13 @@ public abstract class Entity {
 	public boolean isAlive(){ return isAlive; }
 	public void setAlive(boolean isAlive){ this.isAlive = isAlive; }
 	
+	public int getHeight(){ return height; }
 	public void setHeight(int h){
 		this.height = h;
 		hitBox.setHeight(h);
 	}
+	
+	public int getWidth(){ return width; }
 	public void setWidth(int w){
 		this.width = w;
 		hitBox.setWidth(w);

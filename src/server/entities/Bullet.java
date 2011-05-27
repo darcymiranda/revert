@@ -1,4 +1,4 @@
-package server.entites;
+package server.entities;
 
 import org.newdawn.slick.geom.Vector2f;
 
