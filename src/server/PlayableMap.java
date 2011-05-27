@@ -45,9 +45,9 @@ public class PlayableMap
 		}
 		
 		//reads each pixel of the image checking colors
-		for(int i = 0; i < 20; i++)
+		for(int i = 0; i < imageMap.getHeight(); i++)
 		{
-			for(int j = 0; j < 20; j++)
+			for(int j = 0; j < imageMap.getWidth(); j++)
 			{
 				int temp = imageMap.getRGB(j, i);
 				//gets the rgb of pixel
