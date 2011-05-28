@@ -74,11 +74,11 @@ public class Broadcast {
 	public void update(){
 		
 		Message msg;
+		long time = System.currentTimeMillis() / 1000;
+		
 		for(int i = 0; i < messages.size(); i++){
 			msg = messages.get(i);
-			
-			float time = System.currentTimeMillis() / 1000;
-			
+
 			// remove decayed messages
 			if(time - msg.creationTime >= decayTime){
 				messages.remove(i);
@@ -91,9 +91,11 @@ public class Broadcast {
 			}
 			
 			//fade out messages
+			System.out.println(isFade + " " + (time - msg.creationTime));
 			if(isFade && (time - msg.creationTime) >= fadeTime){
 				messages.get(i).fade();
 			}
+
 			
 		}
 		

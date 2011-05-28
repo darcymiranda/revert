@@ -177,7 +177,6 @@ import packet.Snapshot;
 					if(client.players[pId].getShip() != null){
 						if(packet.getBulletType() == 2){
 							client.players[pId].getShip().shootMissileRemote(packet.bulletId);
-							System.out.println("spawned bullet for " + pId);
 						}
 					}
 				}
@@ -306,8 +305,8 @@ import packet.Snapshot;
 					// remove the player from the game
 					if(client.players[i].id == packet.getId()){
 						System.out.println(client.players[i].getUsername() + " has disconnected.");
-						client.bc.addMessage(client.players[i].getUsername() + " has disconnected.");
-						client.ec.removeEntity(client.players[i].getShip());
+						Revert.bc.addMessage(client.players[i].getUsername() + " has disconnected.");
+						Revert.ec.removeEntity(client.players[i].getShip());
 						client.players[i] = null;
 					}
 					break;

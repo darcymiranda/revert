@@ -52,10 +52,8 @@ public class Ship extends NetEntity {
 			float centerx = e.clientPosition.x + e.getWidth() /2;
 			float centery = e.clientPosition.y + e.getHeight() /2;
 			
-			temp.setPosition(centerx, centery);
-			temp2.setPosition(centerx, centery);
-			System.out.println(temp.getX() + " " + temp.getY());
-			System.out.println(e.clientPosition.x + " " + e.clientPosition.y);
+			temp.setPosition(centerx, centery, false);
+			temp2.setPosition(centerx, centery, false);
 			
 			Revert.ps.addEmitter(temp);
 			Revert.ps.addEmitter(temp2);
