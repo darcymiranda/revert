@@ -192,9 +192,9 @@ public class Revert extends BasicGame {
 		ps.render();
 		
 		// testing
-		//for(int i = 0; i < serverBullets.size(); i++){
-		//	serverBullets.get(i).render(g);
-		//}
+		for(int i = 0; i < serverBullets.size(); i++){
+			serverBullets.get(i).render(g);
+		}
 
 		cam.untranslateGraphics();
 		ui.render(g);
@@ -244,9 +244,9 @@ public class Revert extends BasicGame {
 		bc.update();
 		
 		// testing
-		//for(int i = 0; i < serverBullets.size(); i++){
-		//	serverBullets.get(i).update(gc, delta);
-		//}
+		for(int i = 0; i < serverBullets.size(); i++){
+			serverBullets.get(i).update(gc, delta);
+		}
 		
 		
 	}

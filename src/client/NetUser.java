@@ -177,6 +177,7 @@ import packet.Snapshot;
 					if(client.players[pId].getShip() != null){
 						if(packet.getBulletType() == 2){
 							client.players[pId].getShip().shootMissileRemote(packet.bulletId);
+							System.out.println("spawned bullet for " + pId);
 						}
 					}
 				}

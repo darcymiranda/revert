@@ -89,25 +89,6 @@ public class World {
 						client.send(new Packet(Packet.UPDATE_OTHER, clients[i].id, ship.position.x,
 								ship.position.y, ship.velocity.x, ship.velocity.y, ship.rotation));
 					
-					// check if a missile lock has changed
-					for(int b = 0; b < bullets.length; b++){
-						if(bullets[i] == null) continue;
-						Bullet bullet = bullets[i];
-						if(bullet instanceof Missile){
-							Missile missile = (Missile) bullet;
-							if(missile.id != missile.id) continue;	// get the owner's bullets only
-							if(missile.hasTargetChanged()){
-								System.out.println("TARGET CHANGED");
-								Packet packet = new Packet(Packet.UPDATE_OTHER_BULLET);
-								packet.id = clients[i].id;
-								packet.bulletType = 2;
-								packet.bulletId = missile.id;
-								packet.targetId = missile.getTargetedEntity().id;
-								client.send(packet);
-							}
-						}
-					}
-					
 					if(ship.hasShootingChanged()){
 						Packet packet = new Packet(Packet.UPDATE_OTHER_BULLET);
 						packet.id = clients[i].id;
@@ -115,6 +96,26 @@ public class World {
 						packet.setKeySpace(ship.isShooting());
 						client.send(packet);
 					}
+				}
+			}
+		}
+		
+		// check if a missile lock has changed
+		for(int b = 0; b < bullets.length; b++){
+			if(bullets[b] == null) continue;
+			Bullet bullet = bullets[b];
+			if(bullet instanceof Missile){
+				Missile missile = (Missile) bullet;
+				if(missile.id != missile.id) continue;	// get the owner's bullets only
+				if(missile.hasTargetChanged()){
+					System.out.println("TARGET CHANGED");
+					Packet packet = new Packet(Packet.UPDATE_OTHER_BULLET);
+					packet.id = missile.getOwner().id;
+					packet.bulletType = 2;
+					packet.bulletId = missile.id;
+					packet.targetId = missile.getTargetedEntity().id;
+					System.out.println(packet.id + "'s missile is tracking " + packet.targetId);
+					server.sendToAll(packet, true);
 				}
 			}
 		}
@@ -167,6 +168,8 @@ public class World {
 	public void addBullet(Packet packet, Client client){
 		
 		Ship ship = client.getShip();
+		System.out.println(ship.getId() + " is requesting to add a bullet");
+		
 		if(ship == null){
 			Log.warn(client + " tried to shoot with a null ship.");
 			return;
@@ -267,20 +270,18 @@ public class World {
 		return client;
 	}
 	
-	public Entity getNearestShip(Entity owner, float range){
+	public Ship getNearestShip(Entity owner, float range){
 		
 		float distance = range;
-		Entity target = null;
+		Ship target = null;
 		for(int i = 0; i < clients.length; i++){
 			
-			Entity other;
+			Ship other;
 			
 			if(clients[i] == null) continue;
 			other = clients[i].getShip();
 			if(other == null || !other.isAlive()
 					|| owner.id == other.id) continue;	// don't get self
-			
-			System.out.println(owner.id + " / " + other.id);
 			
 			float dx = (owner.position.x + owner.getWidth() /2) - (other.position.x + other.getWidth() /2);
 			float dy = (owner.position.y + owner.getHeight() /2) - (other.position.y + other.getHeight() /2);
@@ -291,6 +292,7 @@ public class World {
 			
 		}
 		
+		System.out.println("target id " + target.id);
 		return target;
 		
 	}

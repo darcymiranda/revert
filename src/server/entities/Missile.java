@@ -41,8 +41,9 @@ public class Missile extends Bullet{
 	}
 	
 	private void findTarget(){
-		Entity temp = World.getInstance().getNearestShip(this, RANGE);
+		Ship temp = World.getInstance().getNearestShip(owner, RANGE);
 		oldTargetEntity = targetEntity;
+		System.out.println("tracked entity " + temp.id);
 		if(temp != null){
 			state++;
 			targetEntity = temp;

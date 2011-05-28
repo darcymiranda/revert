@@ -7,7 +7,7 @@ public class Bullet extends Entity{
 	
 	public int test_id = 0; // TESTING ID
 	
-	private Entity owner;
+	protected Entity owner;
 	
 	private final int HEIGHT = 10,
 					WIDTH = 2;

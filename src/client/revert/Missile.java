@@ -35,7 +35,7 @@ public class Missile extends Bullet {
 	
 	public void trackTarget(Entity e){
 		if(e != null)
-			if(e.id != super.id){
+			if(e.id != getOwner().id){
 				targetEntity = e;
 				state = 2;
 			}
@@ -103,6 +103,7 @@ public class Missile extends Bullet {
 	public void collide(Entity e) {
 		dead = true;
 		targetEntity = null;
+		Revert.ps.removeEmitter(trail);
 		state = -1;
 	}
 
