@@ -28,7 +28,7 @@ public class MinimapHandler
 		this.height = height;
 		this.revert = revert;
 		
-		minimapScale = (width/2) / MINIMAP_DISTANCE;
+		minimapScale = ((width-10)/2) / MINIMAP_DISTANCE;
 		
 	}
 	
