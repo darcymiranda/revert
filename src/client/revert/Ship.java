@@ -72,8 +72,8 @@ public class Ship extends NetEntity {
 		float centery = height /2;
 		
 		// TODO: emitter is rotating the wrong way???
-		particleEngine.setPosition((float) FastTrig.sin(Math.toRadians(rotation-90)) * centerx + (clientPosition.x + centerx),
-									(float) FastTrig.cos(Math.toRadians(rotation-90)) * centery + (clientPosition.y + centery), false);
+		particleEngine.setPosition((float) FastTrig.cos(Math.toRadians(rotation+90)) * centerx + (clientPosition.x + centerx),
+									(float) FastTrig.sin(Math.toRadians(rotation+90)) * centery + (clientPosition.y + centery), false);
 		particleEngine.angularOffset.setValue(rotation-180);
 		
 		if(health < 1){
