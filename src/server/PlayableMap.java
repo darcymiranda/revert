@@ -57,7 +57,7 @@ public class PlayableMap
 				if(j >= sx && j < fx && i >= sy && i < fy)
 				{
 					//skip
-					System.out.println("SKIP**********************");
+					//System.out.println("SKIP**********************");
 				}
 				else
 				{
@@ -71,12 +71,12 @@ public class PlayableMap
 					if(pixelRGB.equals(Constants.ASTEROID_SM_RGB))
 					{
 						asteroidsSM.add(new Vector2f(j*offset, i*offset));
-						System.out.println("SMALL:  (" + j*offset + "," + i*offset + ")");
+						//System.out.println("SMALL:  (" + j*offset + "," + i*offset + ")");
 					}
 					else if(pixelRGB.equals(Constants.ASTEROID_MD_RGB))
 					{
 						asteroidsMD.add(new Vector2f(j*offset, i*offset));
-						System.out.println("MEDIUM: (" + j*offset + "," + i*offset + ")");
+						//System.out.println("MEDIUM: (" + j*offset + "," + i*offset + ")");
 						sx = j;
 						fx = j+2;
 						sy = i;
@@ -85,7 +85,7 @@ public class PlayableMap
 					else if(pixelRGB.equals(Constants.ASTEROID_LG_RGB))
 					{
 						asteroidsLG.add(new Vector2f(j*offset, i*offset));
-						System.out.println("LARGE:  (" + j*offset + "," + i*offset + ")");
+						//System.out.println("LARGE:  (" + j*offset + "," + i*offset + ")");
 						sx = j;
 						fx = j+2;
 						sy = i;

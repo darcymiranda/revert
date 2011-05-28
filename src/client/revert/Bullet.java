@@ -14,8 +14,10 @@ public class Bullet extends Entity {
 	protected float speed = 0.45f;		/* dont forget to change on server //ya ya duplicate code blah blah// */
 	protected final float maxTravelTime = 250;
 	protected float travelTime;
+	protected Entity owner;
+	protected int serverId = -1;
 	
-	public Bullet(float x, float y, float r, Vector2f shipVel){
+	public Bullet(float x, float y, float r, Vector2f shipVel, Entity owner){
 		super();
 		
 		clientPosition.x = x;
@@ -24,6 +26,8 @@ public class Bullet extends Entity {
 		
 		velocity = new Vector2f(-(speed * (float) Math.sin(Math.toRadians(rotation+180))) + shipVel.x,
 								-(speed * (float) Math.cos(Math.toRadians(rotation+180))) + shipVel.y);
+		
+		this.owner = owner;
 		
 		collidable = true;
 	}
@@ -41,6 +45,11 @@ public class Bullet extends Entity {
 	public boolean hasExpired(){
 		return (travelTime >= maxTravelTime) || dead;
 	}
+	
+	public int getServerId(){ return serverId; }
+	public void setServerId(int id){ this.serverId = id; }
+	
+	public Entity getOwner(){ return owner; }
 	
 	public boolean hasSentToOtherClients(){ return hasSentToOtherClients; }
 	public void setSentToOtherClients(boolean s){ hasSentToOtherClients = s; }

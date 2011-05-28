@@ -9,9 +9,10 @@ import util.Stopwatch;
 public class Missile extends Bullet {
 	
 	private final float TURN_SPEED = 0.11f;
-	private final float ACCELERATION = 0.003f;
+	private final float ACCELERATION = 0.0003f;
 	private final int PREP_TIME = 50;	// how long the prep state lasts
 	
+	private final float RANGE = 2000;
 	private final float MAX_SPEED = 0.50f;
 	private float speed = 0;
 	private int state = 0;  				// phases of the missile
@@ -22,8 +23,8 @@ public class Missile extends Bullet {
 	private Stopwatch timer = new Stopwatch();
 	private ConfigurableEmitter trail;
 	
-	public Missile(float x, float y, float r, Vector2f shipVel){
-		super(x, y, r, shipVel);
+	public Missile(float x, float y, float r, Vector2f shipVel, Entity owner){
+		super(x, y, r, shipVel, owner);
 		
 		collidable = true;
 		trail = (ConfigurableEmitter) Revert.cache.get("particle_missile_trail");
@@ -33,14 +34,15 @@ public class Missile extends Bullet {
 	}
 	
 	public void trackTarget(Entity e){
-		if(e.id != super.id){
-			targetEntity = e;
-			state = 2;
-		}
+		if(e != null)
+			if(e.id != super.id){
+				targetEntity = e;
+				state = 2;
+			}
 	}
 	
 	private void findTarget(){
-		targetEntity = Revert.ec.getNearestEntity(this, 2000);
+		targetEntity = Revert.ec.getNearestEntity(this, RANGE);
 		if(targetEntity != null)
 			state++;
 	}
@@ -58,8 +60,8 @@ public class Missile extends Bullet {
 			velocity.x = -(speed * (float) Math.sin(Math.toRadians(rotation+180)));
 			velocity.y = -(speed * (float) Math.cos(Math.toRadians(rotation+180)));
 			
-			Vector2f targetDir = new Vector2f(targetEntity.clientPosition.x + (targetEntity.width /2) - clientPosition.x + (width /2),
-											targetEntity.clientPosition.y + (targetEntity.height /2) - clientPosition.y + (height/2));
+			Vector2f targetDir = new Vector2f(targetEntity.clientPosition.x + (targetEntity.getWidth() /2) - clientPosition.x + (getWidth() /2),
+											targetEntity.clientPosition.y + (targetEntity.getHeight() /2) - clientPosition.y + (getHeight()/2));
 			
 			
 			if(velocity.y * targetDir.x + velocity.x * targetDir.y > 0){
@@ -80,19 +82,19 @@ public class Missile extends Bullet {
 		
 		this.delta = delta;
 		
-		trail.setPosition(clientPosition.x + (width/2), clientPosition.y + (height/2), false);
+		trail.setPosition(clientPosition.x + (getWidth()/2), clientPosition.y + (getHeight()/2), false);
 		trail.angularOffset.setValue(rotation);
 		
 		velocity.x = -(speed * (float) Math.sin(Math.toRadians(rotation+180)));
 		velocity.y = -(speed * (float) Math.cos(Math.toRadians(rotation+180)));
 		
 		if(speed < MAX_SPEED){
-			speed += ACCELERATION;
-			speed += ACCELERATION;
+			speed += ACCELERATION * delta;
+			speed += ACCELERATION * delta;
 		}
 		
 		if(state == 0) preping();
-		if(state == 1) findTarget();
+		//if(state == 1) findTarget();
 		if(state == 2) chaseTarget();
 		
 	}

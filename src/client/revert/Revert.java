@@ -141,7 +141,7 @@ public class Revert extends BasicGame {
 		cam = new Camera(gc, tiledMap);
 		ec = new EntityController();
 
-		ps = new ParticleSystem("img/d_particle.png");
+		ps = new ParticleSystem("img/d_particle.png", 5000);
 		
 		/** Init User Interface **/
 		ui = new UserInterface(gc, this);
@@ -188,13 +188,13 @@ public class Revert extends BasicGame {
 		cam.translateGraphics();
 
 		map.render(g);
-		ps.render();
 		ec.render(g);
+		ps.render();
 		
 		// testing
-		for(int i = 0; i < serverBullets.size(); i++){
-			serverBullets.get(i).render(g);
-		}
+		//for(int i = 0; i < serverBullets.size(); i++){
+		//	serverBullets.get(i).render(g);
+		//}
 
 		cam.untranslateGraphics();
 		ui.render(g);
@@ -220,6 +220,7 @@ public class Revert extends BasicGame {
 		
 		ec.checkCollisions();
 		ec.update(gc, delta);
+		ps.update(delta);
 		
 		// Send position update packet to server
 		if(ticks > 6){
@@ -241,12 +242,11 @@ public class Revert extends BasicGame {
 		
 		ui.update();
 		bc.update();
-		ps.update(delta);
 		
 		// testing
-		for(int i = 0; i < serverBullets.size(); i++){
-			serverBullets.get(i).update(gc, delta);
-		}
+		//for(int i = 0; i < serverBullets.size(); i++){
+		//	serverBullets.get(i).update(gc, delta);
+		//}
 		
 		
 	}

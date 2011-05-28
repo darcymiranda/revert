@@ -59,17 +59,18 @@ public class Ship extends Entity {
 		float cx = position.x + (super.width / 2 - 5),
 			  cy = position.y + (super.height / 2 - 5); 
 		
-		return new Bullet(cx, cy, velocity.x, velocity.y, cr, id);
+		return new Bullet(cx, cy, velocity.x, velocity.y, cr, this);
 		
 	}
 		
-	public Missile shootTrackable(Packet packet, Entity entity){
+	public Missile shootTrackable(Entity entity){
 		
 		float cx = position.x + (super.width / 2 - 5),
 		  cy = position.y + (super.height / 2 - 5); 
 		
-		Missile missile = new Missile(cx, cy, velocity.x, velocity.y, packet.getRotationR(), id);
-		//missile.trackEntity(entity);
+		Missile missile = new Missile(cx, cy, velocity.x, velocity.y, rotation, this);
+		if(entity != null)
+			missile.trackTarget(entity);
 		
 		return missile;
 		

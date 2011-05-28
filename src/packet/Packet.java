@@ -12,7 +12,7 @@ public class Packet implements Serializable  {
 	public static final byte DISCONNECT = -1;
 	public static final byte CONNECT = 1;
 	public static final byte READY_MARKER = 2;
-	public static final byte CHAT = 3;
+	public static final byte UPDATE_ID = 3;
 	public static final byte UPDATE_SELF = 4;
 	public static final byte UPDATE_SELF_BULLET = 5;
 	public static final byte UPDATE_OTHER = 6;
@@ -30,18 +30,21 @@ public class Packet implements Serializable  {
 	public static final byte UPDATE_ASTEROIDS_LG = 54;
 	public static final byte UPDATE_ORES = 55;
 	public static final byte UPDATE_STATIONS = 56;
-	public static final byte UPDATE_MISSILE = 11;
+	public static final byte CHAT = 60;
+	public static final byte SPAWN_BULLET = 71;
 
 	private static final long serialVersionUID = 1L;
 	
 	private float time;
-	private int id = -1;
+	public int id = -1;
+	public int bulletId = -1;
+	public int targetId = -1;
 	private String message;
 	private String username;
 	private boolean status;
 	private boolean w,s,d,a,q,e,space;
 	private float x,y,r,xv,yv;
-	private byte bulletType;
+	public byte bulletType;
 	
 	public byte type;
 	
@@ -109,18 +112,6 @@ public class Packet implements Serializable  {
 		this.xv = xv;
 		this.yv = yv;
 	}
-	
-	public Packet(byte t, byte bt, float r) {
-		this.type = t;
-		this.bulletType = bt;
-		this.r = r;
-	}
-	
-	public Packet(byte t, byte bt, int id){
-		this.type = t;
-		this.bulletType = bt;
-		this.id = id;
-	}
 
 	public void setMessage(String message){ this.message = message; }
 	public String getMessage(){ return message; }
@@ -142,6 +133,7 @@ public class Packet implements Serializable  {
 	public boolean getPressedE(){ return e; }
 	public boolean getPressedSpace(){ return space; }
 	
+	public void setRotation(float r){ this.r = r; }
 	public void setKeySpace(boolean s){ this.space = s; }
 	
 	public float getPositionX(){ return x; }
@@ -151,6 +143,8 @@ public class Packet implements Serializable  {
 	public float getVelocityY(){ return yv; }
 	
 	public byte getBulletType(){ return bulletType; }
+	public int getBulletId(){ return bulletId; }
+	public int getTargetId(){ return targetId; }
 
 	
 	public float getTime(){ return time; }

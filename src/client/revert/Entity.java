@@ -17,7 +17,6 @@ public abstract class Entity {
 	protected Vector2f dirSpeed; 	// Holds the direction speed;
 	
 	public int id;
-	protected int height, width;
 	protected float rotation;
 	
 	protected boolean isAlive;
@@ -29,6 +28,7 @@ public abstract class Entity {
 	protected Rectangle hitBox;
 	
 	private Image image;
+	private int height, width;
 	
 	public Entity(){
 		clientPosition = new Vector2f();
@@ -49,15 +49,15 @@ public abstract class Entity {
 	 */
 	public void setImage(Image img){
 		
-		height = img.getHeight();
-		width = img.getWidth();
+		setHeight(img.getHeight());
+		setWidth(img.getWidth());
 		
 		image = img.copy();
 		
 	}
 	
 	public Shape getHitBox(){
-		return new Rectangle(clientPosition.x, clientPosition.y, width, height);
+		return hitBox;
 	}
 	
 	public void destroy(){
@@ -102,6 +102,9 @@ public abstract class Entity {
 		this.width = w;
 		hitBox.setWidth(w);
 	}
+	
+	public int getHeight(){ return height; }
+	public int getWidth(){ return width; }
 	
 	public Vector2f getClientPosition(){ return new Vector2f(clientPosition); }
 	public Vector2f getMinimapPosition() { return new Vector2f(minimapPosition); }

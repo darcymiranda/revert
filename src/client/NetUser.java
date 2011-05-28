@@ -8,6 +8,8 @@ import java.net.Socket;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
 
+import client.revert.Entity;
+import client.revert.Missile;
 import client.revert.Revert;
 
 import packet.Packet;
@@ -119,7 +121,7 @@ import packet.Snapshot;
 				
 				if(client.serverBullets.size() < 1){
 					client.revert.Bullet b = new client.revert.Bullet( packet.getPositionX(), packet.getPositionY(), packet.getRotationR(),
-							new Vector2f(0,0));
+							new Vector2f(0,0), null);
 					b.velocity.x = packet.getVelocityX();
 					b.velocity.y = packet.getVelocityY();
 					b.test_id = packet.getId();
@@ -143,7 +145,7 @@ import packet.Snapshot;
 				}
 				if(!created){
 					client.revert.Bullet b = new client.revert.Bullet( packet.getPositionX(), packet.getPositionY(), packet.getRotationR(),
-							new Vector2f(0,0));
+							new Vector2f(0,0), null);
 					b.velocity.x = packet.getVelocityX();
 					b.velocity.y = packet.getVelocityY();
 					b.test_id = packet.getId();
@@ -157,9 +159,39 @@ import packet.Snapshot;
 				int pId = packet.getId();
 				if(client.players[pId] != null){
 					if(client.players[pId].getShip() != null){
-						client.players[pId].getShip().setShooting(packet.getPressedSpace());
+						// BULLET
+						if(packet.getBulletType() == 1)
+							client.players[pId].getShip().setShooting(packet.getPressedSpace());
+						// MISSILE
+						else if(packet.getBulletType() == 2){
+							Missile missile = (Missile) Revert.ec.getBulletByServerId(packet.bulletId);
+							Entity target = Revert.ec.getEntityById(packet.targetId);
+							missile.trackTarget(target);
+						}
 					}
 				}
+			}
+			else if(packet.type == Packet.SPAWN_BULLET){
+				int pId = packet.getId();
+				if(client.players[pId] != null){
+					if(client.players[pId].getShip() != null){
+						if(packet.getBulletType() == 2){
+							client.players[pId].getShip().shootMissileRemote(packet.bulletId);
+						}
+					}
+				}
+			}
+			else if(packet.type == Packet.UPDATE_ID){
+				int pId = packet.getId();
+				
+				// get the owner id and set the bullet's server id
+				if(client.players[pId] != null){
+					if(client.players[pId].getShip() != null){
+						int ownerId = client.players[pId].getShip().id;
+						Revert.ec.setBulletServerId(packet.getBulletId(), ownerId);
+					}
+				}
+				
 			}
 			else if(packet.type == Packet.UPDATE_SELF){
 				

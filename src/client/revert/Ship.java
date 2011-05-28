@@ -49,13 +49,13 @@ public class Ship extends NetEntity {
 			temp = temp.duplicate();
 			temp2 = temp2.duplicate();
 			
-			float centerx = clientPosition.x + width /2;
-			float centery = clientPosition.y + height /2;
+			float centerx = e.clientPosition.x + e.getWidth() /2;
+			float centery = e.clientPosition.y + e.getHeight() /2;
 			
 			temp.setPosition(centerx, centery);
 			temp2.setPosition(centerx, centery);
-			temp.replay();
-			temp2.replay();
+			System.out.println(temp.getX() + " " + temp.getY());
+			System.out.println(e.clientPosition.x + " " + e.clientPosition.y);
 			
 			Revert.ps.addEmitter(temp);
 			Revert.ps.addEmitter(temp2);
@@ -68,8 +68,8 @@ public class Ship extends NetEntity {
 		super.update(gc, delta);
 		float rotation = super.getRotation();
 		
-		float centerx = width /2;
-		float centery = height /2;
+		float centerx = getWidth() /2;
+		float centery = getHeight() /2;
 		
 		// TODO: emitter is rotating the wrong way???
 		particleEngine.setPosition((float) FastTrig.sin(Math.toRadians(rotation-90)) * centerx + (clientPosition.x + centerx),
@@ -100,24 +100,12 @@ public class Ship extends NetEntity {
 			
 			if(in.isKeyPressed(Input.KEY_3)){
 				
-				// target nearest ship and shoot
-				//Entity target = Revert.ec.getNearestEntity(this, 5000);
-				//if(target != null){
-					Missile missile = new Missile(getClientPosition().x, getClientPosition().y, rotation,
-							new Vector2f(velocity));
-					missile.setImage((Image) Revert.cache.get("test_bullet"));
+				shootMissile();
 					
-					//missile.trackTarget(target);
-					Revert.ec.addBullet(missile);
+				Packet packet = new Packet(Packet.UPDATE_SELF_BULLET);
+				packet.bulletType = 2;
+				Revert.net.send(packet);
 					
-					//Packet packet = new Packet(Packet.UPDATE_MISSILE, missile.clientPosition.x,
-					//		missile.clientPosition.y, missile.velocity.x, missile.velocity.y, missile.rotation);
-					//Revert.net.send(packet);
-				//}
-				//else{
-				//	Revert.bc.addMessage("no target in range");
-				//}
-				
 			}
 			
 			/**
@@ -301,9 +289,9 @@ public class Ship extends NetEntity {
 	public void render(Graphics g){
 		super.render(g);
 		
-		g.drawRect(serverPosition.x, serverPosition.y, width, height);
+		g.drawRect(serverPosition.x, serverPosition.y, getWidth(), getHeight());
 		if(font != null)
-			font.drawString(clientPosition.x + width - 50, clientPosition.y + height, displayText);
+			font.drawString(clientPosition.x + getWidth() - 50, clientPosition.y + getHeight(), displayText);
 		
 	}
 	
@@ -319,21 +307,50 @@ public class Ship extends NetEntity {
 			
 			float calcRotation = rotation - (float)(Math.random() * ((-accuracy * 100) + 100));
 			
-			float cx = clientPosition.x + (super.width / 2 - 5), // (float)Math.sin(Math.toRadians(rotation/180))),
-				  cy = clientPosition.y + (super.height / 2 - 5); // (float)Math.cos(Math.toRadians(rotation/180)));
+			float cx = clientPosition.x + (super.getWidth() / 2 - 5), // (float)Math.sin(Math.toRadians(rotation/180))),
+				  cy = clientPosition.y + (super.getHeight() / 2 - 5); // (float)Math.cos(Math.toRadians(rotation/180)));
 			
-			bullet = new Bullet(cx,cy, calcRotation, velocity);
+			bullet = new Bullet(cx,cy, calcRotation, velocity, this);
 			bullet.setImage((Image) Revert.cache.get("default_bullet"));
 			bullet.id = id;
 			Revert.ec.addBullet(bullet);
 			
 			// REMOTE
 			if(super.isLocal()){
-				Packet packet = new Packet(Packet.UPDATE_SELF_BULLET, 1, bullet.rotation);
+				Packet packet = new Packet(Packet.UPDATE_SELF_BULLET);
+				packet.bulletType = 1;
+				packet.setRotation(calcRotation);
 				Revert.net.send(packet);
 			}
 		}
 		
+	}
+	
+	private void shootMissile(){
+		float cx = clientPosition.x + (super.getWidth() / 2 - 5),
+		cy = clientPosition.y + (super.getHeight() / 2 - 5); 
+		
+		Missile missile = new Missile(cx, cy, rotation,
+				new Vector2f(velocity), this);
+		missile.setImage((Image) Revert.cache.get("test_bullet"));
+		
+		Revert.ec.addBullet(missile);
+	}
+	
+	/**
+	 * TODO: NEEDS TO BE FUCKING REDONE!!
+	 * @param serverId
+	 */
+	public void shootMissileRemote(int serverId){
+		float cx = clientPosition.x + (super.getWidth() / 2 - 5),
+		cy = clientPosition.y + (super.getHeight() / 2 - 5); 
+		
+		Missile missile = new Missile(cx, cy, rotation,
+				new Vector2f(velocity), this);
+		missile.serverId = serverId;
+		missile.setImage((Image) Revert.cache.get("test_bullet"));
+		
+		Revert.ec.addBullet(missile);
 	}
 	
 	@Override

@@ -26,7 +26,8 @@ public class World {
 	private PlayableMap map;
 	
 	private Client[] clients = new Client[Constants.WORLD_PLAYER_SIZE];
-	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+	private Bullet[] bullets = new Bullet[Constants.WORLD_ENTITY_SIZE];
+	//private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	
 	private int unique_id = 0; // TESTING
 	
@@ -52,8 +53,9 @@ public class World {
 					client.send(new Packet(Packet.UPDATE_SELF, ship.position.x, ship.position.y));
 					
 					/* test to see server side position of bullets */
-					for(int i = 0; i < bullets.size(); i++){
-						Bullet b = bullets.get(i);
+					for(int i = 0; i < bullets.length; i++){
+						if(bullets[i] == null) continue;
+						Bullet b = bullets[i];
 						Packet packet = new Packet((byte) 105, b.test_id, b.position.x, b.position.y,
 								b.velocity.x, b.velocity.y, b.rotation);
 						server.sendToAll(packet, true);
@@ -87,18 +89,29 @@ public class World {
 						client.send(new Packet(Packet.UPDATE_OTHER, clients[i].id, ship.position.x,
 								ship.position.y, ship.velocity.x, ship.velocity.y, ship.rotation));
 					
-					for(int b = 0; b < bullets.size(); b++){
-						Bullet bullet = bullets.get(b);
+					// check if a missile lock has changed
+					for(int b = 0; b < bullets.length; b++){
+						if(bullets[i] == null) continue;
+						Bullet bullet = bullets[i];
 						if(bullet instanceof Missile){
-							if(bullet.id != client.id) continue;	// get the owner's bullets only
-							if(bullet.hasPositionChanged())
-								client.send(new Packet(Packet.UPDATE_MISSILE, clients[i].id, bullet.position.x,
-										bullet.position.y, bullet.velocity.x, bullet.velocity.y));
+							Missile missile = (Missile) bullet;
+							if(missile.id != missile.id) continue;	// get the owner's bullets only
+							if(missile.hasTargetChanged()){
+								System.out.println("TARGET CHANGED");
+								Packet packet = new Packet(Packet.UPDATE_OTHER_BULLET);
+								packet.id = clients[i].id;
+								packet.bulletType = 2;
+								packet.bulletId = missile.id;
+								packet.targetId = missile.getTargetedEntity().id;
+								client.send(packet);
+							}
 						}
 					}
 					
 					if(ship.hasShootingChanged()){
-						Packet packet = new Packet(Packet.UPDATE_OTHER_BULLET, clients[i].id);
+						Packet packet = new Packet(Packet.UPDATE_OTHER_BULLET);
+						packet.id = clients[i].id;
+						packet.bulletType = 1;
 						packet.setKeySpace(ship.isShooting());
 						client.send(packet);
 					}
@@ -107,23 +120,26 @@ public class World {
 		}
 		
 		// Update and remove expired bullets
-		for(int i = 0; i < bullets.size(); i++){
-			bullets.get(i).update();
-			if(bullets.get(i).hasExpired()) bullets.remove(i);
+		for(int i = 0; i < bullets.length; i++){
+			if(bullets[i] == null) continue;
+			bullets[i].update();
+			if(bullets[i].hasExpired()) bullets[i] = null;
 		}
 		
 		// Check for collisions
-		for(int i = 0; i < bullets.size(); i++){
-			
-			Bullet b = bullets.get(i);
+		for(int i = 0; i < bullets.length; i++){
+			if(bullets[i] == null) continue;
+			Bullet b = bullets[i];
 			
 			for(int j = 0; j < clients.length; j++){
 				
 				if(clients[j] == null) continue;
-				if(clients[j].id == b.getId()) continue;	// ignore own bullets
+				if(clients[j].id == b.getOwner().id) continue;	// ignore own bullets
+				
 				
 				Entity s = clients[j].getShip();
 				if(s != null && s.isAlive()){
+					
 					
 					if(b.getHitBox().intersects(s.getHitBox())){
 						
@@ -134,7 +150,7 @@ public class World {
 						
 						// clean up bullet if need be
 						if(b.hasExpired())
-							bullets.remove(b);
+							bullets[i] = null;
 						
 					}
 				}
@@ -166,20 +182,46 @@ public class World {
 				unique_id++;
 				/* */
 				
-				bullets.add(bullet);
+				// add bullet to list
+				for(int i = 0; i < bullets.length; i++){
+					if(bullets[i] == null){
+						bullets[i] = bullet;
+						bullets[i].id = i;
+						break;
+					}
+				}
 				break;
 			case 2:
-				Client trackClient = getPlayerById(packet.getId());
 				Ship trackShip = null;
 				Missile missile = null;
 				
-				if(trackClient != null) 
-					trackShip = client.getShip();
-				
+				// Should check server side if ship is in range to prevent cheating.
 				if(ship != null)
-					missile = ship.shootTrackable(packet, trackShip);
+					missile = ship.shootTrackable(trackShip);
 				
-				bullets.add(missile);
+				// add missile to list
+				for(int i = 0; i < bullets.length; i++){
+					if(bullets[i] == null){
+						bullets[i] = missile;
+						bullets[i].id = i;
+						
+						// send the server's bullet id to the client
+						Packet p = new Packet(Packet.UPDATE_ID);
+						p.id = client.id;
+						p.bulletId = i;
+						client.send(p);
+						
+						// tell other clients
+						p = new Packet(Packet.SPAWN_BULLET);
+						p.id = client.id;
+						p.bulletId = i;
+						p.bulletType = 2;
+						server.sendToAll(p, false);
+
+						break;
+						
+					}
+				}
 				break;
 			
 		}
@@ -223,6 +265,34 @@ public class World {
 		}
 		
 		return client;
+	}
+	
+	public Entity getNearestShip(Entity owner, float range){
+		
+		float distance = range;
+		Entity target = null;
+		for(int i = 0; i < clients.length; i++){
+			
+			Entity other;
+			
+			if(clients[i] == null) continue;
+			other = clients[i].getShip();
+			if(other == null || !other.isAlive()
+					|| owner.id == other.id) continue;	// don't get self
+			
+			System.out.println(owner.id + " / " + other.id);
+			
+			float dx = (owner.position.x + owner.getWidth() /2) - (other.position.x + other.getWidth() /2);
+			float dy = (owner.position.y + owner.getHeight() /2) - (other.position.y + other.getHeight() /2);
+			
+			float tempDistance = (float) Math.sqrt((dx * dx) + (dy * dy));
+			if(tempDistance < distance)
+				target = other;
+			
+		}
+		
+		return target;
+		
 	}
 	
 	public static World getInstance(){

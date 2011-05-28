@@ -5,6 +5,7 @@ import org.newdawn.slick.geom.Vector2f;
 import server.entities.Entity;
 
 import server.Constants;
+import server.World;
 import util.Stopwatch;
 
 public class Missile extends Bullet{
@@ -13,35 +14,39 @@ public class Missile extends Bullet{
 					WIDTH = 2;
 	
 	private final float TURN_SPEED = 0.11f;
-	private final float ACCELERATION = 0.003f;
+	private final float ACCELERATION = 0.0003f;
 	private final int PREP_TIME = 50;	// how long the prep state lasts
 	
+	private final float RANGE = 2000;
 	private final float MAX_SPEED = 0.50f;
 	private float speed = 0;
 	private int state = 0;  				// phases of the missile
 	
-	private int delta;
-	
 	private Entity targetEntity;
+	private Entity oldTargetEntity;
 	private Stopwatch timer = new Stopwatch();
 	
-	public Missile(float x, float y, float xv, float yv, float r, int id) {
-		super(x, y, xv, yv, r, id);
+	public Missile(float x, float y, float xv, float yv, float r, Entity owner) {
+		super(x, y, xv, yv, r, owner);
 		super.height = HEIGHT;
 		super.width = WIDTH;
 	}
 	
 	public void trackTarget(Entity e){
 		if(e.id != super.id){
+			oldTargetEntity = targetEntity;
 			targetEntity = e;
 			state = 2;
 		}
 	}
 	
 	private void findTarget(){
-		//targetEntity = Revert.ec.getNearestEntity(this, 2000);
-		if(targetEntity != null)
+		Entity temp = World.getInstance().getNearestShip(this, RANGE);
+		oldTargetEntity = targetEntity;
+		if(temp != null){
 			state++;
+			targetEntity = temp;
+		}
 	}
 	
 	private void preping(){
@@ -81,14 +86,34 @@ public class Missile extends Bullet{
 		velocity.y = -(speed * (float) Math.cos(Math.toRadians(rotation+180)));
 		
 		if(speed < MAX_SPEED){
-			speed += ACCELERATION;
-			speed += ACCELERATION;
+			speed += ACCELERATION * Constants.SERVER_DELTA;
+			speed += ACCELERATION * Constants.SERVER_DELTA;
 		}
 		
 		if(state == 0) preping();
 		if(state == 1) findTarget();
 		if(state == 2) chaseTarget();
 		
+	}
+	
+	public boolean hasTargetChanged(){
+		if(targetEntity != null){
+			if(oldTargetEntity != null &&
+					targetEntity.id != oldTargetEntity.id){
+				return true;
+			}
+			// if the target is not null now and the old one became null that
+			// means that the target changed from nothing to something :)
+			if(oldTargetEntity == null){
+				oldTargetEntity = targetEntity;
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public Entity getTargetedEntity(){
+		return targetEntity;
 	}
 		
 }

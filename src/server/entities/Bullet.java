@@ -7,6 +7,8 @@ public class Bullet extends Entity{
 	
 	public int test_id = 0; // TESTING ID
 	
+	private Entity owner;
+	
 	private final int HEIGHT = 10,
 					WIDTH = 2;
 	
@@ -15,7 +17,7 @@ public class Bullet extends Entity{
 	
 	private float speed = 0.45f;	/* dont forget to change on client //ya ya duplicate code blah blah// */
 	
-	public Bullet(float x, float y, float xv, float yv, float r, int id){
+	public Bullet(float x, float y, float xv, float yv, float r, Entity owner){
 		super(new Vector2f(x,y));
 		velocity.x = xv;
 		velocity.y = yv;
@@ -23,6 +25,7 @@ public class Bullet extends Entity{
 		super.id = id;
 		super.height = HEIGHT;
 		super.width = WIDTH;
+		this.owner = owner;
 		
 		velocity = new Vector2f(-(speed * (float) Math.sin(Math.toRadians(rotation+180))) + xv,
 				-(speed * (float) Math.cos(Math.toRadians(rotation+180))) + yv);
@@ -41,6 +44,8 @@ public class Bullet extends Entity{
 	public boolean hasExpired(){
 		return travelTime >= maxTravelTime;
 	}
+	
+	public Entity getOwner(){ return owner; }
 
 	@Override
 	public void collide(Entity e) {

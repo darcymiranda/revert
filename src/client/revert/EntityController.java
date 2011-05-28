@@ -53,6 +53,30 @@ public class EntityController {
 		return null;
 	}
 	
+	public Bullet getBulletByServerId(int serverId){
+		for(int i = 0; i < bulletPool.size(); i++){
+			if(serverId == bulletPool.get(i).serverId){
+				return bulletPool.get(i);
+			}
+		}
+		return null;		
+	}
+	
+	/**
+	 * 
+	 * @param id
+	 * @param owner
+	 */
+	public void setBulletServerId(int id, int ownerId){
+		for(int i = 0; i < bulletPool.size(); i++){
+			Bullet b = bulletPool.get(i);
+			if(b.serverId == -1 && b.owner.id == ownerId){
+				b.serverId = id;
+				return;
+			}
+		}
+	}
+	
 	/**
 	 * Returns the nearest entity to the passed entity.
 	 * @param owner
@@ -68,8 +92,8 @@ public class EntityController {
 			
 			if(owner.id == other.id) continue;
 			
-			float dx = (owner.clientPosition.x + owner.width /2) - (other.clientPosition.x + other.width /2);
-			float dy = (owner.clientPosition.y + owner.height /2) - (other.clientPosition.y + other.width /2);
+			float dx = (owner.clientPosition.x + owner.getWidth() /2) - (other.clientPosition.x + other.getWidth() /2);
+			float dy = (owner.clientPosition.y + owner.getHeight() /2) - (other.clientPosition.y + other.getHeight() /2);
 			
 			float tempDistance = (float) Math.sqrt((dx * dx) + (dy * dy));
 			if(tempDistance < distance)
@@ -95,7 +119,7 @@ public class EntityController {
 			for(int j = 0; j < entityPool.size(); j++){
 				
 				entity = entityPool.get(j);
-				if(bullet.id != entity.id){
+				if(bullet.owner.id != entity.id){
 					if(bullet.getHitBox().intersects(entity.getHitBox())){
 						bullet.collide(entity);
 						entity.collide(bullet);
