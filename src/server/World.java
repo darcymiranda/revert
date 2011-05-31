@@ -292,7 +292,6 @@ public class World {
 			
 		}
 		
-		System.out.println("target id " + target.id);
 		return target;
 		
 	}

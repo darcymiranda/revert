@@ -16,6 +16,7 @@ public class UserInterface
 	private Revert revert;
 	
 	private Minimap minimap;
+	private Taskbar taskbar;
 	
 	public UserInterface(GameContainer gc, Revert revert)
 	{
@@ -26,7 +27,10 @@ public class UserInterface
 		components = new ArrayList<UIComponent>();
 		
 		minimap = new Minimap(gc, revert);
+		taskbar = new Taskbar(gc);
+		
 		components.add(minimap);
+		components.add(taskbar);
 		
 	}
 	

@@ -12,7 +12,6 @@ public class Minimap extends UIComponent
 {
 	
 	private MinimapHandler mh;
-	private float width, height;
 	
 	public Minimap(GameContainer gc, Revert revert)
 	{
@@ -21,7 +20,7 @@ public class Minimap extends UIComponent
 		height = 250;
 		
 		xpos = gc.getWidth() - (width + 10);
-		ypos = gc.getHeight() - (height + 10);
+		ypos = gc.getHeight() - (height + 60);
 		
 		mh = new MinimapHandler(xpos, ypos, width, height, revert);
 		
