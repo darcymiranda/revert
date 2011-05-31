@@ -12,7 +12,6 @@ public class Missile extends Bullet {
 	private final float ACCELERATION = 0.0003f;
 	private final int PREP_TIME = 50;	// how long the prep state lasts
 	
-	private final float RANGE = 2000;
 	private final float MAX_SPEED = 0.50f;
 	private float speed = 0;
 	private int state = 0;  				// phases of the missile
@@ -33,6 +32,11 @@ public class Missile extends Bullet {
 		
 	}
 	
+	/**
+	 * The missile will track the massed it target, if it is not owned by the same
+	 * entity.
+	 * @param e
+	 */
 	public void trackTarget(Entity e){
 		if(e != null)
 			if(e.id != getOwner().id){
@@ -41,12 +45,9 @@ public class Missile extends Bullet {
 			}
 	}
 	
-	private void findTarget(){
-		targetEntity = Revert.ec.getNearestEntity(this, RANGE);
-		if(targetEntity != null)
-			state++;
-	}
-	
+	/**
+	 * Delay before the missile can start chasing anything.
+	 */
 	private void preping(){
 		
 		if(timer.elapsed() >= PREP_TIME*delta){
@@ -54,6 +55,9 @@ public class Missile extends Bullet {
 		}
 	}
 	
+	/**
+	 * Chase the targeted entity if it is still alive or exists.
+	 */
 	private void chaseTarget(){
 		if(targetEntity != null && targetEntity.isAlive()){
 			
@@ -71,9 +75,6 @@ public class Missile extends Bullet {
 				rotation -= TURN_SPEED * delta;
 			}
 			
-		}
-		else{
-			state = 1;
 		}
 	}
 	

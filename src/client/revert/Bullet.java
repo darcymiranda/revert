@@ -3,9 +3,7 @@ package client.revert;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.geom.Vector2f;
 
-public class Bullet extends Entity {    
-	
-	private boolean hasSentToOtherClients;
+public class Bullet extends Entity {
 	
 	public int test_id = 99999;
 	public boolean test_real = false;
@@ -15,7 +13,6 @@ public class Bullet extends Entity {
 	protected final float maxTravelTime = 250;
 	protected float travelTime;
 	protected Entity owner;
-	protected int serverId = -1;
 	
 	public Bullet(float x, float y, float r, Vector2f shipVel, Entity owner){
 		super();
@@ -23,11 +20,10 @@ public class Bullet extends Entity {
 		clientPosition.x = x;
 		clientPosition.y = y;
 		rotation = r;
+		this.owner = owner;
 		
 		velocity = new Vector2f(-(speed * (float) Math.sin(Math.toRadians(rotation+180))) + shipVel.x,
 								-(speed * (float) Math.cos(Math.toRadians(rotation+180))) + shipVel.y);
-		
-		this.owner = owner;
 		
 		collidable = true;
 	}
@@ -39,6 +35,7 @@ public class Bullet extends Entity {
 	public void update(GameContainer gc, int delta){
 		super.update(gc, delta);
 		
+		// TODO: Needs to be properly timed..
 		travelTime++;
 	}
 	
@@ -46,12 +43,6 @@ public class Bullet extends Entity {
 		return (travelTime >= maxTravelTime) || dead;
 	}
 	
-	public int getServerId(){ return serverId; }
-	public void setServerId(int id){ this.serverId = id; }
-	
 	public Entity getOwner(){ return owner; }
-	
-	public boolean hasSentToOtherClients(){ return hasSentToOtherClients; }
-	public void setSentToOtherClients(boolean s){ hasSentToOtherClients = s; }
 
 }

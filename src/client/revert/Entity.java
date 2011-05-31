@@ -13,7 +13,6 @@ public abstract class Entity {
 	
 	public Vector2f clientPosition;
 	public Vector2f velocity;
-	protected Vector2f minimapPosition;
 	protected Vector2f dirSpeed; 	// Holds the direction speed;
 	
 	public int id;
@@ -32,7 +31,6 @@ public abstract class Entity {
 	
 	public Entity(){
 		clientPosition = new Vector2f();
-		minimapPosition = new Vector2f(-1, -1);
 		velocity = new Vector2f();
 		dirSpeed = new Vector2f();
 		isAlive = true;
@@ -107,10 +105,7 @@ public abstract class Entity {
 	public int getWidth(){ return width; }
 	
 	public Vector2f getClientPosition(){ return new Vector2f(clientPosition); }
-	public Vector2f getMinimapPosition() { return new Vector2f(minimapPosition); }
 	public Vector2f getVelocity(){ return new Vector2f(velocity); }
-	
-	public void setMinimapPosition(Vector2f minimapPosition) { this.minimapPosition = minimapPosition; }
 	
 	public Color getMinimapColor() { return minimapColor; }
 	

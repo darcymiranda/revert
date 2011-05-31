@@ -37,10 +37,8 @@ public class EntityController {
 	public Entity getNextEntity(int i){
 		if(i >= entityPool.size()){
 			i = 0;
-		}
-		else{
+		}else
 			i++;
-		}
 		return entityPool.get(i);
 	}
 	
@@ -53,25 +51,26 @@ public class EntityController {
 		return null;
 	}
 	
-	public Bullet getBulletByServerId(int serverId){
+	public Bullet getBulletById(int id){
 		for(int i = 0; i < bulletPool.size(); i++){
-			if(serverId == bulletPool.get(i).serverId){
-				return bulletPool.get(i);
+			Bullet bullet = bulletPool.get(i);
+			if(id == bullet.id){
+				return bullet;
 			}
 		}
 		return null;		
 	}
 	
 	/**
-	 * 
+	 * Set the the server id to the last created bullet.
 	 * @param id
 	 * @param owner
 	 */
-	public void setBulletServerId(int id, int ownerId){
+	public void setBulletId(int id, int ownerId){
 		for(int i = 0; i < bulletPool.size(); i++){
 			Bullet b = bulletPool.get(i);
-			if(b.serverId == -1 && b.owner.id == ownerId){
-				b.serverId = id;
+			if(b.id == -1 && b.owner.id == ownerId){
+				b.id = id;
 				return;
 			}
 		}
@@ -151,7 +150,6 @@ public class EntityController {
 			b = bulletPool.get(i);
 			if(b.hasExpired()){ 
 				bulletPool.remove(i);
-				System.gc();
 				continue;
 			}
 			
@@ -161,8 +159,7 @@ public class EntityController {
 		Entity e;
 		for(int i = 0; i < entityPool.size(); i++){
 			e = entityPool.get(i);
-			if(e != null)
-				e.update(gc, delta);
+			e.update(gc, delta);
 		}
 	}
 	

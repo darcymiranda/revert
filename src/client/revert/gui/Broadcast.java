@@ -91,7 +91,6 @@ public class Broadcast {
 			}
 			
 			//fade out messages
-			System.out.println(isFade + " " + (time - msg.creationTime));
 			if(isFade && (time - msg.creationTime) >= fadeTime){
 				messages.get(i).fade();
 			}
