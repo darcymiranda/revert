@@ -72,11 +72,7 @@ public class Revert extends BasicGame {
 		gc.setVSync(true);
 		
 		/** Init cache **/
-		cache = new LinkedHashMap<String, Object>(100, .75f, true){
-			public boolean removeOldEntry(java.util.Map.Entry oldest){
-				return size() > 100;
-			}
-		};
+		cache = new LinkedHashMap<String, Object>(100, .75f, true);
 		
 		/** Init Font **/
 	    Font awtFont = new Font("Verdana", Font.PLAIN, 12); 
@@ -240,7 +236,6 @@ public class Revert extends BasicGame {
 			cam.centerOn(localPlayer.getShip());
 		}
 		
-		ui.update();
 		bc.update();
 		
 		// testing
@@ -284,7 +279,6 @@ public class Revert extends BasicGame {
 		
 		if(key == Input.KEY_ENTER && !players[net.id].readyStatus){
 			net.send(new Packet(Packet.READY_MARKER, net.id, !players[net.id].readyStatus));
-			System.out.println(!players[net.id].readyStatus + " ready status sent to server.");
 		}
 		
 		Packet packet = new Packet(Packet.UPDATE_SELF_INPUT);

@@ -16,8 +16,8 @@ public class Minimap extends UIComponent
 	public Minimap(GameContainer gc, Revert revert)
 	{
 		
-		width = 250;
-		height = 250;
+		width = 200;
+		height = 200;
 		
 		xpos = gc.getWidth() - (width + 10);
 		ypos = gc.getHeight() - (height + 60);
@@ -26,7 +26,7 @@ public class Minimap extends UIComponent
 		
 		try 
 		{
-			image = new Image("img/ui/minimap.png");
+			image = new Image("img/ui/minimap2.png");
 		} 
 		catch (SlickException e) 
 		{
@@ -45,13 +45,5 @@ public class Minimap extends UIComponent
 		
 		//renders objects on minimap
 		mh.render(g);
-	}
-	
-	/**
-	 * updates minimap
-	 */
-	public void update()
-	{
-		mh.update();
 	}
 }

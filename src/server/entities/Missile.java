@@ -43,7 +43,7 @@ public class Missile extends Bullet{
 	private void findTarget(){
 		Ship temp = World.getInstance().getNearestShip(owner, RANGE);
 		oldTargetEntity = targetEntity;
-		
+
 		if(temp != null){
 			state++;
 			targetEntity = temp;

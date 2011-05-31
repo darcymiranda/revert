@@ -114,7 +114,6 @@ public class World {
 					packet.bulletType = 2;
 					packet.bulletId = missile.id;
 					packet.targetId = missile.getTargetedEntity().id;
-					System.out.println(packet.id + "'s missile is tracking " + packet.targetId);
 					server.sendToAll(packet, true);
 				}
 			}
@@ -168,7 +167,6 @@ public class World {
 	public void addBullet(Packet packet, Client client){
 		
 		Ship ship = client.getShip();
-		System.out.println(ship.getId() + " is requesting to add a bullet");
 		
 		if(ship == null){
 			Log.warn(client + " tried to shoot with a null ship.");

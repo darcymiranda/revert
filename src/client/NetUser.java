@@ -31,7 +31,7 @@ import packet.Snapshot;
 		
 		// Game related
 		private Revert client;
-		public int id = -1;
+		public int id = -1;		// negitive id represents no established connection
 		public String username;
 		
 		public NetUser(Revert client, String host, int port){
@@ -164,7 +164,7 @@ import packet.Snapshot;
 							client.players[pId].getShip().setShooting(packet.getPressedSpace());
 						// MISSILE
 						else if(packet.getBulletType() == 2){
-							Missile missile = (Missile) Revert.ec.getBulletByServerId(packet.bulletId);
+							Missile missile = (Missile) Revert.ec.getBulletById(packet.bulletId);
 							Entity target = Revert.ec.getEntityById(packet.targetId);
 							missile.trackTarget(target);
 						}
@@ -177,7 +177,6 @@ import packet.Snapshot;
 					if(client.players[pId].getShip() != null){
 						if(packet.getBulletType() == 2){
 							client.players[pId].getShip().shootMissileRemote(packet.bulletId);
-							System.out.println("spawned bullet for " + pId);
 						}
 					}
 				}
@@ -189,7 +188,7 @@ import packet.Snapshot;
 				if(client.players[pId] != null){
 					if(client.players[pId].getShip() != null){
 						int ownerId = client.players[pId].getShip().id;
-						Revert.ec.setBulletServerId(packet.getBulletId(), ownerId);
+						Revert.ec.setBulletId(packet.getBulletId(), ownerId);
 					}
 				}
 				
@@ -204,7 +203,7 @@ import packet.Snapshot;
 				int pId = packet.getId();
 				if(client.players[pId] != null){
 					if(client.players[pId].getShip() != null){
-						client.players[pId].getShip().takeDamage();
+						client.players[pId].getShip().takeDamage(3);
 					}
 				}
 			}
@@ -214,8 +213,8 @@ import packet.Snapshot;
 				if(client.players[pId] != null){
 					if(client.players[pId].getShip() != null){
 						client.players[pId].getShip().setAlive(false);
-						client.ec.removeEntity(client.players[pId].getShip());
-						client.bc.addMessage(client.players[pId].getUsername() + " has died!.");
+						Revert.ec.removeEntity(client.players[pId].getShip());
+						Revert.bc.addMessage(client.players[pId].getUsername() + " has died!.");
 					}
 				}		
 				
@@ -228,7 +227,7 @@ import packet.Snapshot;
 			}
 			else if(packet.type == Packet.READY_MARKER){
 				
-				String names = "You are"; // debug
+				//String names = "You are"; // debug
 				client.players[packet.getId()].readyStatus = packet.getStatus();
 				
 				if(packet.getId() == id){
@@ -243,7 +242,7 @@ import packet.Snapshot;
 					}
 				}
 				else{
-					names = client.players[packet.getId()].getUsername() + " is"; // debug
+					//names = client.players[packet.getId()].getUsername() + " is"; // debug
 					
 					// create a ship if they have true ready status and dont already have one
 					if(packet.getStatus()){
@@ -258,8 +257,8 @@ import packet.Snapshot;
 				}
 				
 				// debugging
-				String rstatus = packet.getStatus() ? "ready" : "not ready";
-				System.out.println(names + " " + rstatus + ".");
+				//String rstatus = packet.getStatus() ? "ready" : "not ready";
+				//System.out.println(names + " " + rstatus + ".");
 				
 			}
 			else if(packet.type == Packet.CLIENT_INFO){
@@ -294,7 +293,7 @@ import packet.Snapshot;
 					client.players[packet.getId()] = tempPlayer;
 					
 					System.out.println(tempPlayer + " connected.");
-					client.bc.addMessage(tempPlayer.getUsername() + " has connected.");
+					Revert.bc.addMessage(tempPlayer.getUsername() + " has connected.");
 				}
 			}
 			else if(packet.type == Packet.DISCONNECT){
@@ -306,8 +305,8 @@ import packet.Snapshot;
 					// remove the player from the game
 					if(client.players[i].id == packet.getId()){
 						System.out.println(client.players[i].getUsername() + " has disconnected.");
-						client.bc.addMessage(client.players[i].getUsername() + " has disconnected.");
-						client.ec.removeEntity(client.players[i].getShip());
+						Revert.bc.addMessage(client.players[i].getUsername() + " has disconnected.");
+						Revert.ec.removeEntity(client.players[i].getShip());
 						client.players[i] = null;
 					}
 					break;

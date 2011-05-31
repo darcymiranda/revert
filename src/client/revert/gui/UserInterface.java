@@ -45,12 +45,4 @@ public class UserInterface
 			components.get(i).render(g);
 		}
 	}
-	
-	/**
-	 * updates user interface
-	 */
-	public void update()
-	{
-		minimap.update();
-	}
 }

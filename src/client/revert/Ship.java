@@ -52,10 +52,8 @@ public class Ship extends NetEntity {
 			float centerx = e.clientPosition.x + e.getWidth() /2;
 			float centery = e.clientPosition.y + e.getHeight() /2;
 			
-			temp.setPosition(centerx, centery);
-			temp2.setPosition(centerx, centery);
-			System.out.println(temp.getX() + " " + temp.getY());
-			System.out.println(e.clientPosition.x + " " + e.clientPosition.y);
+			temp.setPosition(centerx, centery, false);
+			temp2.setPosition(centerx, centery, false);
 			
 			Revert.ps.addEmitter(temp);
 			Revert.ps.addEmitter(temp2);
@@ -312,7 +310,6 @@ public class Ship extends NetEntity {
 			
 			bullet = new Bullet(cx,cy, calcRotation, velocity, this);
 			bullet.setImage((Image) Revert.cache.get("default_bullet"));
-			bullet.id = id;
 			Revert.ec.addBullet(bullet);
 			
 			// REMOTE
@@ -347,7 +344,7 @@ public class Ship extends NetEntity {
 		
 		Missile missile = new Missile(cx, cy, rotation,
 				new Vector2f(velocity), this);
-		missile.serverId = serverId;
+		missile.id = serverId;
 		missile.setImage((Image) Revert.cache.get("test_bullet"));
 		
 		Revert.ec.addBullet(missile);
@@ -360,8 +357,8 @@ public class Ship extends NetEntity {
 		return packet;
 	}
 	
-	public void takeDamage(){
-		health -= 3;
+	public void takeDamage(float dmg){
+		health -= dmg;
 	}
 	
 	public void destory(){
