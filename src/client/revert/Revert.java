@@ -52,8 +52,9 @@ public class Revert extends BasicGame {
 	private Camera cam;
 
 	private UnicodeFont font;
-	
 	private UserInterface ui;
+	
+	private TextOverlay debug;
 	
 	private short ticks = 0;
 
@@ -162,7 +163,8 @@ public class Revert extends BasicGame {
 		}
 		bc.addMessage("connection established");
 		
-		
+		/** Init Debug **/
+		debug = new TextOverlay(new Vector2f(gc.getWidth() - 400, 75), font);
 		
 		// Request Map
 		bc.addMessage("downloading map");
@@ -197,6 +199,7 @@ public class Revert extends BasicGame {
 		cam.untranslateGraphics();
 		ui.render(g);
 		bc.render(g);
+		debug.render(g);
 		
 	}
 	
@@ -207,6 +210,7 @@ public class Revert extends BasicGame {
 		Ship localShip = getLocalPlayer().getShip();	
 		
 		if(localShip != null){
+			
 			// map bounds collision (only left and top)
 			if(localShip.getClientPosition().x < 0 && localShip.velocity.x < 0){
 				localShip.velocity.x *= -0.3;
@@ -239,14 +243,12 @@ public class Revert extends BasicGame {
 		}
 		
 		bc.update();
+		debug.update(delta);
 		
 		// testing
 		for(int i = 0; i < serverBullets.size(); i++){
 			serverBullets.get(i).update(gc, delta);
 		}
-		
-		System.out.println(delta);
-		
 		
 	}
 	
@@ -256,6 +258,9 @@ public class Revert extends BasicGame {
 		ship.setImage((Image) cache.get("default_ship"));
 		ship.displayText = players[id].getUsername();
 		ship.font = font;
+		
+		if(id == net.id)
+			debug.trackNetEntity(ship);
 		
 		System.out.println("ship created for " + id + " " + net.username);
 		bc.addMessage(players[id].getUsername() + " has spawned.");
