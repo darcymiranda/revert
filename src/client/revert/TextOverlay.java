@@ -1,5 +1,7 @@
 package client.revert;
 
+import java.text.DecimalFormat;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.UnicodeFont;
@@ -16,9 +18,12 @@ public class TextOverlay {
 	
 	private Entity tracking;
 	
+	private DecimalFormat format;
+	
 	public TextOverlay(Vector2f position, UnicodeFont font){
 		this.position = position;
 		this.font = font;
+		format = new DecimalFormat("#,##0.0000");
 	}
 	
 	public void trackNetEntity(Entity e){
@@ -35,10 +40,10 @@ public class TextOverlay {
 		
 		if(tracking == null) return;
 		
-		g.drawString("Client Position: " + tracking.getClientPosition().x + " : " + tracking.getClientPosition().y,
+		g.drawString("Client Position: " + format.format(tracking.getClientPosition().x) + " : " + format.format(tracking.getClientPosition().y),
 				position.x, position.y);
 		
-		g.drawString("       Velocity: " + tracking.getVelocity().x * delta + " : " + tracking.getVelocity().y * delta,
+		g.drawString("       Velocity: " + format.format(tracking.getVelocity().x * delta) + " : " + format.format(tracking.getVelocity().y * delta),
 				position.x, position.y - PADDING);
 	}
 
