@@ -66,10 +66,12 @@ public class Revert extends BasicGame {
 	 * @param gc
 	 * @param g
 	 */
-	@SuppressWarnings({ "unchecked", "serial" })
+	@SuppressWarnings("unchecked")
 	public void init(GameContainer gc){
 		
+		gc.setSmoothDeltas(true);
 		gc.setVSync(true);
+		
 		
 		/** Init cache **/
 		cache = new LinkedHashMap<String, Object>(100, .75f, true);
@@ -242,6 +244,8 @@ public class Revert extends BasicGame {
 		for(int i = 0; i < serverBullets.size(); i++){
 			serverBullets.get(i).update(gc, delta);
 		}
+		
+		System.out.println(delta);
 		
 		
 	}
