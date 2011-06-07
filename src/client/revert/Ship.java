@@ -200,25 +200,22 @@ public class Ship extends NetEntity {
 			
 			if(in.isKeyDown(Input.KEY_W)){
 				
-				
-				
+								
 				//x-axis calculations
 				velocity.x += (ACCELERATION * dirSpeed.x);
 				
-				if(velocity.x > maxVelocity.x || velocity.x < -maxVelocity.x)
-					if(velocity.x > 0)
-						velocity.x = maxVelocity.x;
-					else
-						velocity.x = -maxVelocity.x;
+				if(velocity.x > maxVelocity.x)
+					velocity.x = maxVelocity.x;
+				else if(velocity.x < -maxVelocity.x)
+					velocity.x = -maxVelocity.x;
 				
 				//y-axis calculations
 				velocity.y += (ACCELERATION * dirSpeed.y);
 				
-				if(velocity.y > maxVelocity.y || velocity.y < -maxVelocity.y)
-					if(velocity.y > 0)
-						velocity.y = maxVelocity.y;
-					else
-						velocity.y = -maxVelocity.y;
+				if(velocity.y > maxVelocity.y)
+					velocity.y = maxVelocity.y;
+				else if(velocity.y < -maxVelocity.y)
+					velocity.y = -maxVelocity.y;
 				
 				/**OLD CODE
 				// the calculation for increasing the x-axis velocity for forward movement
