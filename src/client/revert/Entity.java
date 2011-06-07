@@ -14,6 +14,7 @@ public abstract class Entity {
 	public Vector2f clientPosition;
 	public Vector2f velocity;
 	protected Vector2f dirSpeed; 	// Holds the direction speed;
+	protected Vector2f maxVelocity;
 	
 	public int id;
 	protected float rotation;
@@ -33,6 +34,7 @@ public abstract class Entity {
 		clientPosition = new Vector2f();
 		velocity = new Vector2f();
 		dirSpeed = new Vector2f();
+		maxVelocity = new Vector2f();
 		isAlive = true;
 		
 		hitBox = new Rectangle(clientPosition.x, clientPosition.y, height, width);

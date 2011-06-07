@@ -1,5 +1,7 @@
 package client.revert;
 
+import java.text.DecimalFormat;
+
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -13,7 +15,8 @@ import packet.Packet;
 public class Ship extends NetEntity {
 	
 	private final float ACCELERATION = 0.005f;
-	private final float maxVelocity = 5;
+	private final float MAX_VELOCITY = 5;
+	//private final float MAX_VELOCITY = 5/16f;
 	private long lastFire;
 	private int rate = 125;
 	private float accuracy = .96f;
@@ -69,7 +72,6 @@ public class Ship extends NetEntity {
 		float centerx = getWidth() /2;
 		float centery = getHeight() /2;
 		
-		// TODO: emitter is rotating the wrong way???
 		particleEngine.setPosition((float) FastTrig.cos(Math.toRadians(rotation+90)) * centerx + (clientPosition.x + centerx),
 									(float) FastTrig.sin(Math.toRadians(rotation+90)) * centery + (clientPosition.y + centery), false);
 		particleEngine.angularOffset.setValue(rotation-180);
@@ -112,11 +114,11 @@ public class Ship extends NetEntity {
 	
 			if(in.isKeyDown(Input.KEY_E)){
 				
-				dirSpeed.x = (float) FastTrig.cos(Math.toRadians(rotation+90));
-				dirSpeed.y = (float) FastTrig.sin(Math.toRadians(rotation+90));
+				setVelocity(rotation+90);
 				
+				/**OLD CODE				
 				float xvelChange = velocity.x + (ACCELERATION * dirSpeed.x);
-				if(xvelChange <= maxVelocity && xvelChange >= -maxVelocity){
+				if(xvelChange <= maxVelocity.x && xvelChange >= -maxVelocity.x){
 					
 					velocity.x -= (xvelChange - velocity.x) ; // minus the x velocity as it was only needed for the if statement
 					
@@ -124,13 +126,13 @@ public class Ship extends NetEntity {
 				else{
 					
 					if(velocity.x > 0)
-						velocity.x = maxVelocity /1.2f;
+						velocity.x = maxVelocity.x /1.2f;
 					else
-						velocity.x = -maxVelocity /1.2f;
+						velocity.x = -maxVelocity.x /1.2f;
 				}
 				
 				float yvelChange = velocity.y + (ACCELERATION * dirSpeed.y);
-				if(yvelChange <= maxVelocity && yvelChange >= -maxVelocity){
+				if(yvelChange <= maxVelocity.y && yvelChange >= -maxVelocity.y){
 	
 					velocity.y -= (yvelChange - velocity.y); // minus the y velocity as it was only needed for the if statement
 					
@@ -138,20 +140,21 @@ public class Ship extends NetEntity {
 				else{
 					
 					if(velocity.y > 0)
-						velocity.y = maxVelocity /1.2f;
+						velocity.y = maxVelocity.y /1.2f;
 					else
-						velocity.y = -maxVelocity /1.2f;
+						velocity.y = -maxVelocity.y /1.2f;
 					
 				}
+				**/
 			}
 			
 			if(in.isKeyDown(Input.KEY_Q)){
 				
-				dirSpeed.x = (float) FastTrig.sin(Math.toRadians(rotation-90));
-				dirSpeed.y = (float) FastTrig.cos(Math.toRadians(rotation-90));
+				setVelocity(rotation-90);
 				
+				/**OLD CODE
 				float xvelChange = velocity.x + (ACCELERATION * dirSpeed.x);
-				if(xvelChange <= maxVelocity && xvelChange >= -maxVelocity){
+				if(xvelChange <= maxVelocity.x && xvelChange >= -maxVelocity.x){
 					
 					velocity.x += (xvelChange - velocity.x) ; // minus the x velocity as it was only needed for the if statement
 					
@@ -159,13 +162,13 @@ public class Ship extends NetEntity {
 				else{
 					
 					if(velocity.x > 0)
-						velocity.x = maxVelocity /1.2f;
+						velocity.x = maxVelocity.x /1.2f;
 					else
-						velocity.x = -maxVelocity /1.2f;
+						velocity.x = -maxVelocity.x /1.2f;
 				}
 				
 				float yvelChange = velocity.y + (ACCELERATION * dirSpeed.y);
-				if(yvelChange <= maxVelocity && yvelChange >= -maxVelocity){
+				if(yvelChange <= maxVelocity.y && yvelChange >= -maxVelocity.y){
 	
 					velocity.y += (yvelChange - velocity.y); // minus the y velocity as it was only needed for the if statement
 					
@@ -173,35 +176,55 @@ public class Ship extends NetEntity {
 				else{
 					
 					if(velocity.y > 0)
-						velocity.y = maxVelocity /1.2f;
+						velocity.y = maxVelocity.y /1.2f;
 					else
-						velocity.y = -maxVelocity /1.2f;
+						velocity.y = -maxVelocity.y /1.2f;
 					
 				}
+				**/
 			}
 			
 			if(in.isKeyDown(Input.KEY_D)){
 				
 				rotation += 0.2f * delta;
-				dirSpeed.x = (float) FastTrig.sin(Math.toRadians(rotation));
-				dirSpeed.y = (float) FastTrig.cos(Math.toRadians(rotation));
+				setVelocity(rotation);
 				
 			}
 			
 			if(in.isKeyDown(Input.KEY_A)){
 				
 				rotation += -0.2f * delta;
-				dirSpeed.x = (float) FastTrig.sin(Math.toRadians(rotation));
-				dirSpeed.y = (float) FastTrig.cos(Math.toRadians(rotation));
+				setVelocity(rotation);
 				
 			}
 			
 			if(in.isKeyDown(Input.KEY_W)){
 				
+				
+				
+				//x-axis calculations
+				velocity.x += (ACCELERATION * dirSpeed.x);
+				
+				if(velocity.x > maxVelocity.x || velocity.x < -maxVelocity.x)
+					if(velocity.x > 0)
+						velocity.x = maxVelocity.x;
+					else
+						velocity.x = -maxVelocity.x;
+				
+				//y-axis calculations
+				velocity.y += (ACCELERATION * dirSpeed.y);
+				
+				if(velocity.y > maxVelocity.y || velocity.y < -maxVelocity.y)
+					if(velocity.y > 0)
+						velocity.y = maxVelocity.y;
+					else
+						velocity.y = -maxVelocity.y;
+				
+				/**OLD CODE
 				// the calculation for increasing the x-axis velocity for forward movement
 				float xvelChange = velocity.x + (ACCELERATION * dirSpeed.x);
 				
-				if(xvelChange <= maxVelocity && xvelChange >= -maxVelocity){
+				if(xvelChange <= maxVelocity.x && xvelChange >= -maxVelocity.x){
 					
 					velocity.x += xvelChange - velocity.x; // minus the x velocity as it was only needed for the if statement
 					
@@ -209,15 +232,15 @@ public class Ship extends NetEntity {
 				else{
 					
 					if(velocity.x > 0)
-						velocity.x = maxVelocity;
+						velocity.x = maxVelocity.x;
 					else
-						velocity.x = -maxVelocity;
+						velocity.x = -maxVelocity.x;
 				}
 				
 				// the calculation for increasing the y-axis velocity for forward movement
 				float yvelChange = velocity.y + (ACCELERATION * dirSpeed.y);
 				
-				if(yvelChange <= maxVelocity && yvelChange >= -maxVelocity){
+				if(yvelChange <= maxVelocity.y && yvelChange >= -maxVelocity.y){
 	
 					velocity.y += yvelChange - velocity.y; // minus the y velocity as it was only needed for the if statement
 	
@@ -225,20 +248,23 @@ public class Ship extends NetEntity {
 				else{
 					
 					if(velocity.y > 0)
-						velocity.y = maxVelocity;
+						velocity.y = maxVelocity.y;
 					else
-						velocity.y = -maxVelocity;
+						velocity.y = -maxVelocity.y;
 					
 				}
-				
+				**/
 			}
 			
 			if(in.isKeyDown(Input.KEY_S)){
 				
+				setVelocity(rotation);
+				
+				/**OLD CODE
 				// the calculation for increasing the x-axis velocity for backwards movement
 				float xvelChange = velocity.x + (ACCELERATION * dirSpeed.x) / 2;
 				
-				if(xvelChange <= maxVelocity && xvelChange >= -maxVelocity){
+				if(xvelChange <= maxVelocity.x && xvelChange >= -maxVelocity.x){
 					
 					velocity.x -= xvelChange - velocity.x; // minus the x velocity as it was only needed for the if statement
 					
@@ -246,16 +272,16 @@ public class Ship extends NetEntity {
 				else{
 					
 					if(velocity.x > 0)
-						velocity.x = maxVelocity;
-						else
-						velocity.x = -maxVelocity;
+						velocity.x = maxVelocity.x;
+					else
+						velocity.x = -maxVelocity.x;
 					
 				}
 				
 				// the calculation for increasing the y-axis velocity for backwards movement
 				float yvelChange = velocity.y + (ACCELERATION * dirSpeed.y) / 2;
 				
-				if(yvelChange <= maxVelocity && yvelChange >= -maxVelocity){
+				if(yvelChange <= maxVelocity.y && yvelChange >= -maxVelocity.y){
 					
 					velocity.y -= yvelChange - velocity.y; // minus the y velocity as it was only needed for the if statement
 					
@@ -263,12 +289,12 @@ public class Ship extends NetEntity {
 				else{
 					
 					if(velocity.y > 0)
-						velocity.y = maxVelocity;
-						else
-						velocity.y = -maxVelocity;
+						velocity.y = maxVelocity.y;
+					else
+						velocity.y = -maxVelocity.y;
 					
 				}
-				
+				**/
 			}
 			
 		}
@@ -282,6 +308,20 @@ public class Ship extends NetEntity {
 		
 		super.setRotation(rotation);
 	
+	}
+	
+	/**
+	 * Sets the max x/y velocity based on current rotation
+	 */
+	private void setVelocity(float rotation)
+	{
+		
+		maxVelocity.x = (float) (FastTrig.sin(Math.toRadians(rotation)) * MAX_VELOCITY);
+		maxVelocity.y = (float) (FastTrig.cos(Math.toRadians(rotation)) * MAX_VELOCITY);
+		
+		dirSpeed.x = (float) FastTrig.sin(Math.toRadians(rotation));
+		dirSpeed.y = (float) FastTrig.cos(Math.toRadians(rotation));
+		
 	}
 	
 	public void render(Graphics g){
