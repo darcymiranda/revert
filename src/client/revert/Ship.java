@@ -15,8 +15,8 @@ import packet.Packet;
 public class Ship extends NetEntity {
 	
 	private final float ACCELERATION = 0.005f;
-	private final float MAX_VELOCITY = 5;
-	//private final float MAX_VELOCITY = 5/16f;
+	//private final float MAX_VELOCITY = 5;
+	private final float MAX_VELOCITY = 5/16f;
 	private long lastFire;
 	private int rate = 125;
 	private float accuracy = .96f;
@@ -116,6 +116,22 @@ public class Ship extends NetEntity {
 				
 				setVelocity(rotation+90);
 				
+				//x-axis calculations
+				velocity.x += (ACCELERATION * dirSpeed.x);
+				
+				if(velocity.x > maxVelocity.x)
+					velocity.x = maxVelocity.x;
+				else if(velocity.x < -maxVelocity.x)
+					velocity.x = -maxVelocity.x;
+				
+				//y-axis calculations
+				velocity.y += (ACCELERATION * dirSpeed.y);
+				
+				if(velocity.y > maxVelocity.y)
+					velocity.y = maxVelocity.y;
+				else if(velocity.y < -maxVelocity.y)
+					velocity.y = -maxVelocity.y;
+				
 				/**OLD CODE				
 				float xvelChange = velocity.x + (ACCELERATION * dirSpeed.x);
 				if(xvelChange <= maxVelocity.x && xvelChange >= -maxVelocity.x){
@@ -151,6 +167,22 @@ public class Ship extends NetEntity {
 			if(in.isKeyDown(Input.KEY_Q)){
 				
 				setVelocity(rotation-90);
+				
+				//x-axis calculations
+				velocity.x += (ACCELERATION * dirSpeed.x);
+				
+				if(velocity.x > maxVelocity.x)
+					velocity.x = maxVelocity.x;
+				else if(velocity.x < -maxVelocity.x)
+					velocity.x = -maxVelocity.x;
+				
+				//y-axis calculations
+				velocity.y += (ACCELERATION * dirSpeed.y);
+				
+				if(velocity.y > maxVelocity.y)
+					velocity.y = maxVelocity.y;
+				else if(velocity.y < -maxVelocity.y)
+					velocity.y = -maxVelocity.y;
 				
 				/**OLD CODE
 				float xvelChange = velocity.x + (ACCELERATION * dirSpeed.x);
@@ -199,8 +231,7 @@ public class Ship extends NetEntity {
 			}
 			
 			if(in.isKeyDown(Input.KEY_W)){
-				
-								
+											
 				//x-axis calculations
 				velocity.x += (ACCELERATION * dirSpeed.x);
 				
@@ -257,6 +288,22 @@ public class Ship extends NetEntity {
 				
 				setVelocity(rotation);
 				
+				//x-axis calculations
+				velocity.x -= (ACCELERATION * dirSpeed.x) / 2;
+				
+				if(velocity.x > maxVelocity.x)
+					velocity.x = maxVelocity.x;
+				else if(velocity.x < -maxVelocity.x)
+					velocity.x = -maxVelocity.x;
+				
+				//y-axis calculations
+				velocity.y -= (ACCELERATION * dirSpeed.y) / 2;
+				
+				if(velocity.y > maxVelocity.y)
+					velocity.y = maxVelocity.y;
+				else if(velocity.y < -maxVelocity.y)
+					velocity.y = -maxVelocity.y;
+				
 				/**OLD CODE
 				// the calculation for increasing the x-axis velocity for backwards movement
 				float xvelChange = velocity.x + (ACCELERATION * dirSpeed.x) / 2;
@@ -309,15 +356,23 @@ public class Ship extends NetEntity {
 	
 	/**
 	 * Sets the max x/y velocity based on current rotation
+	 * @param rotation - current direction of ship
 	 */
 	private void setVelocity(float rotation)
 	{
 		
-		maxVelocity.x = (float) (FastTrig.sin(Math.toRadians(rotation)) * MAX_VELOCITY);
-		maxVelocity.y = (float) (FastTrig.cos(Math.toRadians(rotation)) * MAX_VELOCITY);
-		
 		dirSpeed.x = (float) FastTrig.sin(Math.toRadians(rotation));
 		dirSpeed.y = (float) FastTrig.cos(Math.toRadians(rotation));
+		
+		maxVelocity.x = dirSpeed.x * MAX_VELOCITY;
+		maxVelocity.y = dirSpeed.y * MAX_VELOCITY;
+		
+		if(maxVelocity.x < 0)
+			maxVelocity.x = -maxVelocity.x;
+		if(maxVelocity.y < 0)
+			maxVelocity.y = -maxVelocity.y;
+		
+		
 		
 	}
 	

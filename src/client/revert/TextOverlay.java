@@ -48,6 +48,8 @@ public class TextOverlay {
 		g.drawString("Rotation: " + format.format(tracking.rotation), position.x, position.y + PADDING);
 		g.drawString("Max Vel: " + format.format(tracking.maxVelocity.x * delta) + " : " + format.format(tracking.maxVelocity.y * delta),
 				position.x, position.y + (PADDING*2));
+		g.drawString("Dir Speed: " + format.format(tracking.dirSpeed.x) + " : " + format.format(tracking.dirSpeed.y), 
+				position.x, position.y + (PADDING*3));
 	}
 
 }
