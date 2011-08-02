@@ -11,7 +11,7 @@ public class Snapshot implements Serializable {
 	
 	private List<Packet> packets = new LinkedList<Packet>();
 	
-	public void Screnshot(){
+	public void screenshot(){
 		
 	}
 	
